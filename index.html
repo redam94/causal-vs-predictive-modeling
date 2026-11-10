@@ -24,9 +24,24 @@ p{margin:0 0 1em}
 .gnav{position:sticky;top:0;z-index:50;height:48px;background:rgba(22,22,23,.78);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);color:#f5f5f7}
 .gnav .wrap{display:flex;align-items:center;height:48px;gap:22px}
 .gnav .brand{font-weight:600;font-size:15px;color:#f5f5f7;white-space:nowrap}
-.gnav .links{display:flex;gap:20px;overflow-x:auto;scrollbar-width:none;flex:1;justify-content:flex-end}
-.gnav .links::-webkit-scrollbar{display:none}
-.gnav .links a{color:#d2d2d7;font-size:12px;white-space:nowrap;opacity:.85}
+.gnav .links{display:flex;gap:22px;margin-left:auto;align-items:center;flex:none}
+
+.gnav .links a,.gnav .links button{color:#d2d2d7;font-size:12px;white-space:nowrap;opacity:.9;background:none;border:0;font-family:inherit;cursor:pointer;padding:0;letter-spacing:inherit}
+.gnav .links button:hover,.gnav .links button[aria-expanded=true]{color:#fff;opacity:1}
+.gnav .car{display:inline-block;transition:transform .25s;font-size:10px}.gnav button[aria-expanded=true] .car{transform:rotate(180deg)}
+.navcur{font-size:12px;color:#86868b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1;padding-left:14px;border-left:1px solid #424245}
+.navcur:empty{border-left:0}
+.chmenu{position:absolute;left:0;right:0;top:48px;background:#161617;backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-top:1px solid #2a2a2d;max-height:calc(100vh - 48px);overflow-y:auto;opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .25s,transform .25s,visibility .25s}
+.chmenu.open{opacity:1;visibility:visible;transform:none}
+.gnav .chmenu .wrap{display:block;height:auto}
+.chgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:4px 18px;padding:22px 0 28px}
+.chgrid a{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:12px;color:#f5f5f7}
+.chgrid a:hover{background:rgba(255,255,255,.08);text-decoration:none}
+.chgrid a.on{background:rgba(41,151,255,.18)}
+.chgrid .num{flex:none;width:26px;height:26px;border-radius:50%;border:1px solid #6e6e73;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#d2d2d7}
+.chgrid a.on .num{border-color:#2997ff;color:#2997ff}
+.chgrid b{display:block;font-size:14px;font-weight:600}.chgrid small{display:block;font-size:12px;color:#86868b}
+@media(max-width:560px){.navcur{display:none}}
 .gnav .links a:hover,.gnav .links a.on{opacity:1;color:#fff;text-decoration:none}
 #prog{position:absolute;left:0;bottom:0;height:2px;width:0;background:linear-gradient(90deg,var(--blue2),var(--purple))}
 
@@ -218,11 +233,15 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
 <nav class="gnav">
   <div class="wrap">
     <a class="brand" href="#top">Seeing vs. Doing</a>
+    <span class="navcur" id="navCur"></span>
     <div class="links">
-      <a href="#trap">The trap</a><a href="#two">Two questions</a><a href="#dags">DAGs</a><a href="#dsep">d-separation</a><a href="#do">do-calculus</a><a href="#ident">Identification</a><a href="#disc">Discovery</a><a href="#mec">Equivalence</a><a href="#summ">Summaries</a><a href="#graphs">Graph types</a><a href="#limits">Limits</a><a href="#target">Targeting</a><a href="#transport">Transport</a><a href="#workflow">Workflow</a><a href="faq.html">FAQ</a><a href="#sources">Sources</a>
+      <button id="chBtn" aria-expanded="false" aria-controls="chMenu">Chapters <span class="car">&#9662;</span></button>
+      <a href="#workflow">Workflow</a>
+      <a href="faq.html">FAQ</a>
     </div>
   </div>
   <div id="prog"></div>
+  <div class="chmenu" id="chMenu"><div class="wrap"><div class="chgrid"><a href="#trap" data-t="1. The trap"><span class="num">1</span><span><b>The trap</b><small>When a good forecast gives bad advice</small></span></a><a href="#two" data-t="2. Two questions"><span class="num">2</span><span><b>Two questions</b><small>Seeing versus doing</small></span></a><a href="#dags" data-t="3. Causal diagrams"><span class="num">3</span><span><b>Causal diagrams</b><small>Forks, chains and colliders</small></span></a><a href="#dsep" data-t="4. d-separation"><span class="num">4</span><span><b>d-separation</b><small>The adjustment playground</small></span></a><a href="#do" data-t="5. do-calculus"><span class="num">5</span><span><b>do-calculus</b><small>Turning do into see</small></span></a><a href="#ident" data-t="6. Identification"><span class="num">6</span><span><b>Identification</b><small>Causal versus statistical</small></span></a><a href="#disc" data-t="7. Causal discovery"><span class="num">7</span><span><b>Causal discovery</b><small>Can data draw the diagram?</small></span></a><a href="#mec" data-t="8. Markov equivalence"><span class="num">8</span><span><b>Markov equivalence</b><small>Different stories, identical data</small></span></a><a href="#summ" data-t="9. Summary DAGs"><span class="num">9</span><span><b>Summary DAGs</b><small>Zooming out safely</small></span></a><a href="#graphs" data-t="Beyond the DAG"><span class="num">+</span><span><b>Beyond the DAG</b><small>Twelve kinds of causal graph</small></span></a><a href="#limits" data-t="10. Honest limits"><span class="num">10</span><span><b>Honest limits</b><small>What data cannot tell you, and Table 2</small></span></a><a href="#target" data-t="11. Audience targeting"><span class="num">11</span><span><b>Audience targeting</b><small>Propensity versus uplift</small></span></a><a href="#transport" data-t="12. Transport and calibration"><span class="num">12</span><span><b>Transport and calibration</b><small>Moving results, calibrating models</small></span></a><a href="#check" data-t="Five questions"><span class="num">✓</span><span><b>Five questions</b><small>Checklist and glossary</small></span></a><a href="#workflow" data-t="Workflow"><span class="num">→</span><span><b>Workflow</b><small>Nine stages and a design router</small></span></a><a href="#sources" data-t="Sources"><span class="num">§</span><span><b>Sources</b><small>Vault notes and original works</small></span></a></div></div></div>
 </nav>
 
 <!-- ============ HERO ============ -->
@@ -1213,9 +1232,14 @@ $$('.rv').forEach(e=>io.observe(e));
 function countUp(n){if(n._done)return;n._done=1;const to=+n.dataset.count,dec=+(n.dataset.dec||0),plus=n.dataset.plus;const t0=performance.now(),D=reduced?1:1300;
   (function f(t){const k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3),v=to*e;n.textContent=(v<0?'\u2212':(plus?'+':''))+Math.abs(v).toFixed(dec);if(k<1)requestAnimationFrame(f);})(t0);}
 const bars=$('#abBars');new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){$$('.fill',bars).forEach(f=>f.style.width=f.dataset.w+'%');o.disconnect();}},{threshold:.4}).observe(bars);
-const links=$$('.gnav .links a').filter(a=>a.getAttribute('href').startsWith('#')),secs=links.map(a=>$(a.getAttribute('href')));
+const links=$$('#chMenu a'),secs=links.map(a=>$(a.getAttribute('href'))),chBtn=$('#chBtn'),chMenu=$('#chMenu');
+function setMenu(o){chMenu.classList.toggle('open',o);chBtn.setAttribute('aria-expanded',o?'true':'false');}
+chBtn.onclick=e=>{e.stopPropagation();setMenu(!chMenu.classList.contains('open'));};
+links.forEach(a=>a.addEventListener('click',()=>setMenu(false)));
+document.addEventListener('click',e=>{if(!e.target.closest('.gnav'))setMenu(false);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false);});
 function onScroll(){const h=document.documentElement,p=h.scrollTop/(h.scrollHeight-h.clientHeight||1);$('#prog').style.width=(p*100)+'%';
-  let cur=-1;secs.forEach((s,i)=>{if(s&&s.getBoundingClientRect().top<140)cur=i;});links.forEach((a,i)=>a.classList.toggle('on',i===cur));}
+  let cur=-1;secs.forEach((s,i)=>{if(s&&s.getBoundingClientRect().top<140)cur=i;});links.forEach((a,i)=>a.classList.toggle('on',i===cur));$('#navCur').textContent=cur>=0?links[cur].dataset.t:'';}
 addEventListener('scroll',onScroll,{passive:true});onScroll();
 
 /* ---------- hero ---------- */
