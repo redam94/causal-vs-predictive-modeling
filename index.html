@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Seeing vs. Doing: A Field Guide to Causal Identification</title>
-<meta name="description" content="An interactive guide to DAGs, d-separation, do-calculus, causal discovery, Markov equivalence, and the trap of treating predictive models as causal.">
+<meta name="description" content="Why every causal estimate needs an identification argument: without one you cannot say how far off the answer might be or whether it is close enough to act on. An interactive guide with DAGs, d-separation, do-calculus, sensitivity analysis and worked media examples.">
 <style>
 :root{
   --ink:#1d1d1f;--ink2:#6e6e73;--line:#d2d2d7;--blue:#0071e3;--blue2:#2997ff;
@@ -188,6 +188,7 @@ svg.dag{width:100%;height:auto;display:block;overflow:visible;color:var(--ink);u
 .paths small{display:block;color:var(--ink2);font-family:var(--font);font-size:12px}
 .verdict{border-radius:18px;padding:18px 20px;margin-top:16px;font-size:15.5px;transition:background .3s}
 .verdict.ok{background:rgba(48,209,88,.14)}.verdict.bad{background:rgba(255,69,58,.12)}.verdict.warn{background:rgba(255,159,10,.16)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.86em;letter-spacing:0}
 .verdict b{display:block;font-size:19px;margin-bottom:4px}
 
 /* bars */
@@ -243,6 +244,7 @@ table.cmp td.num{font-variant-numeric:tabular-nums;font-weight:600}table.cmp tr.
 .doc .k{display:inline-block;font-size:11px;font-weight:600;border-radius:980px;padding:2px 9px;margin-right:6px}
 .doc .k.g{background:rgba(48,209,88,.18);color:#1d8a3a}.doc .k.o{background:rgba(255,159,10,.2);color:#b25000}.doc .k.r{background:rgba(255,69,58,.15);color:#d70015}
 @media(max-width:560px){.doc{padding:22px}.doc .row{grid-template-columns:1fr}}
+#thesis .stage{background:rgba(255,255,255,.06)}
 .tl{position:relative;margin-top:40px}
 .tl::before{content:"";position:absolute;left:23px;top:10px;bottom:10px;width:2px;background:linear-gradient(var(--teal),var(--purple),#ff375f)}
 .tl .st{position:relative;padding:0 0 26px 70px}
@@ -281,7 +283,7 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
   <div class="wrap">
     <div class="eyebrow rv">A field guide to causal identification</div>
     <h1 class="rv d1">Seeing is one thing.<br><span class="grad">Doing is another.</span></h1>
-    <p class="lead rv d2">A model can forecast your business beautifully and still point you toward the wrong decision. This guide shows why, using diagrams you can click, drag and break.</p>
+    <p class="lead rv d2">A model can forecast your business beautifully and still point you toward the wrong decision. The way out is an argument for why your number means what you think it means. Without one, nobody can say how far off it might be, or whether it is close enough to act on.</p>
     <div class="cta rv d3"><a class="btn" href="#workflow">Start with the workflow</a><a class="btn ghost" href="#trap">See the trap first</a></div>
     <div class="chev">Scroll</div>
   </div>
@@ -293,6 +295,23 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
     <div class="eyebrow rv">Start here &middot; The practitioner's workflow</div>
     <h2 class="big rv">From question <span class="grad">to defensible answer.</span></h2>
     <p class="lead rv">Everything on this page, arranged in the order you would actually do it. Each stage names what to produce and the signal that should send you back a step. Most analyses that go wrong skipped stage two or stage three.</p>
+
+    <div class="card mt rv" id="thesis">
+      <div class="tag" style="color:var(--teal)">The argument of this guide</div>
+      <h3 style="margin-top:8px;font-size:32px">You need an identification argument to know when an answer is close enough.</h3>
+      <p class="muted" style="max-width:860px">Every estimate is off by some amount. An identification argument is what lets you say by how much. It states what your number would equal if the assumptions held, and it names those assumptions, so you can ask how badly each could fail and which way that pushes the answer. The decision then tells you how much error you can absorb. "Close enough" is the first compared with the second.</p>
+      <div class="pipe" style="margin-top:22px">
+        <div class="stage"><div class="tag" style="color:var(--purple)">From the identification argument</div><h4 style="margin-top:6px">How far off, and which way</h4><p class="muted small">The assumptions the estimate rests on, the direction of the bias if they fail, and a range once you say how badly they could fail.</p></div>
+        <div class="arrow"><span>+</span></div>
+        <div class="stage"><div class="tag" style="color:var(--orange)">From the decision</div><h4 style="margin-top:6px">How much error it can absorb</h4><p class="muted small">Keeping or cutting a channel needs the right side of break-even. Sizing an investment needs the number itself.</p></div>
+        <div class="arrow"><span>=</span></div>
+        <div class="stage"><div class="tag" style="color:var(--green)">The answer you can defend</div><h4 style="margin-top:6px">Close enough, or go and test</h4><p class="muted small">If the range clears the decision, act. If it straddles the decision, you know what a test must resolve and <a href="#voi">what it is worth</a>.</p></div>
+      </div>
+      <div class="grid2" style="margin-top:22px">
+        <p class="muted small" style="margin:0"><b style="color:var(--ink)">Fit cannot stand in for the argument.</b> A high R&sup2; measures prediction and a tight interval measures precision. Both stay excellent when the estimate is far from the effect you want, and neither tells you the direction of the error.</p>
+        <p class="muted small" style="margin:0"><b style="color:var(--ink)">The argument is useful even when it fails.</b> "Not identified, because expected demand drives both spend and sales" already tells you the bias runs upward and gives you something to size it against. An estimate with no argument behind it might be close. You would have no way of knowing.</p>
+      </div>
+    </div>
     <div class="grid3 mt">
       <a class="card rv" href="#trap" style="color:inherit;text-decoration:none"><div class="tag" style="color:var(--teal)">Twenty minutes &middot; 1 of 3</div><h4 style="margin-top:8px">See the problem</h4><p class="muted small">Chapter 1 shows a model that forecasts well and advises badly, with a simulator you can break.</p></a>
       <a class="card rv d1" href="#mmm" style="color:inherit;text-decoration:none"><div class="tag" style="color:var(--teal)">Twenty minutes &middot; 2 of 3</div><h4 style="margin-top:8px">Watch it happen in a weekly model</h4><p class="muted small">Chapter 12 runs the whole workflow on 156 weeks of media and sales, and ends with a filled-in readout.</p></a>
@@ -1058,9 +1077,9 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
 <!-- ============ BALANCE ============ -->
 <section class="sec light" id="balance">
   <div class="wrap">
-    <div class="eyebrow rv">Judgment &middot; The other side of the argument</div>
+    <div class="eyebrow rv">Judgment &middot; What the argument buys you</div>
     <h2 class="big rv">When good enough <span class="grad2">is good enough.</span></h2>
-    <p class="lead rv">This guide spends ten chapters on what observational estimates get wrong. A practitioner also needs the opposite list. Experiments cost money, time and sales, and a biased estimate can still lead to the right decision.</p>
+    <p class="lead rv">The chapters before this one ask you to build an identification argument. This is where it pays off. Experiments cost money, time and sales, and a biased estimate can still lead to the right decision, provided you can say which way the bias runs and how large it could be. Each condition below is something only that argument can tell you.</p>
     <div class="grid2 mt">
       <div class="rv">
         <h3>Act on the observational estimate when</h3>
@@ -1068,8 +1087,9 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
           <li><b>The decision only needs a sign or a ranking.</b>If every plausible value of the bias leaves channel A ahead of channel B, the exact size does not matter.</li>
           <li><b>You know which way the bias runs.</b>Targeting and demand-following push estimates up. An estimate that is already below break-even after an upward bias is a safe reason to cut.</li>
           <li><b>The action is cheap to reverse.</b>A two-week budget shift that can be undone is its own small experiment. Save rigor for annual plans and contracts.</li>
-          <li><b>A test would cost more than the mistake.</b>Use the calculator on the right. If the plausible range sits entirely on one side of break-even, no test result would change what you do.</li>
+          <li><b>A test would cost more than it could return.</b>The calculator below prices a test before you run it. When the plausible range sits entirely on one side of break-even, no result would change what you do, and the test is worth almost nothing to this decision however much it teaches you.</li>
         </ol>
+        <p class="muted" style="margin-top:16px">All four rest on the same footing. A robust sign, a known bias direction and a range to hold against break-even each come from having named the assumptions and asked how they could fail. Skip that step and the estimate may still be close, with nothing to tell you so.</p>
       </div>
       <div class="rv d1">
         <h3>What experiments really cost</h3>
@@ -1081,26 +1101,74 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
       </div>
     </div>
 
-    <div class="card mt rv">
-      <div class="split">
+    <div class="card mt rv" id="voi">
+      <div class="tag" style="color:var(--teal)">Pricing a test before you run it</div>
+      <h3 style="margin-top:8px">Try it: what is the test worth?</h3>
+      <p class="muted" style="max-width:880px">A regional retailer has to decide whether to renew $10M of paid social. The model says each dollar returns 1.5. Sensitivity analysis widened that to somewhere between 0.8 and 2.2, and break-even is 1.0. The analytics lead asks for a geo test. Finance asks what the test is worth, and "it would reduce our uncertainty" does not survive the meeting. Decision theory gives an answer in dollars: take every result the test could return, work out how much better the renewal decision gets in each case, and average. Then compare that with the price.</p>
+      <div class="split" style="margin-top:18px">
         <div>
-          <h3>Try it: is the test worth running?</h3>
-          <p class="muted">Take the range your sensitivity analysis left you with and compare the cost of being wrong against the cost of finding out.</p>
           <label class="ctl">Annual spend this decision governs: <b id="voBv"></b></label><input type="range" id="voB" min="1" max="100" value="10">
           <label class="ctl">Plausible return, low end: <b id="voLv"></b></label><input type="range" id="voL" min="0" max="300" step="5" value="80">
           <label class="ctl">Plausible return, high end: <b id="voHv"></b></label><input type="range" id="voH" min="20" max="500" step="5" value="220">
           <label class="ctl">Break-even return: <b id="voKv"></b></label><input type="range" id="voK" min="50" max="300" step="5" value="100">
-          <label class="ctl">Cost of the test, spend plus lost sales plus effort: <b id="voCv"></b></label><input type="range" id="voC" min="10" max="2000" step="10" value="150">
+          <label class="ctl">How precisely the test would measure the return, as a standard error: <b id="voSv"></b></label><input type="range" id="voS" min="5" max="100" step="5" value="30">
+          <label class="ctl">Cost of the test, spend plus lost sales plus effort: <b id="voCv"></b></label><input type="range" id="voC" min="10" max="2000" step="10" value="80">
+          <p class="small muted" style="margin-top:14px">For the standard error, take the smallest detectable return from the <a href="#sizing">sizing calculator</a> and divide by 2.8.</p>
         </div>
         <div>
           <div class="small muted">Plausible range against break-even</div>
           <div class="ivtrack" id="voTrack" style="margin:14px 0"></div>
-          <div class="grid2" style="gap:12px"><div><div class="small muted">Chance the default decision is wrong</div><div style="font-size:30px;font-weight:600" id="voP"></div></div><div><div class="small muted">Expected yearly cost of deciding without a test</div><div style="font-size:30px;font-weight:600" id="voE"></div></div></div>
+          <div class="grid2" style="gap:14px 12px">
+            <div><div class="small muted">Chance the default decision is wrong</div><div style="font-size:28px;font-weight:600" id="voP"></div></div>
+            <div><div class="small muted">Value of a perfect answer <span class="mono">EVPI</span></div><div style="font-size:28px;font-weight:600" id="voE"></div></div>
+            <div><div class="small muted">Value of this test <span class="mono">EVSI</span></div><div style="font-size:28px;font-weight:600;color:var(--blue)" id="voS1"></div></div>
+            <div><div class="small muted">Left after paying for it <span class="mono">ENBS</span></div><div style="font-size:28px;font-weight:600" id="voN"></div></div>
+          </div>
+          <p class="small" style="margin:14px 0 0" id="voI"></p>
           <div class="verdict" id="voV"></div>
-          <p class="small muted" style="margin-top:12px">Assumes every value in the range is equally likely, returns are in margin terms, and the test would settle the question. Real tests settle it partly, so treat the ratio as an upper bound on what the test is worth.</p>
         </div>
       </div>
+      <div style="margin-top:22px">
+        <div class="small muted">Would a bigger or smaller version of this test pay better? Value and cost as the test scales.</div>
+        <canvas id="voC2" role="img" aria-label="Chart of the dollar value of the test and its cost as the test is made smaller or larger" style="width:100%;height:230px;margin-top:8px;border-radius:14px;background:#fff"></canvas>
+        <div class="small muted" style="margin-top:8px"><span style="color:var(--blue);font-weight:600">Blue</span> is the value of the test. <span style="color:var(--orange);font-weight:600">Orange</span> is its cost. The dashed line is the value of a perfect answer, which no test can pass. The test pays wherever blue sits above orange.</div>
+      </div>
+      <p class="small muted" style="margin-top:14px">Reads your range as the middle 90% of a bell curve, puts returns in margin terms, counts one year of the decision, assumes the test measures the same quantity the decision turns on, and assumes cost grows in proportion to the size of the test. The arithmetic is the normal closed form from the vault's value-of-information note.</p>
     </div>
+
+    <div class="grid3 mt">
+      <div class="card rv"><div class="tag" style="color:var(--purple)">The ceiling</div><h4 style="margin-top:6px">Expected value of perfect information</h4><p class="muted small">Suppose someone could hand you the true return today. EVPI is how much better your decision would be, on average, than the one you would make now. No test, model upgrade or vendor study can be worth more to this decision. If the price is above the ceiling, stop there.</p></div>
+      <div class="card rv d1"><div class="tag" style="color:var(--blue)">This test</div><h4 style="margin-top:6px">Expected value of sample information</h4><p class="muted small">A real test returns a noisy estimate, so it buys part of the ceiling. Returns diminish quickly. In the vault's worked example one observation captures 35% of the ceiling, four capture 71%, sixteen capture 91% and sixty-four capture 98%.</p></div>
+      <div class="card rv d2"><div class="tag" style="color:var(--green)">The verdict</div><h4 style="margin-top:6px">Expected net benefit of sampling</h4><p class="muted small">ENBS is the value of the test minus its cost. Because value flattens while cost keeps climbing, there is a best size: the point where one more market adds less value than it costs. Power analysis tells you what a test can see. This tells you whether seeing it is worth the money.</p></div>
+    </div>
+    <p class="src" data-src="voi,heath,voiprice,decision"></p>
+
+    <div class="card mt rv" id="eig">
+      <div class="tag" style="color:var(--teal)">A second way to score a test</div>
+      <h3 style="margin-top:8px">Information gained and dollars gained can disagree.</h3>
+      <div class="grid2" style="margin-top:14px">
+        <div>
+          <p>In 1956 Dennis Lindley proposed scoring an experiment by how much it is expected to shrink your uncertainty about the unknowns. The score is the expected drop in entropy from prior to posterior, averaged over the data the experiment might produce. It is called expected information gain, and modern Bayesian experimental design chooses the design that maximizes it.</p>
+          <p>For a single quantity with bell-shaped uncertainty the formula is short:</p>
+          <p class="mono" style="font-size:15px">information gain = &frac12; &times; log(1 + prior variance &divide; test variance)</p>
+          <p class="muted small">The logarithm is why returns diminish. In the vault's example the first observation buys 0.80 nats and three observations buy 1.28. A nat is a unit of information, about 1.44 bits. The calculator above reports the same score for your test.</p>
+        </div>
+        <div>
+          <p><b>Try this in the calculator.</b> Drag break-even down to 0.50, so the whole range sits above it. The information line does not move. The test would still narrow the range by about 42%. Its dollar value falls from about $117k to about $2k, because no plausible result would stop the renewal.</p>
+          <p>Information gain measures learning about the parameters. Value of information measures improvement in one decision. A test can be rich in the first and nearly empty in the second.</p>
+          <p class="muted small"><b style="color:var(--ink)">Use dollars</b> when one decision is on the table and you can write down its payoff. <b style="color:var(--ink)">Use information</b> when the result will feed many later decisions you cannot list yet, such as a response curve reused across next year's plans. <b style="color:var(--ink)">In between</b>, target the information: score the test on the one quantity the decision turns on, such as the marginal return at the planned spend, and ignore what it teaches about everything else.</p>
+        </div>
+      </div>
+      <p class="muted small" style="margin-top:8px">A geo test fits this frame directly. The design is the choice of markets, channel, size of the spend change and length of the window. The prior is the current model's posterior. Each candidate design gets a score before any money moves.</p>
+    </div>
+
+    <div class="grid2 mt">
+      <div class="card rv"><h4>The width you feed in is the identification argument</h4><p class="muted small">Both scores start from how uncertain you are today. That has to be the range left after sensitivity analysis. Feed in the model's own interval, which assumes no confounding, and the range looks tight, the ceiling looks tiny, and the arithmetic tells you never to test. An overconfident model prices its own correction at zero. This is the thesis of the guide in dollar form: without the argument you cannot say how wrong you might be, so you cannot say what finding out is worth.</p></div>
+      <div class="card rv d1"><h4>A test resolves part of the uncertainty</h4><p class="muted small">A geo test pins down the return in its markets, weeks and spend level. Whether that carries to the national plan stays open, as Chapter 13 describes. The value of learning one piece of the puzzle has its own name, EVPPI, and it never exceeds the ceiling. In the vault's example, learning one of two equally uncertain inputs captures 54% of the total. Ranking the pieces this way tells you which uncertainty is worth buying down first.</p></div>
+      <div class="card rv"><h4>Both scores live inside your model</h4><p class="muted small">Value and information are computed under the model you believe today. If the model is wrong, so is the score. A model that assumes a straight-line response will always send the test's spend to the two extremes, since under a straight line nothing in the middle can teach it anything, and it will never find the curve it ruled out. Check the design against a rival model before trusting the ranking.</p></div>
+      <div class="card rv d1"><h4>Learn, optimize, or earn while learning</h4><p class="muted small">These are three different jobs. To learn how a channel responds, design for information. To find the best allocation in as few tries as possible, use Bayesian optimization, which spends its trials near the suspected optimum. To keep earning while you learn, use a bandit, which shifts budget toward what is working and accepts that it will know less about what is not.</p></div>
+    </div>
+    <p class="src" data-src="eig,lindley,eigobj,geoeig,bedopen,bedbo"></p>
     <p class="src" data-src="pitfalls,power,unified,mmmprior,chanperry"></p>
   </div>
 </section>
@@ -1442,7 +1510,7 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
     <ol class="steps mt rv">
       <li><b>Is this a seeing question or a doing question?</b>Forecasts, rankings and risk scores are seeing. Choosing a lever is doing, and a driver chart from a predictive model does not answer it.</li>
       <li><b>Have you drawn the diagram?</b>Put the treatment, the outcome, and everything that influences both on one page. Argue about the missing arrows, since those carry the claims.</li>
-      <li><b>Is the effect causally identified with what you measured?</b>Find the backdoor paths. If a measured set blocks them all without touching mediators or colliders, proceed. If none does, say so and move to question five.</li>
+      <li><b>Is the effect causally identified with what you measured?</b>Find the backdoor paths. If a measured set blocks them all without touching mediators or colliders, proceed. If none does, say so and move to question five. Either way you now know what the answer depends on, which is what lets you judge whether it is close enough.</li>
       <li><b>Does the data contain the variation to estimate it?</b>Check overlap and collinearity. A tight interval reflects sample size and model structure. It carries no information about whether the first lock was opened.</li>
       <li><b>How wrong could the assumptions be, and can you run a test?</b>Run a sensitivity analysis, then design the smallest experiment that would settle the open question.</li>
     </ol>
@@ -1476,7 +1544,7 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
       <p class="small" style="margin:6px 0 0"><span class="prov ill">Illustration</span>A simulator or example built for this page, with parameters chosen to make the mechanism visible. Every "Try it" panel is one. They show how a problem behaves and say nothing about how large it is in your data.</p></div>
     <p class="lead rv">Research for this page was drawn from the <a href="https://redam94.github.io/second-brain/">Second Brain</a> knowledge base. Each row links the vault note that was used and names the original work that note is built on.</p>
     <div class="scroll mt rv"><table class="t" id="srcTable"><tr><th>Used for</th><th>Vault note</th><th>Original source behind the note</th></tr></table></div>
-    <p class="small muted mt2">The framing of identification as two separate locks, the interactive simulations, the media diagram in Chapter 9, and the character of Dana are this page's own synthesis and illustration, as are Marcus, the audience-targeting simulation, the sample regression table in the Table 2 close-up, Lena and the three simulators in Chapter 13, the weekly model and its readout in Chapter 12, the sizing and value-of-testing calculators, the example graphs in the field guide to graph types, and the arrangement of the workflow and design router. Statements of the three do-calculus rules and the front-door formula follow Pearl (2009), <em>Causality</em>, 2nd ed., Cambridge University Press, which the vault references and lists as not yet fully covered. The E-value formula follows VanderWeele and Ding (2017), cited by the vault's sensitivity-analysis note. Journal, volume and page details for Lewis, Rao and Reiley (2011), Glymour, Zhang and Spirtes (2019), K&uuml;nzel et al. (2019), Lewis and Rao (2015), Gordon, Moakler and Zettelmeyer (2023), Kerman, Wang and Vaver (2017), Meager (2019), Cinelli and Hazlett (2020), Rambachan and Roth (2023) and the Plausible GMM working paper were checked against publisher or index pages in November 2026. The background references for graph types outside the vault have not been checked the same way.</p>
+    <p class="small muted mt2">The thesis that an identification argument is what makes "close enough" answerable, the framing of identification as two separate locks, the interactive simulations, the media diagram in Chapter 9, and the character of Dana are this page's own synthesis and illustration, as are Marcus, the audience-targeting simulation, the sample regression table in the Table 2 close-up, Lena and the three simulators in Chapter 13, the weekly model and its readout in Chapter 12, the sizing and value-of-testing calculators, the example graphs in the field guide to graph types, and the arrangement of the workflow and design router. Statements of the three do-calculus rules and the front-door formula follow Pearl (2009), <em>Causality</em>, 2nd ed., Cambridge University Press, which the vault references and lists as not yet fully covered. The E-value formula follows VanderWeele and Ding (2017), cited by the vault's sensitivity-analysis note. Journal, volume and page details for Lewis, Rao and Reiley (2011), Glymour, Zhang and Spirtes (2019), K&uuml;nzel et al. (2019), Lewis and Rao (2015), Gordon, Moakler and Zettelmeyer (2023), Kerman, Wang and Vaver (2017), Meager (2019), Cinelli and Hazlett (2020), Rambachan and Roth (2023) and the Plausible GMM working paper were checked against publisher or index pages in November 2026. The background references for graph types outside the vault have not been checked the same way.</p>
   </div>
 </section>
 <footer><div class="wrap">Built as a single static file for GitHub Pages. No trackers, no external scripts. Simulated data throughout unless a source is named.</div></footer>
@@ -2058,20 +2126,47 @@ function drawSZ(){
 }
 ['#szN','#szS','#szC','#szT','#szX','#szR'].forEach(i=>$(i).oninput=drawSZ);
 
-/* ---------- value of testing ---------- */
+/* ---------- value of testing: EVPI, EVSI, ENBS, information gain ---------- */
+const phiN=z=>.3989423*Math.exp(-z*z/2);
+const voGain=(d,sd)=>sd<1e-9?0:Math.max(0,sd*phiN(d/sd)+d*Phi(d/sd)-Math.max(d,0));
 function drawVO(){
-  const B=+$('#voB').value;let lo=$('#voL').value/100,hi=$('#voH').value/100;const k=$('#voK').value/100,c=+$('#voC').value;if(hi<lo+.05)hi=lo+.05;
-  $('#voBv').textContent='$'+B+'M';$('#voLv').textContent=lo.toFixed(2);$('#voHv').textContent=hi.toFixed(2);$('#voKv').textContent=k.toFixed(2);$('#voCv').textContent=kfmt(c);
-  const mid=(lo+hi)/2,keep=mid>=k,L=keep?Math.max(0,Math.min(hi,k)-lo):Math.max(0,hi-Math.max(lo,k)),p=L/(hi-lo),loss=B*1000*L*L/(2*(hi-lo));
+  const B=+$('#voB').value;let lo=$('#voL').value/100,hi=$('#voH').value/100;const k=$('#voK').value/100,se=$('#voS').value/100,c=+$('#voC').value;if(hi<lo+.05)hi=lo+.05;
+  $('#voBv').textContent='$'+B+'M';$('#voLv').textContent=lo.toFixed(2);$('#voHv').textContent=hi.toFixed(2);$('#voKv').textContent=k.toFixed(2);$('#voSv').textContent='±'+se.toFixed(2);$('#voCv').textContent=kfmt(c);
+  const m=(lo+hi)/2,s0=(hi-lo)/3.29,d=m-k,keep=d>=0,M=B*1000,act=keep?'keep spending':'cut';
+  const ev=f=>M*voGain(d,s0*s0/Math.sqrt(s0*s0+se*se/f));
+  const evpi=M*voGain(d,s0),evsi=ev(1),enbs=evsi-c,p=Phi(-Math.abs(d)/s0),r=s0*s0/(se*se),nats=.5*Math.log(1+r),shr=1-1/Math.sqrt(1+r);
+  let bf=0,bn=0;for(let i=0;i<=120;i++){const f=.25*Math.pow(64,i/120),n=ev(f)-c*f;if(n>bn){bn=n;bf=f;}}
   const a=0,b=5,pc=v=>Math.max(0,Math.min(100,(v-a)/(b-a)*100));
-  $('#voTrack').innerHTML=`<div class="ivband" style="left:${pc(lo)}%;width:${pc(hi)-pc(lo)}%;background:rgba(0,113,227,.45)"></div><div class="ivtruth" style="left:${pc(k)}%;background:var(--ink)"></div>`;
-  $('#voP').textContent=Math.round(p*100)+'%';$('#voE').textContent=kfmt(loss);const V=$('#voV'),act=keep?'keep spending':'cut';
-  if(L<=0){V.className='verdict ok';V.innerHTML=`<b>Skip the test</b>The whole plausible range sits ${keep?'above':'below'} break-even. Every value in it says ${act}. A test could refine the number and would not change the decision.`;}
-  else if(loss>c*1.5){V.className='verdict bad';V.innerHTML=`<b>Run the test</b>On current knowledge you would ${act}, with a ${Math.round(p*100)}% chance that is the wrong call. The expected cost of that is about ${(loss/c).toFixed(1)} times the cost of testing, every year the question stays open.`;}
-  else if(loss>c*.6){V.className='verdict warn';V.innerHTML=`<b>Close call</b>The expected cost of deciding blind is similar to the cost of the test. Look for a cheaper design, or a reversible way to act and watch.`;}
-  else{V.className='verdict ok';V.innerHTML=`<b>Act on what you have</b>You would ${act}. There is a ${Math.round(p*100)}% chance that is wrong, and the expected cost is well under the price of a test.`;}
+  $('#voTrack').innerHTML=`<div class="ivband" style="left:${pc(lo)}%;width:${pc(hi)-pc(lo)}%;background:rgba(0,113,227,.45)"></div><div class="ivdot" style="left:${pc(m)}%"></div><div class="ivtruth" style="left:${pc(k)}%;background:var(--ink)"></div>`;
+  $('#voP').textContent=p<.005?'<1%':Math.round(p*100)+'%';$('#voE').textContent=kfmt(evpi);$('#voS1').textContent=kfmt(evsi);
+  const N=$('#voN');N.textContent=(enbs<0?'−':'+')+kfmt(Math.abs(enbs));N.style.color=enbs>=0?'var(--green)':'var(--red)';
+  $('#voI').innerHTML=`<b>Information gained:</b> ${nats.toFixed(2)} nats. The test would narrow your range by about ${Math.round(shr*100)}%, wherever break-even sits.`;
+  const V=$('#voV'),share=evpi>0?Math.round(evsi/evpi*100):0,sz=f=>f>=1?f.toFixed(1)+' times':Math.round(f*100)+'% of';
+  if(evpi<c&&evpi<.02*M*Math.max(.05,Math.abs(d))){V.className='verdict ok';V.innerHTML=`<b>Nothing here to buy</b>Almost the whole range sits ${keep?'above':'below'} break-even, so nearly every result says ${act}. Even a perfect answer is worth about ${kfmt(evpi)} to this decision. The test would teach you something and change nothing.`;}
+  else if(evpi<c){V.className='verdict ok';V.innerHTML=`<b>No test can pay at this price</b>A perfect answer is worth ${kfmt(evpi)} and the test costs ${kfmt(c)}. No study can beat the ceiling, so the choice is to ${act} on what you know or to find a design that costs far less.`;}
+  else if(enbs>0){V.className='verdict ok';V.innerHTML=`<b>Run the test</b>On current knowledge you would ${act}, with a ${Math.round(p*100)}% chance that is the wrong call. This test buys ${share}% of what a perfect answer would, and returns ${kfmt(enbs)} beyond its cost.${bf>1.6?` A version about ${sz(bf)} the size would pay better still.`:(bf<.6&&bf>0?` A version about ${sz(bf)} the size would pay better still.`:'')}`;}
+  else if(bn>0){V.className='verdict warn';V.innerHTML=`<b>Wrong size</b>This design costs ${kfmt(c)} and is worth ${kfmt(evsi)}. A version about ${sz(bf)} the size would come out ahead by ${kfmt(bn)}. Check the chart below.`;}
+  else{V.className='verdict ok';V.innerHTML=`<b>Act on what you have</b>You would ${act}. A perfect answer would be worth ${kfmt(evpi)}, and this kind of test costs more than it returns at every size. Look for a cheaper design, or a reversible way to act and watch.`;}
+  /* chart */
+  const cv=$('#voC2');if(!cv)return;const {g,w,h}=setup(cv);if(w<10)return;
+  const L=52,R=14,T=14,Bm=34,f0=.25,f1=16,X=f=>L+(w-L-R)*Math.log(f/f0)/Math.log(f1/f0),ym=Math.max(evpi*1.25,Math.min(c*1.6,evpi*4),1),Y=v=>T+(h-T-Bm)*(1-Math.min(v,ym)/ym);
+  g.font='12px -apple-system,Helvetica,Arial';g.textBaseline='middle';
+  g.strokeStyle='rgba(0,0,0,.08)';g.fillStyle='#86868b';g.lineWidth=1;
+  [.25,.5,1,2,4,8,16].forEach(f=>{g.beginPath();g.moveTo(X(f),T);g.lineTo(X(f),h-Bm);g.stroke();g.textAlign='center';g.fillText(f<1?(f==.25?'¼×':'½×'):f+'×',X(f),h-Bm+13);});
+  g.fillText('size of the test relative to yours',L+(w-L-R)/2,h-8);
+  g.textAlign='right';[0,.5,1].forEach(q=>{const v=ym*q;g.fillText(kfmt(v),L-8,Y(v));g.beginPath();g.moveTo(L,Y(v));g.lineTo(w-R,Y(v));g.stroke();});
+  /* region where the test pays */
+  g.fillStyle='rgba(48,209,88,.18)';g.beginPath();let open=false;const pts=[];
+  for(let i=0;i<=160;i++){const f=f0*Math.pow(f1/f0,i/160);pts.push([f,ev(f),c*f]);}
+  pts.forEach(([f,v,k2])=>{if(v>k2){g.fillRect(X(f)-1,Y(v),(w-L-R)/160+1.5,Y(k2)-Y(v));}});
+  g.setLineDash([5,5]);g.strokeStyle='#86868b';g.lineWidth=1.5;g.beginPath();g.moveTo(L,Y(evpi));g.lineTo(w-R,Y(evpi));g.stroke();g.setLineDash([]);
+  g.fillStyle='#86868b';g.textAlign='right';g.fillText('perfect answer',w-R-4,Y(evpi)-9);
+  g.strokeStyle='#ff9f0a';g.lineWidth=2.5;g.beginPath();pts.filter(q=>q[2]<=ym).forEach(([f,v,k2],i)=>{const y=Y(k2);i?g.lineTo(X(f),y):g.moveTo(X(f),y);});g.stroke();
+  g.strokeStyle='#0071e3';g.lineWidth=3;g.beginPath();pts.forEach(([f,v],i)=>{i?g.lineTo(X(f),Y(v)):g.moveTo(X(f),Y(v));});g.stroke();
+  g.fillStyle='#0071e3';g.beginPath();g.arc(X(1),Y(evsi),5.5,0,7);g.fill();g.fillStyle='#ff9f0a';g.beginPath();g.arc(X(1),Y(c),5.5,0,7);g.fill();
+  if(bn>0){g.strokeStyle='#1d8a3a';g.lineWidth=1.5;g.beginPath();g.moveTo(X(bf),Y(ev(bf)));g.lineTo(X(bf),Y(c*bf));g.stroke();g.fillStyle='#1d8a3a';g.textAlign=X(bf)>w-130?'right':'left';g.fillText('best size, +'+kfmt(bn),X(bf)+(X(bf)>w-130?-7:7),(Y(ev(bf))+Y(c*bf))/2);}
 }
-['#voB','#voL','#voH','#voK','#voC'].forEach(i=>$(i).oninput=drawVO);
+['#voB','#voL','#voH','#voK','#voS','#voC'].forEach(i=>$(i).oninput=drawVO);
 
 /* ---------- prior dial ---------- */
 function drawPR(){
@@ -2204,10 +2299,10 @@ $('#hdM').oninput=drawHD;
     x:'Someone asks for the effect of a control variable. That is a new question and returns to stage one.',
     l:[L('#readout','a filled-in readout'),L('#check','Five questions')]},
    {t:'Close the loop',s:'Use each answer to make the next question cheaper.',
-    d:['Feed experiment results into ongoing models as evidence about the model-implied lift for the same regions, weeks and spend, with carryover weeks included.','Check that the experiment and the model are measuring the same thing. A heavy-up test measures a marginal return and a go-dark test measures an average one.','Widen the experiment’s reported uncertainty before using it elsewhere, since conditions will differ.','Plan the next test where the diagrams from stage two disagreed or where sensitivity was worst.'],
+    d:['Feed experiment results into ongoing models as evidence about the model-implied lift for the same regions, weeks and spend, with carryover weeks included.','Check that the experiment and the model are measuring the same thing. A heavy-up test measures a marginal return and a go-dark test measures an average one.','Widen the experiment’s reported uncertainty before using it elsewhere, since conditions will differ.','Plan the next test where the diagrams from stage two disagreed or where sensitivity was worst, and rank the candidates by what each is expected to be worth against its cost.'],
     o:'An updated model, and a ranked list of the next experiments.',
     x:'The model and the experiment disagree sharply. Averaging them produces a number neither supports. Decide explicitly which one yields and say why.',
-    l:[L('#transport','Chapter 13'),L('faq.html#mmm-experiments','FAQ: experiments and MMM')]}];
+    l:[L('#transport','Chapter 13'),L('#voi','pricing a test'),L('faq.html#mmm-experiments','FAQ: experiments and MMM')]}];
   const tl=$('#wfTL');
   WF.forEach((w,i)=>{const d=document.createElement('div');d.className='st rv';
     d.innerHTML=`<div class="n">${i+1}</div><h3>${w.t}</h3><div class="muted">${w.s}</div><div class="cols"><div><h5 style="color:var(--teal)">Do</h5><ul>${w.d.map(x=>'<li>'+x+'</li>').join('')}</ul></div><div><h5 style="color:var(--green)">Deliverable</h5>${w.o}<div class="links">See ${w.l.join(' · ')}</div></div><div><h5 style="color:var(--orange)">Stop and rethink if</h5>${w.x}</div></div>`;
@@ -2283,6 +2378,16 @@ const SRC={
  bggraphs:{t:null,o:'Background beyond the vault for mixed graphs, time-series, cyclic, SWIG, twin-network, interference and path diagrams: Richardson, T. & Spirtes, P. (2002), "Ancestral Graph Markov Models," Annals of Statistics; Richardson, T. & Robins, J. (2013), "Single World Intervention Graphs"; Balke, A. & Pearl, J. (1994), "Probabilistic Evaluation of Counterfactual Queries"; Peters, J., Janzing, D. & Sch\u00f6lkopf, B. (2017), Elements of Causal Inference; Ogburn, E. & VanderWeele, T. (2014), "Causal Diagrams for Interference"; Wright, S. (1921), "Correlation and Causation."'},
  chanperry:{t:'Chan Perry 2017 - Challenges in Media Mix Modeling',u:'Research/Model-Validation-and-Interpretability/Simulation-Based-Method-Validation/Chan-Perry-2017---Challenges-in-Media-Mix-Modeling/_Index',f:'Why weekly media models are hard: demand-following spend, few rows, models that fit equally and disagree',o:'Chan, D. & Perry, M. (2017). "Challenges and Opportunities in Media Mix Modeling." Google Inc.'},
  bgsens:{t:null,o:'Background beyond the vault for the two sensitivity calculators: Cinelli, C. & Hazlett, C. (2020). "Making Sense of Sensitivity: Extending Omitted Variable Bias." Journal of the Royal Statistical Society B 82(1), 39-67; Rambachan, A. & Roth, J. (2023). "A More Credible Approach to Parallel Trends." Review of Economic Studies 90(5), 2555-2591.'},
+ voi:{t:'Value of Information Concept Note - EVPI, EVPPI and EVSI',u:'Research/Applied-Bayesian-Model-Families/Decisions-and-Value-of-Information/Concept-Notes---Value-of-Information-and-Adaptive-Decisions/Value-of-Information-Concept-Note---EVPI,-EVPPI-and-EVSI',f:'Pricing a test before running it: the ceiling, the value of a noisy test, net benefit, diminishing returns',o:'Vault concept note with no single raw source. The decision-theoretic framework its companion note cites is Raiffa, H. & Schlaifer, R. (1961). Applied Statistical Decision Theory. Harvard Business School.'},
+ heath:{t:'Heath 2015 - Net Benefit, EVPI and EVPPI Definitions',u:'Research/Applied-Bayesian-Model-Families/Decisions-and-Value-of-Information/Heath-2015---Review-of-Expected-Value-of-Information-Methods/Heath-2015---Net-Benefit,-EVPI-and-EVPPI-Definitions',f:'Formal definitions; the value of learning one part of the uncertainty',o:'Heath, A., Manolopoulou, I. & Baio, G. (2015). "A Review of Methods for the Analysis of the Expected Value of Information." arXiv:1507.02513.'},
+ voiprice:{t:'Value of Information Concept Note - Pricing a Model with EVPI',u:'Research/Applied-Bayesian-Model-Families/Decisions-and-Value-of-Information/Concept-Notes---Value-of-Information-and-Adaptive-Decisions/Value-of-Information-Concept-Note---Pricing-a-Model-with-EVPI',f:'The price ceiling: nothing is worth buying above the value of a perfect answer',o:'Vault concept note with no single raw source, citing Raiffa, H. & Schlaifer, R. (1961). Applied Statistical Decision Theory. Harvard Business School.'},
+ decision:{t:'Decision Analysis',u:'Research/Bayesian-Statistics/Model-Assessment/Decision-Analysis',f:'Choosing the action with the best expected outcome under the posterior',o:'Gelman, A., Carlin, J., Stern, H., Dunson, D., Vehtari, A. & Rubin, D. (2013). Bayesian Data Analysis, 3rd ed., Ch. 9. CRC Press.'},
+ eig:{t:'Expected Information Gain',u:'Research/Bayesian-Experimental-Design/Foundations/Expected-Information-Gain',f:'Scoring a test by how much it is expected to shrink uncertainty',o:'Rainforth, T., Foster, A., Ivanova, D. R. & Bickford Smith, F. (2023). "Modern Bayesian Experimental Design." Statistical Science.'},
+ lindley:{t:'Lindley\'s Information Measure',u:'Research/Bayesian-Experimental-Design/Foundations/Lindley%27s-Information-Measure',f:'The original information measure; the closed form for a normal mean; diminishing returns',o:'Lindley, D. V. (1956). "On a Measure of the Information Provided by an Experiment." Annals of Mathematical Statistics 27(4), 986-1005.'},
+ eigobj:{t:'Information-Theoretic Design Objectives',u:'Research/Bayesian-Experimental-Design/Modern-BED-Review/Information-Theoretic-Design-Objectives',f:'Targeting information at the quantity a decision turns on',o:'Rainforth, T., Foster, A., Ivanova, D. R. & Bickford Smith, F. (2023). "Modern Bayesian Experimental Design." Statistical Science.'},
+ bedopen:{t:'Open Challenges and Future Directions',u:'Research/Bayesian-Experimental-Design/Modern-BED-Review/Open-Challenges-and-Future-Directions',f:'Designs chosen under a wrong model; a linear model that tests only the extremes',o:'Rainforth, T., Foster, A., Ivanova, D. R. & Bickford Smith, F. (2023). "Modern Bayesian Experimental Design." Statistical Science.'},
+ geoeig:{t:'Q: Encoding a Geo-Holdout as a Bayesian Experimental Design and Computing Its EIG',u:'Questions-and-Answers/Q---Encoding-a-Geo-Holdout-as-a-Bayesian-Experimental-Design-and-Computing-Its-EIG',f:'A geo test as a design to be scored before it runs',o:'Vault synthesis built on its Bayesian experimental design notes; Rainforth et al. (2023).'},
+ bedbo:{t:'Q: BED vs Bayesian Optimization vs Bandits for Media Experimentation',u:'Questions-and-Answers/Q---BED-vs-Bayesian-Optimization-vs-Bandits-for-Media-Experimentation',f:'Learning, optimizing, and earning while learning as three different jobs',o:'Vault synthesis across its experimental design, optimization and bandit notes; Russo, D., Van Roy, B., Kazerouni, A., Osband, I. & Wen, Z. (2018). "A Tutorial on Thompson Sampling." Foundations and Trends in Machine Learning 11(1).'},
  pearl:{t:null,o:'Background beyond the vault: Pearl, J. (2009). Causality: Models, Reasoning, and Inference, 2nd ed. Cambridge University Press.'}
 };
 $$('.src').forEach(p=>{const ks=p.dataset.src.split(',');const vs=ks.filter(k=>SRC[k].t).map(k=>`<a href="${V+SRC[k].u}">${SRC[k].t}</a>`).join(' \u00b7 ');
