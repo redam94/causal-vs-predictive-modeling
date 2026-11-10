@@ -2,8 +2,8 @@
 
 An interactive guide to causal identification and the trap of treating predictive models as causal.
 
-- `index.html`: the guide. DAGs, d-separation, do-calculus, causal versus statistical identification, causal discovery, Markov equivalence, summary DAGs, the Table 2 fallacy, an audience-targeting worked example, and a practitioner workflow.
-- `faq.html`: 36 practitioner questions with short answers, detail, and sources.
+- `index.html`: the guide. DAGs, d-separation, do-calculus, causal versus statistical identification, causal discovery, Markov equivalence, summary DAGs, the Table 2 fallacy, an audience-targeting worked example, transport and calibration of experimental results, and a practitioner workflow.
+- `faq.html`: 41 practitioner questions with short answers, detail, and sources.
 
 Both pages are self-contained static files with no build step and no external scripts.
 
