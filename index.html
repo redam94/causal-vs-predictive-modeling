@@ -34,6 +34,30 @@ p{margin:0 0 1em}
 .chmenu{position:absolute;left:0;right:0;top:48px;background:#161617;backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-top:1px solid #2a2a2d;max-height:calc(100vh - 48px);overflow-y:auto;opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .25s,transform .25s,visibility .25s}
 .chmenu.open{opacity:1;visibility:visible;transform:none}
 .gnav .chmenu .wrap{display:block;height:auto}
+.chtools{display:flex;gap:12px;align-items:center;padding:18px 0 0;flex-wrap:wrap}
+.chtools input{flex:1;min-width:200px;font:inherit;font-size:15px;padding:10px 16px;border-radius:980px;border:1px solid #424245;background:#1d1d1f;color:#f5f5f7;outline:none}
+.chtools input:focus{border-color:#2997ff}
+.chtools button{font:inherit;font-size:13px;color:#2997ff;background:none;border:1px solid #2997ff;border-radius:980px;padding:8px 14px;cursor:pointer;white-space:nowrap}
+#chMsg{font-size:12px;color:#86868b}
+#chRes{padding:10px 0 0}#chRes a{display:block;padding:9px 12px;border-radius:10px;color:#f5f5f7;font-size:14px}#chRes a:hover{background:rgba(255,255,255,.08);text-decoration:none}#chRes small{color:#86868b;display:block;font-size:12px}#chRes .none{color:#86868b;font-size:14px;padding:10px 12px}
+.flash{animation:flash 1.6s ease}@keyframes flash{0%,60%{background:rgba(255,214,10,.45)}100%{background:transparent}}
+.prov{display:inline-block;font-size:11px;font-weight:600;border-radius:980px;padding:2px 9px;margin:0 6px 0 0;vertical-align:middle;letter-spacing:0;text-transform:none}
+.prov.pub{background:rgba(0,113,227,.14);color:#0071e3}.prov.vault{background:rgba(191,90,242,.16);color:#8944ab}.prov.ill{background:rgba(120,120,128,.18);color:var(--ink2)}
+.dark .prov.pub{color:#2997ff}.dark .prov.vault{color:#bf5af2}
+table.cmp .win::after{content:" \25B2";font-size:10px}
+@media print{
+  .gnav,.hero canvas,.chev,.cta,#prog,.btn{display:none!important}
+  .rv{opacity:1!important;transform:none!important}
+  .sec{padding:26px 0!important;overflow:visible}
+  .dark{background:#fff!important;color:#000!important;--ink:#000;--ink2:#444;--line:#bbb;--card:#f2f2f2;--nodefill:#fff;--blue:#0050b3}
+  .dark .card{border-color:#ccc}
+  .hero{min-height:0!important;padding:30px 0!important}
+  .grad,.grad2{background:none!important;color:#000!important;-webkit-text-fill-color:#000}
+  .card,.doc,table,.qa{break-inside:avoid}
+  h2,h3{break-after:avoid}
+  a{color:inherit}
+  .doc{box-shadow:none}
+}
 .chgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:4px 18px;padding:22px 0 28px}
 .chgrid a{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:12px;color:#f5f5f7}
 .chgrid a:hover{background:rgba(255,255,255,.08);text-decoration:none}
@@ -212,6 +236,13 @@ table.cmp td.num{font-variant-numeric:tabular-nums;font-weight:600}table.cmp tr.
 .gfade{animation:gfade .5s ease}@keyframes gfade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .legend{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}.legend span{font-size:12.5px;background:rgba(120,120,128,.12);padding:5px 11px;border-radius:980px}
 .legend b{font-family:ui-monospace,Menlo,monospace;margin-right:5px}
+.doc{background:#fff;color:#1d1d1f;border-radius:18px;padding:34px 38px;box-shadow:0 10px 40px rgba(0,0,0,.10);font-size:15px;line-height:1.5;border:1px solid #e5e5ea}
+.doc h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#6e6e73;margin:20px 0 6px}
+.doc h3{font-size:24px;margin:0 0 2px}.doc .meta{font-size:13px;color:#6e6e73}
+.doc .row{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:8px 0;border-top:1px solid #e5e5ea}.doc .row b{font-weight:600}
+.doc .k{display:inline-block;font-size:11px;font-weight:600;border-radius:980px;padding:2px 9px;margin-right:6px}
+.doc .k.g{background:rgba(48,209,88,.18);color:#1d8a3a}.doc .k.o{background:rgba(255,159,10,.2);color:#b25000}.doc .k.r{background:rgba(255,69,58,.15);color:#d70015}
+@media(max-width:560px){.doc{padding:22px}.doc .row{grid-template-columns:1fr}}
 .tl{position:relative;margin-top:40px}
 .tl::before{content:"";position:absolute;left:23px;top:10px;bottom:10px;width:2px;background:linear-gradient(var(--teal),var(--purple),#ff375f)}
 .tl .st{position:relative;padding:0 0 26px 70px}
@@ -236,12 +267,12 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
     <span class="navcur" id="navCur"></span>
     <div class="links">
       <button id="chBtn" aria-expanded="false" aria-controls="chMenu">Chapters <span class="car">&#9662;</span></button>
-      <a href="#workflow">Workflow</a>
+      <a href="#mmm">Example</a>
       <a href="faq.html">FAQ</a>
     </div>
   </div>
   <div id="prog"></div>
-  <div class="chmenu" id="chMenu"><div class="wrap"><div class="chgrid"><a href="#trap" data-t="1. The trap"><span class="num">1</span><span><b>The trap</b><small>When a good forecast gives bad advice</small></span></a><a href="#two" data-t="2. Two questions"><span class="num">2</span><span><b>Two questions</b><small>Seeing versus doing</small></span></a><a href="#dags" data-t="3. Causal diagrams"><span class="num">3</span><span><b>Causal diagrams</b><small>Forks, chains and colliders</small></span></a><a href="#dsep" data-t="4. d-separation"><span class="num">4</span><span><b>d-separation</b><small>The adjustment playground</small></span></a><a href="#do" data-t="5. do-calculus"><span class="num">5</span><span><b>do-calculus</b><small>Turning do into see</small></span></a><a href="#ident" data-t="6. Identification"><span class="num">6</span><span><b>Identification</b><small>Causal versus statistical</small></span></a><a href="#disc" data-t="7. Causal discovery"><span class="num">7</span><span><b>Causal discovery</b><small>Can data draw the diagram?</small></span></a><a href="#mec" data-t="8. Markov equivalence"><span class="num">8</span><span><b>Markov equivalence</b><small>Different stories, identical data</small></span></a><a href="#summ" data-t="9. Summary DAGs"><span class="num">9</span><span><b>Summary DAGs</b><small>Zooming out safely</small></span></a><a href="#graphs" data-t="Beyond the DAG"><span class="num">+</span><span><b>Beyond the DAG</b><small>Twelve kinds of causal graph</small></span></a><a href="#limits" data-t="10. Honest limits"><span class="num">10</span><span><b>Honest limits</b><small>What data cannot tell you, and Table 2</small></span></a><a href="#target" data-t="11. Audience targeting"><span class="num">11</span><span><b>Audience targeting</b><small>Propensity versus uplift</small></span></a><a href="#transport" data-t="12. Transport and calibration"><span class="num">12</span><span><b>Transport and calibration</b><small>Moving results, calibrating models</small></span></a><a href="#check" data-t="Five questions"><span class="num">✓</span><span><b>Five questions</b><small>Checklist and glossary</small></span></a><a href="#workflow" data-t="Workflow"><span class="num">→</span><span><b>Workflow</b><small>Nine stages and a design router</small></span></a><a href="#sources" data-t="Sources"><span class="num">§</span><span><b>Sources</b><small>Vault notes and original works</small></span></a></div></div></div>
+  <div class="chmenu" id="chMenu"><div class="wrap"><div class="chtools"><input id="chQ" type="search" placeholder="Search this page" aria-label="Search this page"><button id="chLink" type="button">Copy link to this view</button><span id="chMsg"></span></div><div id="chRes"></div><div class="chgrid" id="chGrid"><a href="#workflow" data-t="Start here: the workflow"><span class="num">→</span><span><b>Start here: the workflow</b><small>Nine stages, design router, test sizing</small></span></a><a href="#trap" data-t="1. The trap"><span class="num">1</span><span><b>The trap</b><small>When a good forecast gives bad advice</small></span></a><a href="#two" data-t="2. Two questions"><span class="num">2</span><span><b>Two questions</b><small>Seeing versus doing</small></span></a><a href="#dags" data-t="3. Causal diagrams"><span class="num">3</span><span><b>Causal diagrams</b><small>Forks, chains and colliders</small></span></a><a href="#dsep" data-t="4. d-separation"><span class="num">4</span><span><b>d-separation</b><small>The adjustment playground</small></span></a><a href="#do" data-t="5. do-calculus"><span class="num">5</span><span><b>do-calculus</b><small>Turning do into see</small></span></a><a href="#ident" data-t="6. Identification"><span class="num">6</span><span><b>Identification</b><small>Causal, statistical, and weak</small></span></a><a href="#disc" data-t="7. Causal discovery"><span class="num">7</span><span><b>Causal discovery</b><small>Reference: can data draw the diagram?</small></span></a><a href="#mec" data-t="8. Markov equivalence"><span class="num">8</span><span><b>Markov equivalence</b><small>Reference: identical data, different stories</small></span></a><a href="#summ" data-t="9. Summary DAGs"><span class="num">9</span><span><b>Summary DAGs</b><small>Zooming out safely</small></span></a><a href="#graphs" data-t="Beyond the DAG"><span class="num">+</span><span><b>Beyond the DAG</b><small>Reference: twelve kinds of causal graph</small></span></a><a href="#limits" data-t="10. Honest limits"><span class="num">10</span><span><b>Honest limits</b><small>Table 2 and sensitivity analysis</small></span></a><a href="#balance" data-t="When good enough is enough"><span class="num">⚖</span><span><b>When good enough is enough</b><small>Costs of testing, value of a test</small></span></a><a href="#target" data-t="11. Audience targeting"><span class="num">11</span><span><b>Audience targeting</b><small>Propensity versus uplift</small></span></a><a href="#mmm" data-t="12. A weekly media mix model"><span class="num">12</span><span><b>A weekly media mix model</b><small>Worked example with a filled-in readout</small></span></a><a href="#transport" data-t="13. Transport and calibration"><span class="num">13</span><span><b>Transport and calibration</b><small>Moving results, calibrating models</small></span></a><a href="#check" data-t="Five questions"><span class="num">✓</span><span><b>Five questions</b><small>Checklist and glossary</small></span></a><a href="#sources" data-t="Sources"><span class="num">§</span><span><b>Sources</b><small>Vault notes, original works, evidence labels</small></span></a></div></div></div>
 </nav>
 
 <!-- ============ HERO ============ -->
@@ -251,10 +282,73 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
     <div class="eyebrow rv">A field guide to causal identification</div>
     <h1 class="rv d1">Seeing is one thing.<br><span class="grad">Doing is another.</span></h1>
     <p class="lead rv d2">A model can forecast your business beautifully and still point you toward the wrong decision. This guide shows why, using diagrams you can click, drag and break.</p>
-    <div class="cta rv d3"><a class="btn" href="#trap">Start with the trap</a><a class="btn ghost" href="#dsep">Jump to the playground</a></div>
+    <div class="cta rv d3"><a class="btn" href="#workflow">Start with the workflow</a><a class="btn ghost" href="#trap">See the trap first</a></div>
     <div class="chev">Scroll</div>
   </div>
 </header>
+
+<!-- ============ WORKFLOW ============ -->
+<section class="sec dark" id="workflow">
+  <div class="wrap">
+    <div class="eyebrow rv">Start here &middot; The practitioner's workflow</div>
+    <h2 class="big rv">From question <span class="grad">to defensible answer.</span></h2>
+    <p class="lead rv">Everything on this page, arranged in the order you would actually do it. Each stage names what to produce and the signal that should send you back a step. Most analyses that go wrong skipped stage two or stage three.</p>
+    <div class="grid3 mt">
+      <a class="card rv" href="#trap" style="color:inherit;text-decoration:none"><div class="tag" style="color:var(--teal)">Twenty minutes &middot; 1 of 3</div><h4 style="margin-top:8px">See the problem</h4><p class="muted small">Chapter 1 shows a model that forecasts well and advises badly, with a simulator you can break.</p></a>
+      <a class="card rv d1" href="#mmm" style="color:inherit;text-decoration:none"><div class="tag" style="color:var(--teal)">Twenty minutes &middot; 2 of 3</div><h4 style="margin-top:8px">Watch it happen in a weekly model</h4><p class="muted small">Chapter 12 runs the whole workflow on 156 weeks of media and sales, and ends with a filled-in readout.</p></a>
+      <a class="card rv d2" href="#balance" style="color:inherit;text-decoration:none"><div class="tag" style="color:var(--teal)">Twenty minutes &middot; 3 of 3</div><h4 style="margin-top:8px">Decide how much rigor you need</h4><p class="muted small">When an observational estimate is enough to act on, and when a test pays for itself.</p></a>
+    </div>
+    <p class="muted mt2 rv">The nine stages below are the spine. Each links to the chapter that explains it, so read down this list and jump out only where you need the reasoning.</p>
+    <div class="tl" id="wfTL"></div>
+
+    <div class="card mt rv router">
+      <div class="split">
+        <div>
+          <h3>Design router</h3>
+          <p class="muted">Stage five is where most of the leverage is. Answer a few questions about what you can control and the router names the design, what it assumes, and what it will estimate.</p>
+          <div class="trail" id="rtTrail"></div>
+          <h4 id="rtQ"></h4>
+          <div class="opts" id="rtOpts"></div>
+          <button class="btn sm ghost" id="rtReset" style="margin-top:18px">Start over</button>
+        </div>
+        <div class="verdict" id="rtOut" style="margin-top:0;min-height:260px"></div>
+      </div>
+    </div>
+
+
+    <div class="card mt rv" id="sizing">
+      <div class="split">
+        <div>
+          <h3>Geo-test sizing calculator</h3>
+          <p class="muted">A first-pass answer to "how many markets, how many weeks, and what will it cost?" before anyone commits budget. It assumes half the markets are treated and compares test-period sales between the two groups.</p>
+          <label class="ctl">Markets in the test, treated plus control: <b id="szNv"></b></label><input type="range" id="szN" min="8" max="120" step="2" value="40">
+          <label class="ctl">Average weekly sales per market: <b id="szSv"></b></label><input type="range" id="szS" min="50" max="2000" step="50" value="400">
+          <label class="ctl">Week-to-week noise left after using pre-test history: <b id="szCv"></b></label><input type="range" id="szC" min="2" max="25" value="12">
+          <label class="ctl">Test length: <b id="szTv"></b></label><input type="range" id="szT" min="2" max="12" value="6">
+          <label class="ctl">Added spend per treated market per week: <b id="szXv"></b></label><input type="range" id="szX" min="2" max="100" step="2" value="20">
+          <label class="ctl">Return you expect on that added spend: <b id="szRv"></b></label><input type="range" id="szR" min="20" max="500" step="10" value="150">
+        </div>
+        <div>
+          <div class="grid2" style="gap:14px">
+            <div><div class="small muted">Smallest return the test can reliably detect</div><div class="stat" id="szMde" style="font-size:44px"></div></div>
+            <div><div class="small muted">Chance of detecting the return you expect</div><div class="stat" id="szPow" style="font-size:44px"></div></div>
+            <div><div class="small muted">Total added spend</div><div style="font-size:26px;font-weight:600" id="szCost"></div></div>
+            <div><div class="small muted">Detectable lift in treated-market sales</div><div style="font-size:26px;font-weight:600" id="szLift"></div></div>
+          </div>
+          <div class="verdict" id="szV"></div>
+          <p class="small muted" style="margin-top:12px">A planning approximation: two-sided 5% test, 80% power, weeks treated as independent. Weekly sales are usually correlated, which makes real tests somewhat less powerful than this. Before committing, rerun the design on your own history by placing fake tests in past periods.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="center mt rv">
+      <h3 style="font-size:36px">Still have questions?</h3>
+      <p class="lead">The FAQ answers the ones practitioners ask most, from "can I read SHAP values as drivers?" to "how do I put an experiment into an MMM?"</p>
+      <div style="margin-top:26px"><a class="btn" href="faq.html">Open the FAQ</a></div>
+    </div>
+    <p class="src" data-src="elicit,sum,dagci,overlap,power,geo,iv,qa1,unified,sens,mmmprior,t2,pitfalls,qa2"></p>
+  </div>
+</section>
 
 <!-- ============ 1. THE TRAP ============ -->
 <section class="sec light" id="trap">
@@ -271,6 +365,7 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
         <p class="small muted">Dana is a dramatization. The numbers come from a simulation in the SHAP documentation where the true causal structure is known by construction, as replicated in the vault.</p>
       </div>
       <div>
+        <div class="small" style="margin-bottom:10px"><span class="prov vault">Vault replication</span><span class="muted">of a published simulation</span></div>
         <div class="card rv"><div class="small muted">Plain regression of renewal on discount</div><div class="stat red" data-count="-1.29" data-dec="2">0</div></div>
         <div class="card rv d1" style="margin-top:16px"><div class="small muted">After adjusting for all 7 observed controls (s.e. 0.05)</div><div class="stat red" data-count="-1.08" data-dec="2">0</div></div>
         <div class="card rv d2" style="margin-top:16px"><div class="small muted">True effect when you actually change the discount</div><div class="stat green" data-count="0.06" data-dec="2" data-plus="1">0</div></div>
@@ -306,7 +401,7 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
         <p>Now switch to randomized discounts. The hidden trait is still there and still matters for renewal, yet the estimate lands on the truth, because a coin flip cannot be influenced by customer need.</p>
       </div>
       <div class="card rv d1" id="abBars">
-        <h4>This happens outside simulations</h4>
+        <h4>This happens outside simulations</h4><div style="margin:6px 0"><span class="prov pub">Published experiment</span></div>
         <p class="small muted">A display campaign on the Yahoo! front page, measured two ways. Effect on brand-related searches:</p>
         <div class="bar-row"><div>Randomized experiment</div><div class="track"><div class="fill" data-w="0.45" style="background:var(--green);min-width:4px"></div></div><div class="v">+5.4%</div></div>
         <div class="bar-row"><div>Observational, all controls</div><div class="track"><div class="fill" data-w="72.8" style="background:var(--orange)"></div></div><div class="v">+872%</div></div>
@@ -587,6 +682,33 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
       </div>
     </div>
 
+
+    <div class="mt rv">
+      <h3 style="font-size:36px">In practice it is a dial</h3>
+      <p class="lead" style="margin-top:10px">The four boxes above are the clean cases. Most real analyses sit in between: the effect is identified in principle and the data carry only a little information about it. That zone is called <b>weak identification</b>, and it is where most media work lives.</p>
+      <div class="grid3 mt2">
+        <div class="card tight"><div class="tag n">Not identified</div><p class="small muted" style="margin-top:8px">The answer comes entirely from priors or functional form. More data of the same kind changes nothing. Report a range or change the design.</p></div>
+        <div class="card tight"><div class="tag" style="color:#b25000">Weakly identified</div><p class="small muted" style="margin-top:8px">The data speak, quietly. The estimate moves when the prior, the adstock shape or one outlier week changes. Report it with the sensitivity attached, and prefer decisions that only need the sign or the ranking.</p></div>
+        <div class="card tight"><div class="tag y">Well identified</div><p class="small muted" style="margin-top:8px">Reasonable changes to priors and specification leave the estimate about where it was. The number can carry weight in a budget decision.</p></div>
+      </div>
+      <div class="card mt2">
+        <div class="split">
+          <div>
+            <h3>Try it: how much of the answer is the prior?</h3>
+            <p class="muted">A Bayesian model's estimate for one channel blends what you believed beforehand with what the data say. Move the prior and watch whether the answer follows it. The data here point to a return of 1.10.</p>
+            <label class="ctl">Prior belief about the return: <b id="prMv"></b></label><input type="range" id="prM" min="50" max="300" step="5" value="200">
+            <label class="ctl">Independent variation in this channel's spend: <b id="prSv"></b></label><input type="range" id="prS" min="0" max="100" value="35">
+          </div>
+          <div>
+            <div class="small muted">Green tick: what the data alone say. Grey tick: the prior. Band: the model's 90% range.</div>
+            <div class="ivtrack" id="prTrack" style="margin:14px 0"></div>
+            <div class="grid2" style="gap:12px"><div><div class="small muted">Model's answer</div><div style="font-size:30px;font-weight:600" id="prPost"></div></div><div><div class="small muted">Share of the answer coming from the prior</div><div style="font-size:30px;font-weight:600" id="prShare"></div></div></div>
+            <div class="verdict" id="prV"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="mt rv narrow">
       <h3>A warning for Bayesian models</h3>
       <p>A Bayesian model returns a posterior for every parameter, identified or otherwise. For a parameter the data cannot inform, the posterior is the prior with extra steps, and it stays that way at any sample size. A useful test: does this posterior keep depending heavily on the prior as data grows? If so, the parameter is weakly or partially identified, and honest reporting separates it from the parameters the data actually speak to. That practice has a name, transparent parametrization.</p>
@@ -838,7 +960,7 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
 
       <div class="grid2 mt">
         <div class="rv">
-          <h3>The published evidence</h3>
+          <h3>The published evidence</h3><div style="margin:0 0 8px"><span class="prov pub">Published simulation study</span></div>
           <p class="muted">A simulation study fitted Bayesian regressions to 3,000 datasets generated from a known diagram. The treatment <span class="math">X</span> had a valid adjustment set. The controls did not. Share of 90% intervals that contained the true value:</p>
           <div class="scroll"><table class="t small">
             <tr><th>Row</th><th>n = 2,500</th><th>n = 5,000</th><th>n = 10,000</th></tr>
@@ -882,7 +1004,104 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
         </div>
       </div>
     </div>
-    <p class="src" data-src="dillonu,t2,npb,sens,qa1,ab"></p>
+
+    <div id="sens" class="mt">
+      <h3 class="rv" style="font-size:36px">Sensitivity analysis, on numbers you would actually report</h3>
+      <p class="lead rv" style="margin-top:10px">A sensitivity analysis answers one question: how badly would my key assumption have to fail before the conclusion changes? The three examples here match the three most common designs in media measurement.</p>
+
+      <div class="card mt2 rv">
+        <div class="split">
+          <div>
+            <div class="tag" style="color:var(--orange)">Example 1 &middot; Regression or media mix model</div>
+            <h3 style="margin-top:8px">How strong would the missing driver have to be?</h3>
+            <p class="muted">The weekly model in Chapter 12 estimated a TV return of 2.16 with a standard error of 0.19. Break-even is 1.0. Suppose a driver nobody recorded pushes spend and sales the same way. Describe it by how much of the leftover variation it explains in each, after the existing controls.</p>
+            <label class="ctl">Share of leftover TV spend variation it explains: <b id="ovDv"></b></label><input type="range" id="ovD" min="0" max="60" value="12">
+            <label class="ctl">Share of leftover sales variation it explains: <b id="ovYv"></b></label><input type="range" id="ovY" min="0" max="60" value="18">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn sm ghost" data-ov="12,18">Half as strong as seasonality</button><button class="btn sm ghost" data-ov="25,35">As strong as seasonality</button><button class="btn sm ghost" data-ov="45,55">Twice as strong</button></div>
+            <p class="small muted" style="margin-top:12px">The benchmark buttons use illustrative values for how much seasonality explains. In a real analysis you compute them by dropping seasonality from your own model and measuring what it explained.</p>
+          </div>
+          <div>
+            <div class="small muted">Estimate after allowing for that driver. Dark tick: break-even.</div>
+            <div class="ivtrack" id="ovTrack" style="margin:14px 0"></div>
+            <div class="grid2" style="gap:12px"><div><div class="small muted">Adjusted return</div><div style="font-size:34px;font-weight:600" id="ovAdj"></div></div><div><div class="small muted">Breakdown strength</div><div style="font-size:34px;font-weight:600" id="ovRV"></div><div class="small muted">in both, to reach break-even</div></div></div>
+            <div class="verdict" id="ovV"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt2 rv">
+        <div class="split">
+          <div>
+            <div class="tag" style="color:var(--orange)">Example 2 &middot; Geo test or difference-in-differences</div>
+            <h3 style="margin-top:8px">How far could the trends have drifted?</h3>
+            <p class="muted">Treated markets ran 12 points above control markets during the test. Before the test, the gap between the two groups wandered by as much as 2 points from week to week with no treatment at all. The analysis assumes that wandering would not have grown. Allow it to.</p>
+            <label class="ctl">Drift allowed during the test, as a multiple of the largest pre-test gap: <b id="hdMv"></b></label><input type="range" id="hdM" min="0" max="60" value="10">
+            <p class="small muted" style="margin-top:12px">A flat pre-test period is weak reassurance, since a test with eight pre-weeks can miss a slow drift. Reporting the largest multiple the result survives says more than "pre-trends looked fine".</p>
+          </div>
+          <div>
+            <canvas id="hdC" style="height:210px;border-radius:14px;background:rgba(120,120,128,.08)" role="img"></canvas>
+            <div class="grid2" style="gap:12px;margin-top:12px"><div><div class="small muted">Lift, allowing for drift</div><div style="font-size:26px;font-weight:600" id="hdInt"></div></div><div><div class="small muted">Result survives up to</div><div style="font-size:26px;font-weight:600" id="hdBreak"></div></div></div>
+            <div class="verdict" id="hdV"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid2 mt2">
+        <div class="card rv"><div class="tag" style="color:var(--orange)">Example 3 &middot; Bayesian model</div><h4 style="margin-top:8px">How much of the answer is the prior?</h4><p class="muted">Refit with the prior shifted or widened and see whether the estimate follows. If it does, that parameter is weakly identified and should be reported that way. The dial in <a href="#ident">Chapter 6</a> lets you try it.</p></div>
+        <div class="card rv d1"><div class="tag" style="color:var(--orange)">Whatever the design</div><h4 style="margin-top:8px">Three habits</h4><p class="muted">State the breaking point in units a stakeholder can judge, such as "a driver as strong as seasonality". Report the curve and the breaking point, never a pass or fail. If allowing for violations leaves the interval no wider than before, the violations you allowed were too mild.</p></div>
+      </div>
+    </div>
+    <p class="src" data-src="dillonu,t2,npb,sens,unified,qa1,ab,bgsens"></p>
+  </div>
+</section>
+
+<!-- ============ BALANCE ============ -->
+<section class="sec light" id="balance">
+  <div class="wrap">
+    <div class="eyebrow rv">Judgment &middot; The other side of the argument</div>
+    <h2 class="big rv">When good enough <span class="grad2">is good enough.</span></h2>
+    <p class="lead rv">This guide spends ten chapters on what observational estimates get wrong. A practitioner also needs the opposite list. Experiments cost money, time and sales, and a biased estimate can still lead to the right decision.</p>
+    <div class="grid2 mt">
+      <div class="rv">
+        <h3>Act on the observational estimate when</h3>
+        <ol class="steps">
+          <li><b>The decision only needs a sign or a ranking.</b>If every plausible value of the bias leaves channel A ahead of channel B, the exact size does not matter.</li>
+          <li><b>You know which way the bias runs.</b>Targeting and demand-following push estimates up. An estimate that is already below break-even after an upward bias is a safe reason to cut.</li>
+          <li><b>The action is cheap to reverse.</b>A two-week budget shift that can be undone is its own small experiment. Save rigor for annual plans and contracts.</li>
+          <li><b>A test would cost more than the mistake.</b>Use the calculator on the right. If the plausible range sits entirely on one side of break-even, no test result would change what you do.</li>
+        </ol>
+      </div>
+      <div class="rv d1">
+        <h3>What experiments really cost</h3>
+        <p><b>Sales you give up.</b> A holdout is a group of customers you chose not to advertise to. A go-dark test in real markets has a revenue line attached.</p>
+        <p><b>Time.</b> Six weeks of test plus cooldown plus analysis is a quarter gone. Decisions that cannot wait will be made on what you have.</p>
+        <p><b>False comfort from small tests.</b> An underpowered test that comes back significant tends to overstate the effect, and one that comes back flat is read as "no effect". A weak experiment can mislead more than a careful observational estimate with an honest range.</p>
+        <p><b>Narrow answers.</b> A test answers for its markets, weeks and spend level. Getting from there to the decision takes the assumptions in Chapter 13.</p>
+        <p>None of this argues against testing. It argues for spending tests where the decision is large, hard to reverse, and sensitive to the number.</p>
+      </div>
+    </div>
+
+    <div class="card mt rv">
+      <div class="split">
+        <div>
+          <h3>Try it: is the test worth running?</h3>
+          <p class="muted">Take the range your sensitivity analysis left you with and compare the cost of being wrong against the cost of finding out.</p>
+          <label class="ctl">Annual spend this decision governs: <b id="voBv"></b></label><input type="range" id="voB" min="1" max="100" value="10">
+          <label class="ctl">Plausible return, low end: <b id="voLv"></b></label><input type="range" id="voL" min="0" max="300" step="5" value="80">
+          <label class="ctl">Plausible return, high end: <b id="voHv"></b></label><input type="range" id="voH" min="20" max="500" step="5" value="220">
+          <label class="ctl">Break-even return: <b id="voKv"></b></label><input type="range" id="voK" min="50" max="300" step="5" value="100">
+          <label class="ctl">Cost of the test, spend plus lost sales plus effort: <b id="voCv"></b></label><input type="range" id="voC" min="10" max="2000" step="10" value="150">
+        </div>
+        <div>
+          <div class="small muted">Plausible range against break-even</div>
+          <div class="ivtrack" id="voTrack" style="margin:14px 0"></div>
+          <div class="grid2" style="gap:12px"><div><div class="small muted">Chance the default decision is wrong</div><div style="font-size:30px;font-weight:600" id="voP"></div></div><div><div class="small muted">Expected yearly cost of deciding without a test</div><div style="font-size:30px;font-weight:600" id="voE"></div></div></div>
+          <div class="verdict" id="voV"></div>
+          <p class="small muted" style="margin-top:12px">Assumes every value in the range is equally likely, returns are in margin terms, and the test would settle the question. Real tests settle it partly, so treat the ratio as an upper bound on what the test is worth.</p>
+        </div>
+      </div>
+    </div>
+    <p class="src" data-src="pitfalls,power,unified,mmmprior,chanperry"></p>
   </div>
 </section>
 
@@ -929,6 +1148,7 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
         <div>
           <div class="seg" id="tgSeg"><button data-v="rand">Random</button><button class="on" data-v="prop">Propensity score</button><button data-v="up">Uplift model</button></div>
           <label class="ctl">Share of the list the budget can reach: <b id="tgBv"></b></label><input type="range" id="tgB" min="5" max="60" value="20">
+          <label class="ctl">How well the uplift model ranks people: <b id="tgQv"></b></label><input type="range" id="tgQ" min="0" max="100" value="55">
           <div class="scroll" style="margin-top:16px"><table class="t cmp small" id="tgTable"></table></div>
           <div class="verdict" id="tgV"></div>
         </div>
@@ -946,7 +1166,7 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
         <p class="small muted">The first bar compares two different kinds of customer. The second compares the same kind of customer with and without the ad.</p>
       </div>
       <div class="card rv d1">
-        <h4>The same gap in real campaigns</h4>
+        <h4>The same gap in real campaigns</h4><div style="margin:6px 0"><span class="prov pub">Published study</span></div>
         <p class="small muted">Across 663 randomized ad experiments at Facebook, analysts re-estimated each one with observational methods and rich user data. Median lift, lower-funnel outcomes:</p>
         <div class="bar-row"><div>Randomized experiment</div><div class="track"><div class="fill" style="background:var(--green);width:7.8%"></div></div><div class="v">5%</div></div>
         <div class="bar-row"><div>Double machine learning</div><div class="track"><div class="fill" style="background:var(--orange);width:37.5%"></div></div><div class="v">24%</div></div>
@@ -966,7 +1186,7 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
     </ol>
 
     <div class="grid3 mt">
-      <div class="card rv"><h4>The payoff</h4><p class="muted">Marcus's second flight targets on uplift. The dashboard conversion rate drops by nearly half and the room gets nervous. The holdout readout arrives a few weeks later: incremental orders have more than doubled on the same budget, and dollars per incremental order has fallen by more than half.</p></div>
+      <div class="card rv"><h4>The payoff, with a caveat</h4><p class="muted">Marcus's second flight targets on uplift. The dashboard conversion rate drops by nearly half and the room gets nervous. The holdout readout arrives a few weeks later: incremental orders are up by about three quarters on the same budget, and dollars per incremental order has fallen by more than 40%. How much of that you get depends on the uplift model. Uplift is a small difference between two noisy rates, so it takes far more randomized data to learn than a propensity score does. Drag the model-quality slider down to see the gain shrink.</p></div>
       <div class="card rv d1"><h4>What stays unidentified</h4><p class="muted">Nobody can label an individual as a persuadable. Uplift is identified for groups, on average. The four-way sorting of customers into sure things, persuadables and lost causes is a useful picture and each person's membership remains unknowable.</p></div>
       <div class="card rv d2"><h4>Comparing two targeting methods</h4><p class="muted">The same logic settles a contest between a new method and the current one. Randomize people to be targeted by each method, keep a holdout inside each arm, and compare dollars per incremental conversion. Conversion rate of the chosen audience rewards whichever method is better at finding people who were going to convert.</p></div>
     </div>
@@ -977,10 +1197,108 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
   </div>
 </section>
 
-<!-- ============ 12. TRANSPORT ============ -->
+<!-- ============ 12. MMM ============ -->
+<section class="sec light" id="mmm">
+  <div class="wrap">
+    <div class="eyebrow rv">Chapter 12 &middot; Worked example</div>
+    <h2 class="big rv">A weekly media mix model, <span class="grad2">start to finish.</span></h2>
+    <p class="lead rv">Most media questions are about spend that varies continuously, effects that arrive over several weeks, and budgets that were set by people watching the same sales line you are modeling. This chapter runs the workflow on that kind of data.</p>
+
+    <div class="split mt">
+      <div class="rv" id="mmStory">
+        <p>Ines owns the media mix model at a national retailer. Annual planning is five weeks away, and the CFO has asked a direct question: is TV earning its $9M, or should $2M of it move elsewhere? She has 156 weeks of sales and spend.</p>
+        <p>Her first model regresses weekly sales on TV spend. It says every TV dollar returns 3.5. Nobody in the room believes that, including her. TV runs heaviest before the holidays, when sales would be high anyway.</p>
+        <p>She adds seasonality and holiday terms. The return drops to 1.8 and the fit jumps to 0.93. That looks credible, and for a day she plans to present it.</p>
+        <p>Then she adds carryover, because TV keeps working for weeks after it airs, and the number climbs back to 2.6. That is unsettling. A more correct model should not have moved further from the plausible answer. What had happened is that the 1.8 was two errors partly cancelling: ignoring carryover pushed the estimate down, and something else was pushing it up.</p>
+        <p>The something else comes out in a conversation with the planning team. "We always go heavier when the forecast looks strong," one of them says. Planners had been reading demand signals, weather, competitor moves and retail chatter, and moving weight toward the good weeks. None of that is a column in her data.</p>
+        <p>She tries branded search volume as a stand-in for demand and gets 2.2. Better, and she knows a stand-in is only partial. What she can do is say how far off the remaining bias could plausibly leave her, and ask for a flighting test: vary TV by market on a schedule set by a random draw. In the simulator below, turning that kind of variation up brings the estimate to about 1.6 against a true 1.5.</p>
+      </div>
+      <div class="rv d1">
+        <div class="card">
+          <h4>The diagram, with time in it</h4>
+          <svg class="dag" id="mmSvg" viewBox="0 0 460 270" role="img" aria-label="Time-indexed diagram of TV spend, season, expected demand and sales"></svg>
+          <p class="small muted" style="margin-top:8px"><span style="color:#1d8a3a">Green</span>: the effect being measured. <span style="color:var(--blue)">Blue</span>: carryover from last week's spend. <span style="color:#d70015">Red</span>: the backdoor through demand that planners anticipated and the dataset does not record.</p>
+        </div>
+        <div class="card tight" style="margin-top:16px"><h4>Why this is hard in general</h4><div style="margin:6px 0"><span class="prov pub">Published white paper</span></div><p class="small muted">A typical model has about 156 weekly rows and is asked to estimate three or four parameters for each of twenty or more channels. In one published comparison, five models all fitted with R&sup2; of 0.98 to 0.99 and disagreed by about 50% on what media contributed.</p></div>
+      </div>
+    </div>
+
+    <div class="card mt rv">
+      <h3>Try it: three ways a weekly model goes wrong</h3>
+      <p class="muted" style="max-width:820px">The top controls decide how the data were generated: what the planners did. The checkboxes decide what the analyst puts in the model. The true return on TV is 1.50 in every setting.</p>
+      <div class="split" style="margin-top:14px">
+        <div>
+          <div class="tag" style="color:var(--orange)">How the spend was planned</div>
+          <label class="ctl">Spend follows the calendar: <b id="mmAv"></b></label><input type="range" id="mmA" min="0" max="100" value="70">
+          <label class="ctl">Spend follows demand the planners expected: <b id="mmBv"></b></label><input type="range" id="mmB" min="0" max="100" value="50">
+          <label class="ctl">Spend varies for unrelated reasons (flighting, tests): <b id="mmCv"></b></label><input type="range" id="mmC" min="0" max="100" value="30">
+          <label class="ctl">Weeks of history: <b id="mmTv"></b></label><input type="range" id="mmT" min="78" max="312" step="26" value="156">
+          <div class="tag" style="color:var(--blue);margin-top:20px">What the analyst models</div>
+          <label class="chk"><input type="checkbox" id="mmSeason" checked> Control for seasonality and holidays</label>
+          <label class="chk"><input type="checkbox" id="mmCarry" checked> Model carryover (adstock)</label>
+          <label class="chk"><input type="checkbox" id="mmProxy"> Add branded search volume as a stand-in for demand</label>
+        </div>
+        <div>
+          <canvas id="mmC_" style="height:260px;border-radius:18px;background:#f5f5f7" role="img"></canvas>
+          <div class="small muted" style="margin-top:6px"><span style="color:#1d1d1f">&#9473;</span> weekly sales &nbsp; <span style="color:#0071e3">&#9473;</span> model fit &nbsp; <span style="color:#ff9f0a">&#9608;</span> TV spend</div>
+          <div class="grid3" style="gap:12px;margin-top:14px">
+            <div><div class="small muted">Estimated return</div><div style="font-size:30px;font-weight:600" id="mmEst"></div><div class="small muted" id="mmCI"></div></div>
+            <div><div class="small muted">True return</div><div style="font-size:30px;font-weight:600;color:#1d8a3a">1.50</div></div>
+            <div><div class="small muted">Model fit (R&sup2;)</div><div style="font-size:30px;font-weight:600" id="mmR2"></div></div>
+          </div>
+          <div class="verdict" id="mmV"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid3 mt">
+      <div class="card rv"><h4>Fit is not evidence</h4><p class="muted">Watch the R&sup2; while you change the settings. It stays high whether the estimate is right or far off. Seasonality and demand explain most of the sales line on their own, so a model can fit beautifully and credit the wrong thing.</p></div>
+      <div class="card rv d1"><h4>Calendar-following is a statistical problem</h4><p class="muted">Set spend to follow the calendar fully with no other variation. Once seasonality is controlled, nothing is left to learn from and the interval explodes. The effect is causally identified and the data cannot estimate it.</p></div>
+      <div class="card rv d2"><h4>Demand-following is a causal problem</h4><p class="muted">Raise the second slider. The interval stays tight and the estimate drifts upward. A demand proxy removes part of the bias. Only variation unrelated to demand, the third slider, removes it reliably.</p></div>
+    </div>
+
+    <div class="mt rv narrow">
+      <h3>What the workflow did here</h3>
+      <ol style="padding-left:20px">
+        <li><b>Framed the decision:</b> the return on the next block of TV dollars, over a year, nationally.</li>
+        <li><b>Drew the diagram with time:</b> which put last week's spend and the planners' expectations on the page.</li>
+        <li><b>Checked causal identification:</b> seasonality can be blocked. Expected demand cannot, since it was never recorded.</li>
+        <li><b>Checked the data:</b> how much of the spend variation is left once the calendar is accounted for.</li>
+        <li><b>Chose a design:</b> adjustment for what is measured, a proxy for what is not, and a flighting test to create clean variation.</li>
+        <li><b>Stress-tested:</b> how strong would the unrecorded demand signal need to be to pull the estimate under break-even? The sensitivity examples in Chapter 10 work this through with these numbers.</li>
+        <li><b>Reported the boundary:</b> shown below.</li>
+      </ol>
+      <p class="muted">A caution on the proxy. Branded search helps here because, in this simulation, it reflects demand and is not itself moved by TV. In real data TV does drive branded search, which makes it partly a mediator. Controlling for it then removes some of TV's effect while it removes some of the bias. Which dominates is an empirical question, and the diagram is what tells you to ask it.</p>
+    </div>
+
+    <h3 class="mt rv" style="font-size:36px" id="readout">The readout, filled in</h3>
+    <p class="muted rv narrow">Stage eight of the workflow asks for one page with three headings. This is what that page looks like for the analysis above. Copy it and replace the specifics.</p>
+    <div class="doc mt2 rv" id="roDoc">
+      <h3>TV effectiveness readout</h3>
+      <div class="meta">National, weekly data, 156 weeks &middot; Prepared for annual planning &middot; Illustrative example</div>
+      <h4>Decision</h4>
+      <div>Whether to move $2M from TV to other channels next year.</div>
+      <h4>Recommendation</h4>
+      <div><b>Hold the TV budget, and run a flighting test in Q1 to size it.</b> The estimate stays above break-even unless an unrecorded driver is considerably stronger than seasonality. Its size is uncertain enough to matter for how much to invest.</div>
+      <h4>What we can and cannot say</h4>
+      <div class="row"><div><span class="k g">Identified</span></div><div><b>TV has a positive effect on sales that lasts beyond the week it airs.</b> This holds under every specification and every sensitivity setting we tried.</div></div>
+      <div class="row"><div><span class="k o">Under assumptions</span></div><div><b>Return on TV spend: 2.2 (90% range 1.9 to 2.5).</b> Assumes seasonality, holidays and branded search volume capture the reasons spend and sales move together, and that carryover decays geometrically. Fit: R&sup2; 0.94, which says nothing about whether this number is causal.</div></div>
+      <div class="row"><div><span class="k o">Sensitivity</span></div><div>An unrecorded driver about as strong as seasonality would lower the estimate to about 1.4. One half as strong would lower it to about 1.8. Reaching break-even would take a driver explaining roughly 39% of the leftover variation in both spend and sales. Without the search proxy the model reads 2.6, which shows the direction of the bias.</div></div>
+      <div class="row"><div><span class="k r">Not identified</span></div><div><b>The return at spend levels well above or below the historical range.</b> Weekly spend stayed within about 40% of its average, so the shape of the curve outside that band comes from the functional form.<br><b>The split between TV and online video.</b> They were flighted together in 140 of 156 weeks. Only their combined return is reported.<br><b>The effect of price, promotion and seasonality on sales.</b> These are controls in this model. Their coefficients are not effects.</div></div>
+      <h4>What would settle it</h4>
+      <div>A six-week flighting test in 40 randomly chosen markets, raising TV by $20k per market per week. Cost about $2.4M in added spend. It can detect a return above about 0.9 and would replace the "under assumptions" row with an identified one for the tested spend level.</div>
+      <h4>Method, in one paragraph</h4>
+      <div class="meta" style="font-size:14px">Regression of weekly sales on adstocked TV spend with seasonal and holiday controls and branded search volume as a demand proxy. Adjustment set chosen from a causal diagram reviewed with the media planning team on the date of this readout. Sensitivity by omitted-variable bounds benchmarked against seasonality. One treatment per model.</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap" class="rv"><button class="btn sm" id="roCopy">Copy the readout as text</button><button class="btn sm ghost" id="roPrint">Print this page</button><span class="small muted" id="roMsg" style="align-self:center"></span></div>
+    <p class="src" data-src="chanperry,qa2,mmmprior,t2,unified,geo"></p>
+  </div>
+</section>
+
+<!-- ============ 13. TRANSPORT ============ -->
 <section class="sec white" id="transport">
   <div class="wrap">
-    <div class="eyebrow rv">Chapter 12 &middot; Transport and calibration</div>
+    <div class="eyebrow rv">Chapter 13 &middot; Transport and calibration</div>
     <h2 class="big rv">A result from there. <span class="grad2">A decision here.</span></h2>
     <p class="lead rv">An experiment answers a question about the markets, weeks and spend levels it ran in. The budget decision is about somewhere else. Moving a causal result from one setting to another is called <b>transport</b>, and it needs its own identification argument.</p>
 
@@ -1052,9 +1370,9 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
 
     <h3 class="mt rv" style="font-size:36px">Where the test ran matters</h3>
     <div class="grid3 mt2">
-      <div class="card rv"><div class="small muted">Energy-saving program, 111 randomized sites: how much the early sites overstated the average effect</div><div class="stat orange" data-count="30" data-dec="0">0</div><div class="small muted" style="margin-top:8px">Percent. Effects varied about fivefold across sites, and detailed data from the first ten sites could not predict even the direction of the gap.</div></div>
-      <div class="card rv d1"><div class="small muted">Simulated geo test that over-represented large markets: naive reading versus the population effect</div><div class="stat red">1.8 <span style="font-size:.5em;color:var(--ink2)">vs</span> <span style="color:#1d8a3a">0.6</span></div><div class="small muted" style="margin-top:8px">A threefold overstatement from market mix alone, in a simulation from the vault built on a published review of transport methods.</div></div>
-      <div class="card rv d2"><div class="small muted">Heart surgery trial: benefit in trial participants versus the benefit transported to all eligible patients</div><div class="stat">3.0 <span style="font-size:.5em;color:var(--ink2)">vs</span> 1.3 to 1.9</div><div class="small muted" style="margin-top:8px">Percentage-point reduction in risk. Participants differed from the wider group in ways that mattered for the effect.</div></div>
+      <div class="card rv"><div style="margin-bottom:6px"><span class="prov pub">Published study</span></div><div class="small muted">Energy-saving program, 111 randomized sites: how much the early sites overstated the average effect</div><div class="stat orange" data-count="30" data-dec="0">0</div><div class="small muted" style="margin-top:8px">Percent. Effects varied about fivefold across sites, and detailed data from the first ten sites could not predict even the direction of the gap.</div></div>
+      <div class="card rv d1"><div style="margin-bottom:6px"><span class="prov vault">Vault simulation</span></div><div class="small muted">Simulated geo test that over-represented large markets: naive reading versus the population effect</div><div class="stat red">1.8 <span style="font-size:.5em;color:var(--ink2)">vs</span> <span style="color:#1d8a3a">0.6</span></div><div class="small muted" style="margin-top:8px">A threefold overstatement from market mix alone, in a simulation from the vault built on a published review of transport methods.</div></div>
+      <div class="card rv d2"><div style="margin-bottom:6px"><span class="prov pub">Published study</span></div><div class="small muted">Heart surgery trial: benefit in trial participants versus the benefit transported to all eligible patients</div><div class="stat">3.0 <span style="font-size:.5em;color:var(--ink2)">vs</span> 1.3 to 1.9</div><div class="small muted" style="margin-top:8px">Percentage-point reduction in risk. Participants differed from the wider group in ways that mattered for the effect.</div></div>
     </div>
     <p class="mt2 rv narrow">Test markets get chosen for convenience: where relationships exist, where data is clean, where the team expects a win. Those are rarely the average market. Adjustment after the fact helped little in the 111-site study. The dependable remedy is in the design, which means choosing test markets at random within groups defined by size, region and media mix.</p>
 
@@ -1147,45 +1465,18 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
   </div>
 </section>
 
-<!-- ============ WORKFLOW ============ -->
-<section class="sec dark" id="workflow">
-  <div class="wrap">
-    <div class="eyebrow rv">The practitioner's workflow</div>
-    <h2 class="big rv">From question <span class="grad">to defensible answer.</span></h2>
-    <p class="lead rv">Everything on this page, arranged in the order you would actually do it. Each stage names what to produce and the signal that should send you back a step. Most analyses that go wrong skipped stage two or stage three.</p>
-    <div class="tl" id="wfTL"></div>
-
-    <div class="card mt rv router">
-      <div class="split">
-        <div>
-          <h3>Design router</h3>
-          <p class="muted">Stage five is where most of the leverage is. Answer a few questions about what you can control and the router names the design, what it assumes, and what it will estimate.</p>
-          <div class="trail" id="rtTrail"></div>
-          <h4 id="rtQ"></h4>
-          <div class="opts" id="rtOpts"></div>
-          <button class="btn sm ghost" id="rtReset" style="margin-top:18px">Start over</button>
-        </div>
-        <div class="verdict" id="rtOut" style="margin-top:0;min-height:260px"></div>
-      </div>
-    </div>
-
-    <div class="center mt rv">
-      <h3 style="font-size:36px">Still have questions?</h3>
-      <p class="lead">The FAQ answers the ones practitioners ask most, from "can I read SHAP values as drivers?" to "how do I put an experiment into an MMM?"</p>
-      <div style="margin-top:26px"><a class="btn" href="faq.html">Open the FAQ</a></div>
-    </div>
-    <p class="src" data-src="elicit,sum,dagci,overlap,power,geo,iv,qa1,unified,sens,mmmprior,t2,pitfalls,qa2"></p>
-  </div>
-</section>
-
 <!-- ============ SOURCES ============ -->
 <section class="sec white" id="sources">
   <div class="wrap">
     <div class="eyebrow rv">Sources</div>
     <h2 class="mid rv">Where this comes from.</h2>
+    <div class="card rv" style="margin:26px 0"><h4>How to read the numbers on this page</h4>
+      <p class="small" style="margin:10px 0 6px"><span class="prov pub">Published</span>A finding reported in the cited paper or study.</p>
+      <p class="small" style="margin:6px 0"><span class="prov vault">Vault</span>A replication or simulation written in the knowledge base to illustrate a published idea. Treat the direction as reliable and the exact figures as one run.</p>
+      <p class="small" style="margin:6px 0 0"><span class="prov ill">Illustration</span>A simulator or example built for this page, with parameters chosen to make the mechanism visible. Every "Try it" panel is one. They show how a problem behaves and say nothing about how large it is in your data.</p></div>
     <p class="lead rv">Research for this page was drawn from the <a href="https://redam94.github.io/second-brain/">Second Brain</a> knowledge base. Each row links the vault note that was used and names the original work that note is built on.</p>
     <div class="scroll mt rv"><table class="t" id="srcTable"><tr><th>Used for</th><th>Vault note</th><th>Original source behind the note</th></tr></table></div>
-    <p class="small muted mt2">The framing of identification as two separate locks, the interactive simulations, the media diagram in Chapter 9, and the character of Dana are this page's own synthesis and illustration, as are Marcus, the audience-targeting simulation, the sample regression table in the Table 2 close-up, Lena and the three simulators in Chapter 12, the example graphs in the field guide to graph types, and the arrangement of the workflow and design router. Statements of the three do-calculus rules and the front-door formula follow Pearl (2009), <em>Causality</em>, 2nd ed., Cambridge University Press, which the vault references and lists as not yet fully covered. The E-value formula follows VanderWeele and Ding (2017), cited by the vault's sensitivity-analysis note.</p>
+    <p class="small muted mt2">The framing of identification as two separate locks, the interactive simulations, the media diagram in Chapter 9, and the character of Dana are this page's own synthesis and illustration, as are Marcus, the audience-targeting simulation, the sample regression table in the Table 2 close-up, Lena and the three simulators in Chapter 13, the weekly model and its readout in Chapter 12, the sizing and value-of-testing calculators, the example graphs in the field guide to graph types, and the arrangement of the workflow and design router. Statements of the three do-calculus rules and the front-door formula follow Pearl (2009), <em>Causality</em>, 2nd ed., Cambridge University Press, which the vault references and lists as not yet fully covered. The E-value formula follows VanderWeele and Ding (2017), cited by the vault's sensitivity-analysis note. Journal, volume and page details for Lewis, Rao and Reiley (2011), Glymour, Zhang and Spirtes (2019), K&uuml;nzel et al. (2019), Lewis and Rao (2015), Gordon, Moakler and Zettelmeyer (2023), Kerman, Wang and Vaver (2017), Meager (2019), Cinelli and Hazlett (2020), Rambachan and Roth (2023) and the Plausible GMM working paper were checked against publisher or index pages in November 2026. The background references for graph types outside the vault have not been checked the same way.</p>
   </div>
 </section>
 <footer><div class="wrap">Built as a single static file for GitHub Pages. No trackers, no external scripts. Simulated data throughout unless a source is named.</div></footer>
@@ -1505,7 +1796,7 @@ function t2fit(n,a,seed){
 function ivDraw(id,sid,b,se,truth){
   const t=$(id),lo=-.5,hi=1.5,pc=v=>Math.max(0,Math.min(100,(v-lo)/(hi-lo)*100)),l=b-1.645*se,h=b+1.645*se,ok=truth>=l&&truth<=h;
   t.innerHTML=`<div class="ivzero" style="left:${pc(0)}%"></div><div class="ivband" style="left:${pc(l)}%;width:${Math.max(.6,pc(h)-pc(l))}%;background:${ok?'rgba(48,209,88,.55)':'rgba(255,69,58,.6)'}"></div><div class="ivdot" style="left:calc(${pc(b)}% - 2px)"></div><div class="ivtruth" style="left:${pc(truth)}%"></div>`;
-  $(sid).innerHTML=`<b style="color:${ok?'#1d8a3a':'#d70015'}">${fmt(b)}</b> &plusmn; ${(1.645*se).toFixed(2)}<br><span class="muted">truth ${fmt(truth)}</span>`;return ok;
+  $(sid).innerHTML=`<b style="color:${ok?'#1d8a3a':'#d70015'}">${fmt(b)}</b> &plusmn; ${(1.645*se).toFixed(2)}<br><span class="muted">truth ${fmt(truth)}, ${ok?'covered':'missed'}</span>`;return ok;
 }
 function drawT2(){
   const a=$('#t2A').value/100,n=+$('#t2N').value;$('#t2Av').textContent=Math.round(a*100)+'%';$('#t2Nv').textContent=n.toLocaleString();
@@ -1523,9 +1814,10 @@ $('#t2Run').onclick=()=>{const a=$('#t2A').value/100,n=Math.min(+$('#t2N').value
 const TG=(function(){
   const R=rng(101),N=3000,b=[],tau=[],sc={rand:[],prop:[],up:[]};
   for(let i=0;i<N;i++){const z=R.n(),r=R.u(),bi=1/(1+Math.exp(-(-2.2+1.8*z)));let t=.12*Math.exp(-((z-.5)**2)/.8)*(.4+1.2*r);t=Math.max(0,Math.min(t,.98-bi));
-    b.push(bi);tau.push(t);sc.rand.push(R.u());sc.prop.push(bi+.02*R.n());sc.up.push(t+.015*R.n());}
-  const ord={};for(const k in sc)ord[k]=[...Array(N).keys()].sort((i,j)=>sc[k][j]-sc[k][i]);
-  return{N,b,tau,ord};
+    b.push(bi);tau.push(t);sc.rand.push(R.u());sc.prop.push(bi+.02*R.n());sc.up.push(R.n());}
+  const ord={},un=sc.up;for(const k of ['rand','prop'])ord[k]=[...Array(N).keys()].sort((i,j)=>sc[k][j]-sc[k][i]);
+  const setQ=q=>{const sd=.004+.3*Math.pow(1-q,1.6),v=tau.map((t,i)=>t+sd*un[i]);ord.up=[...Array(N).keys()].sort((i,j)=>v[j]-v[i]);};setQ(.55);
+  return{N,b,tau,ord,setQ};
 })();
 const tg={strat:'prop'};
 function tgStats(k,frac){
@@ -1535,7 +1827,7 @@ function tgStats(k,frac){
   return{inS,m,rate:(sb+st)/m,base:sb/m,inc:st*scale,orders:(sb+st)*scale,cpa:cost/((sb+st)*scale),cpi:cost/(st*scale),naive:((sb+st)/m)/(ob/(N-m))-1,hold:(st/m)/(sb/m)};
 }
 function drawTG(){
-  const frac=$('#tgB').value/100;$('#tgBv').textContent=Math.round(frac*100)+'%';
+  const frac=$('#tgB').value/100;$('#tgBv').textContent=Math.round(frac*100)+'%';const q=$('#tgQ').value/100;TG.setQ(q);$('#tgQv').textContent=q>.9?'near-perfect (unrealistic)':(q>.65?'well':(q>.35?'moderately (typical)':(q>.12?'poorly':'barely better than chance')));
   const S={rand:tgStats('rand',frac),prop:tgStats('prop',frac),up:tgStats('up',frac)},names={rand:'Random',prop:'Propensity score',up:'Uplift model'},keys=['rand','prop','up'];
   const best=(f,lo)=>keys.reduce((a,k)=>(lo?f(S[k])<f(S[a]):f(S[k])>f(S[a]))?k:a,keys[0]),bRate=best(s=>s.rate),bCpa=best(s=>s.cpa,1),bInc=best(s=>s.inc),bCpi=best(s=>s.cpi,1);
   const money=v=>'$'+(v>=100?Math.round(v).toLocaleString():v.toFixed(1));
@@ -1555,7 +1847,7 @@ function drawTG(){
   const p=S.prop,mx=Math.max(p.naive,p.hold,.01);$('#tgBar1').style.width='100%';$('#tgBar2').style.width=Math.max(.5,p.hold/p.naive*100)+'%';
   $('#tgBar1v').textContent='+'+Math.round(p.naive*100)+'%';$('#tgBar2v').textContent='+'+Math.round(p.hold*100)+'%';
 }
-seg('#tgSeg',v=>{tg.strat=v;drawTG();});$('#tgB').oninput=drawTG;
+seg('#tgSeg',v=>{tg.strat=v;drawTG();});$('#tgB').oninput=drawTG;$('#tgQ').oninput=drawTG;
 (function(){
   const svg=$('#tgSvg'),P={I:{x:190,y:44,s:'I',label:'Purchase intent',capY:-32},M:{x:70,y:118,s:'M',label:'Model score',capY:-30},A:{x:70,y:196,s:'A',label:'Sees ad'},Y:{x:310,y:196,s:'Y',label:'Orders'},C:{x:190,y:140,s:'◎',label:'Coin flip',capY:-28}};
   const im=edge(svg,P.I,P.M,{cls:'bad flow',r:22}),ma=edge(svg,P.M,P.A,{cls:'bad flow',r:22}),iy=edge(svg,P.I,P.Y,{cls:'bad flow',r:22}),ay=edge(svg,P.A,P.Y,{cls:'good flow',r:22}),ca=edge(svg,P.C,P.A,{cls:'gone',r:22});
@@ -1704,7 +1996,7 @@ function drawPL(){
     draw(){const X=P(80,195,'X','TV spend'),Y=P(340,195,'Y','Sales'),Z=P(210,105,'Z','Market size',-34),S=P(80,60,'S','may differ',-28);ME(X,Y,{cls:'green'});ME(Z,Y);ME(S,Z,{r1:20,cls:'red'});N(X,{cls:'tx'});N(Y,{cls:'oc'});N(Z);N(S,{type:'sq'});},
     lg:[['■→','this mechanism may differ between test and target']],
     w:'An ordinary causal diagram with square markers pointing at whatever may differ between the place you tested and the place you will act. No marker means "assumed the same in both".',
-    u:'An experimental result has to be applied to other markets, another season or another spend level. Chapter 12 uses it.',
+    u:'An experimental result has to be applied to other markets, another season or another spend level. Chapter 13 uses it.',
     c:'How large the difference is. It records where populations may differ, and the data must supply the rest.'},
    {k:'ts',n:'Time-series graph',t:'Unrolled over time',src:'bg',
     draw(){const a=P(90,70,'Sₜ₋₁','Spend last week',-34),b=P(300,70,'Sₜ','Spend this week',-34),c=P(90,200,'Yₜ₋₁','Sales last week'),d=P(300,200,'Yₜ','Sales this week');ME(a,c);ME(b,d,{cls:'green'});ME(a,d,{cls:'blue'});ME(c,d);ME(a,b);ME(c,b,{cls:'dash red'});[a,b,c,d].forEach(p=>N(p));},
@@ -1749,6 +2041,124 @@ function drawPL(){
   G.forEach((g,i)=>{const b=document.createElement('button');b.innerHTML=`${g.n}<small>${g.t}</small>`;b.onclick=()=>show(i);pick.appendChild(b);});show(0);
 })();
 
+
+/* ---------- sizing calculator ---------- */
+const Phi=z=>{const t=1/(1+.2316419*Math.abs(z)),d=.3989423*Math.exp(-z*z/2),p=d*t*(.3193815+t*(-.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p;};
+const kfmt=v=>v>=1000?'$'+(v/1000).toFixed(v>=10000?0:1)+'M':'$'+Math.round(v)+'k';
+function drawSZ(){
+  const n=+$('#szN').value,sales=+$('#szS').value,cv=$('#szC').value/100,T=+$('#szT').value,x=+$('#szX').value,r=$('#szR').value/100;
+  $('#szNv').textContent=n+' ('+n/2+' treated)';$('#szSv').textContent=kfmt(sales);$('#szCv').textContent=Math.round(cv*100)+'%';$('#szTv').textContent=T+' weeks';$('#szXv').textContent=kfmt(x);$('#szRv').textContent=r.toFixed(2);
+  const sd=cv*sales*Math.sqrt(T),se=sd*Math.sqrt(4/n),mde=2.8*se/(x*T),eff=r*x*T,pow=Phi(eff/se-1.96),cost=x*T*n/2,lift=2.8*se/(sales*T);
+  $('#szMde').textContent=mde.toFixed(2);$('#szPow').textContent=pow>.99?'>99%':Math.round(pow*100)+'%';$('#szCost').textContent=kfmt(cost);$('#szLift').textContent=(lift*100).toFixed(1)+'%';
+  $('#szPow').style.color=pow>=.8?'var(--green)':(pow>=.5?'var(--orange)':'var(--red)');
+  const V=$('#szV');
+  if(pow>=.8){V.className='verdict ok';V.innerHTML=`<b>Adequately sized</b>If the true return is ${r.toFixed(2)}, this design finds it about ${Math.min(99,Math.round(pow*100))} times in 100. Anything above ${mde.toFixed(2)} is detectable.`;}
+  else if(pow>=.5){V.className='verdict warn';V.innerHTML=`<b>Marginal</b>A real return of ${r.toFixed(2)} would be missed about ${Math.round((1-pow)*100)} times in 100. More markets help most. Doubling the spend change halves the smallest detectable return.`;}
+  else{V.className='verdict bad';V.innerHTML=`<b>Underpowered</b>This test can only see returns above ${mde.toFixed(2)}. If it comes back significant anyway, the estimate will probably overstate the truth, and a flat result will say little. Add markets, lengthen the test, or raise the spend change.`;}
+}
+['#szN','#szS','#szC','#szT','#szX','#szR'].forEach(i=>$(i).oninput=drawSZ);
+
+/* ---------- value of testing ---------- */
+function drawVO(){
+  const B=+$('#voB').value;let lo=$('#voL').value/100,hi=$('#voH').value/100;const k=$('#voK').value/100,c=+$('#voC').value;if(hi<lo+.05)hi=lo+.05;
+  $('#voBv').textContent='$'+B+'M';$('#voLv').textContent=lo.toFixed(2);$('#voHv').textContent=hi.toFixed(2);$('#voKv').textContent=k.toFixed(2);$('#voCv').textContent=kfmt(c);
+  const mid=(lo+hi)/2,keep=mid>=k,L=keep?Math.max(0,Math.min(hi,k)-lo):Math.max(0,hi-Math.max(lo,k)),p=L/(hi-lo),loss=B*1000*L*L/(2*(hi-lo));
+  const a=0,b=5,pc=v=>Math.max(0,Math.min(100,(v-a)/(b-a)*100));
+  $('#voTrack').innerHTML=`<div class="ivband" style="left:${pc(lo)}%;width:${pc(hi)-pc(lo)}%;background:rgba(0,113,227,.45)"></div><div class="ivtruth" style="left:${pc(k)}%;background:var(--ink)"></div>`;
+  $('#voP').textContent=Math.round(p*100)+'%';$('#voE').textContent=kfmt(loss);const V=$('#voV'),act=keep?'keep spending':'cut';
+  if(L<=0){V.className='verdict ok';V.innerHTML=`<b>Skip the test</b>The whole plausible range sits ${keep?'above':'below'} break-even. Every value in it says ${act}. A test could refine the number and would not change the decision.`;}
+  else if(loss>c*1.5){V.className='verdict bad';V.innerHTML=`<b>Run the test</b>On current knowledge you would ${act}, with a ${Math.round(p*100)}% chance that is the wrong call. The expected cost of that is about ${(loss/c).toFixed(1)} times the cost of testing, every year the question stays open.`;}
+  else if(loss>c*.6){V.className='verdict warn';V.innerHTML=`<b>Close call</b>The expected cost of deciding blind is similar to the cost of the test. Look for a cheaper design, or a reversible way to act and watch.`;}
+  else{V.className='verdict ok';V.innerHTML=`<b>Act on what you have</b>You would ${act}. There is a ${Math.round(p*100)}% chance that is wrong, and the expected cost is well under the price of a test.`;}
+}
+['#voB','#voL','#voH','#voK','#voC'].forEach(i=>$(i).oninput=drawVO);
+
+/* ---------- prior dial ---------- */
+function drawPR(){
+  const m0=$('#prM').value/100,v=$('#prS').value/100,s0=.45,y=1.10,se=1.6*Math.exp(-3.2*v)+.07;
+  $('#prMv').textContent=m0.toFixed(2);$('#prSv').textContent=v<.15?'almost none':(v<.45?'some':(v<.75?'plenty':'a lot'));
+  const w0=1/(s0*s0),w1=1/(se*se),post=(m0*w0+y*w1)/(w0+w1),sp=Math.sqrt(1/(w0+w1)),share=w0/(w0+w1);
+  const a=0,b=3.4,pc=x=>Math.max(0,Math.min(100,(x-a)/(b-a)*100));
+  $('#prTrack').innerHTML=`<div class="ivband" style="left:${pc(post-1.645*sp)}%;width:${pc(post+1.645*sp)-pc(post-1.645*sp)}%;background:rgba(0,113,227,.45)"></div><div class="ivdot" style="left:calc(${pc(post)}% - 2px)"></div><div class="ivtruth" style="left:${pc(y)}%"></div><div class="ivtruth" style="left:${pc(m0)}%;background:#8e8e93"></div>`;
+  $('#prPost').textContent=post.toFixed(2);$('#prShare').textContent=Math.round(share*100)+'%';const V=$('#prV');
+  if(share>.6){V.className='verdict bad';V.innerHTML='<b>Prior-driven</b>Move the prior and the answer moves with it. The model is mostly repeating what it was told. Report this channel as weakly identified and show the result under two or three different priors.';}
+  else if(share>.2){V.className='verdict warn';V.innerHTML='<b>Weakly identified</b>The data pull the answer toward 1.10 and the prior still has a visible say. A reader deserves to know which part came from where.';}
+  else{V.className='verdict ok';V.innerHTML='<b>Data-driven</b>The answer stays near 1.10 wherever the prior starts. This is what well identified looks like in a Bayesian model.';}
+}
+['#prM','#prS'].forEach(i=>$(i).oninput=drawPR);
+
+
+/* ---------- 12. weekly MMM ---------- */
+function olsN(X,y){const n=X.length,p=X[0].length,A=[];for(let i=0;i<p;i++){A.push(new Float64Array(2*p));A[i][p+i]=1;}const b0=new Float64Array(p);
+  for(let r=0;r<n;r++){const x=X[r];for(let i=0;i<p;i++){b0[i]+=x[i]*y[r];for(let j=0;j<p;j++)A[i][j]+=x[i]*x[j];}}
+  for(let c=0;c<p;c++){let piv=c;for(let r=c+1;r<p;r++)if(Math.abs(A[r][c])>Math.abs(A[piv][c]))piv=r;[A[c],A[piv]]=[A[piv],A[c]];const d=A[c][c]||1e-12;for(let j=0;j<2*p;j++)A[c][j]/=d;
+    for(let r=0;r<p;r++)if(r!==c){const f=A[r][c];if(f)for(let j=0;j<2*p;j++)A[r][j]-=f*A[c][j];}}
+  const b=[];for(let i=0;i<p;i++){let v=0;for(let j=0;j<p;j++)v+=A[i][p+j]*b0[j];b.push(v);}
+  let rss=0,my=0;for(const v of y)my+=v/n;let tss=0;const fit=[];for(let r=0;r<n;r++){let f=0;for(let i=0;i<p;i++)f+=X[r][i]*b[i];fit.push(f);rss+=(y[r]-f)**2;tss+=(y[r]-my)**2;}
+  const s2=rss/Math.max(1,n-p),se=b.map((_,i)=>Math.sqrt(Math.max(0,s2*A[i][p+i])));return{b,se,r2:1-rss/tss,fit};}
+function drawMM(){
+  const a=$('#mmA').value/100,bq=$('#mmB').value/100,c=$('#mmC').value/100,T=+$('#mmT').value,sc=$('#mmSeason').checked,cr=$('#mmCarry').checked,px=$('#mmProxy').checked;
+  const lv=v=>v<.1?'not at all':(v<.4?'a little':(v<.75?'a good deal':'closely'));$('#mmAv').textContent=lv(a);$('#mmBv').textContent=lv(bq);$('#mmCv').textContent=c<.1?'hardly at all':(c<.4?'a little':(c<.75?'a good deal':'a lot'));$('#mmTv').textContent=T;
+  const R=rng(77),lam=.6,x=[],y=[],A=[],X=[];let d=0,fl=0,ad=null;
+  for(let t=0;t<T;t++){const w=t%52,s1=Math.sin(2*Math.PI*w/52),s2=Math.cos(2*Math.PI*w/52),hol=(w>=46&&w<=50)?1:0,sea=s1+.8*hol;d=.7*d+Math.sqrt(1-.49)*R.n();if(t%4===0)fl=R.n();
+    const xv=Math.max(0,50+22*a*sea+18*bq*d+20*c*fl+1.2*R.n());ad=ad===null?xv:(1-lam)*xv+lam*ad;
+    const yv=400+60*sea+1.5*ad+12*d+12*R.n(),prox=d+.7*R.n();x.push(xv);A.push(ad);y.push(yv);
+    const row=[1,cr?ad:xv];if(sc)row.push(s1,s2,hol);if(px)row.push(prox);X.push(row);}
+  const f=olsN(X,y),est=f.b[1],half=1.645*f.se[1],bias=est-1.5,miss=Math.abs(bias)>half,E=$('#mmEst');
+  E.textContent=isFinite(est)?est.toFixed(2):'n/a';E.style.color=miss?'#d70015':(half>1?'#b25000':'#1d8a3a');$('#mmCI').textContent='90% range '+(est-half).toFixed(2)+' to '+(est+half).toFixed(2);$('#mmR2').textContent=f.r2.toFixed(2);
+  const why=[];if(!sc&&a>.15)why.push('Seasonality drives both spend and sales and is missing from the model.');
+  if(bq>.15)why.push(px?'The search proxy absorbs part of the demand planners anticipated. The rest still leaks into the TV estimate.':'Planners moved spend toward weeks they expected to be strong, and nothing in the model measures that expectation.');
+  if(!cr)why.push('The model credits only same-week sales, so effects that arrive later are assigned elsewhere.');
+  const V=$('#mmV');
+  if(half>1){V.className='verdict warn';V.innerHTML='<b>Weakly identified</b>Once the calendar is accounted for, spend barely moves on its own, so the data cannot separate TV from the season. The range is honest and too wide to act on. This is a statistical failure, and more independent variation is the cure.';}
+  else if(miss){V.className='verdict bad';V.innerHTML=`<b>Confidently ${bias>0?'too high':'too low'}</b>${why.join(' ')||'The estimate is off by more than its stated uncertainty.'} The fit is still ${f.r2.toFixed(2)}.`;}
+  else{V.className='verdict ok';V.innerHTML=`<b>On target</b>The range covers the true return.${why.length?' Some bias sources are active, and at this setting they are smaller than the noise: '+why.join(' '):' Nothing in how spend was planned is correlated with unmodeled demand, and carryover is modeled.'}`;}
+  const cv=$('#mmC_'),{g,w,h}=setup(cv),pad=8,mn=Math.min(...y),mx=Math.max(...y),Xp=t=>pad+t/(T-1)*(w-2*pad),Yp=v=>12+(1-(v-mn)/(mx-mn))*(h*.62),xm=Math.max(...x);
+  g.fillStyle='rgba(255,159,10,.75)';const bw=Math.max(1,(w-2*pad)/T-1);for(let t=0;t<T;t++){const bh=x[t]/xm*h*.26;g.fillRect(Xp(t)-bw/2,h-4-bh,bw,bh);}
+  g.lineWidth=1.6;g.strokeStyle='#1d1d1f';g.beginPath();y.forEach((v,t)=>t?g.lineTo(Xp(t),Yp(v)):g.moveTo(Xp(t),Yp(v)));g.stroke();
+  g.strokeStyle='#0071e3';g.lineWidth=1.8;g.beginPath();f.fit.forEach((v,t)=>t?g.lineTo(Xp(t),Yp(v)):g.moveTo(Xp(t),Yp(v)));g.stroke();
+  window.__mm={est,half,r2:f.r2};
+}
+['#mmA','#mmB','#mmC','#mmT'].forEach(i=>$(i).oninput=drawMM);['#mmSeason','#mmCarry','#mmProxy'].forEach(i=>$(i).onchange=drawMM);
+(function(){
+  const svg=$('#mmSvg'),P={C:{x:230,y:48,s:'C',label:'Season, holidays',capY:-32},D:{x:365,y:125,s:'D',label:'Expected demand (not recorded)',capY:-32},Xp:{x:60,y:222,s:'X\u2032',label:'TV last week',capY:40},X:{x:110,y:125,s:'X',label:'TV this week',capY:-30},Y:{x:290,y:222,s:'Y',label:'Sales this week',capY:40}};
+  edge(svg,P.C,P.X,{r:22});edge(svg,P.C,P.Y,{r:22});edge(svg,P.D,P.X,{r:22,cls:'bad flow'});edge(svg,P.D,P.Y,{r:22,cls:'bad flow'});edge(svg,P.Xp,P.Y,{r:22,cls:'hl'});edge(svg,P.Xp,P.X,{r:22});edge(svg,P.X,P.Y,{r:22,cls:'good'});
+  node(svg,P.C,{r:22});node(svg,P.D,{r:22,cls:'hid'});node(svg,P.Xp,{r:22});node(svg,P.X,{r:22,cls:'tx'});node(svg,P.Y,{r:22,cls:'oc'});
+  $('#roCopy').onclick=()=>{const t=$('#roDoc').innerText;const done=()=>{$('#roMsg').textContent='Copied.';setTimeout(()=>$('#roMsg').textContent='',2500);};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,()=>{$('#roMsg').textContent='Select the text and copy it manually.';});
+    else{const r=document.createRange();r.selectNodeContents($('#roDoc'));const s=getSelection();s.removeAllRanges();s.addRange(r);try{document.execCommand('copy');done();}catch(e){$('#roMsg').textContent='Text selected. Press copy.';}}};
+  $('#roPrint').onclick=()=>window.print();
+})();
+
+
+/* ---------- sensitivity: omitted driver ---------- */
+function drawOV(){
+  const rd=$('#ovD').value/100,ry=$('#ovY').value/100,est=2.16,se=.19,df=150,be=1.0;$('#ovDv').textContent=Math.round(rd*100)+'%';$('#ovYv').textContent=Math.round(ry*100)+'%';
+  const bias=se*Math.sqrt(df)*Math.sqrt(ry*rd/(1-rd)),adj=est-bias,qf=(est-be)/est*(est/se)/Math.sqrt(df),rv=.5*(Math.sqrt(qf**4+4*qf*qf)-qf*qf);
+  const a=-.5,b=3,pc=v=>Math.max(0,Math.min(100,(v-a)/(b-a)*100)),h=1.645*se;
+  $('#ovTrack').innerHTML=`<div class="ivzero" style="left:${pc(0)}%"></div><div class="ivband" style="left:${pc(est-h)}%;width:${pc(est+h)-pc(est-h)}%;background:rgba(120,120,128,.3)"></div><div class="ivband" style="left:${pc(adj-h)}%;width:${pc(adj+h)-pc(adj-h)}%;background:${adj-h>be?'rgba(48,209,88,.55)':(adj>be?'rgba(255,159,10,.55)':'rgba(255,69,58,.55)')}"></div><div class="ivdot" style="left:calc(${pc(adj)}% - 2px)"></div><div class="ivtruth" style="left:${pc(be)}%;background:var(--ink)"></div>`;
+  $('#ovAdj').textContent=adj.toFixed(2);$('#ovRV').textContent=Math.round(rv*100)+'%';const V=$('#ovV');
+  if(adj-h>be){V.className='verdict ok';V.innerHTML=`<b>Still clearly above break-even</b>A driver of this strength lowers the return from 2.16 to ${adj.toFixed(2)}, and the whole range stays above 1.0. The decision to keep investing survives.`;}
+  else if(adj>be){V.className='verdict warn';V.innerHTML=`<b>Above break-even, no longer clearly</b>The return falls to ${adj.toFixed(2)} and its range now reaches below 1.0. The direction holds and the size is in doubt.`;}
+  else{V.className='verdict bad';V.innerHTML=`<b>Below break-even</b>A driver this strong would mean TV is losing money at ${adj.toFixed(2)}. The question becomes whether anything that strong could plausibly have gone unrecorded.`;}
+}
+['#ovD','#ovY'].forEach(i=>$(i).oninput=drawOV);$$('[data-ov]').forEach(b=>b.onclick=()=>{const[d,y]=b.dataset.ov.split(',');$('#ovD').value=d;$('#ovY').value=y;drawOV();});
+
+/* ---------- sensitivity: trend drift ---------- */
+function drawHD(){
+  const M=$('#hdM').value/10,est=12,h=5,delta=2,pre=[.8,-1.4,1.9,-.6,1.1,-2,.4,-.9];$('#hdMv').textContent=M.toFixed(1)+'×';
+  const lo=est-h-M*delta,hi=est+h+M*delta,brk=(est-h)/delta;$('#hdInt').textContent=lo.toFixed(1)+' to '+hi.toFixed(1);$('#hdBreak').textContent=brk.toFixed(1)+'×';
+  const {g,w,h:H}=setup($('#hdC')),n=pre.length+1,X=i=>30+i/(n-1)*(w-60),Y=v=>H-24-(v+6)/(30)*(H-40);
+  g.strokeStyle='#c7c7cc';g.lineWidth=1;g.beginPath();g.moveTo(20,Y(0));g.lineTo(w-10,Y(0));g.stroke();g.setLineDash([4,4]);g.beginPath();g.moveTo(X(pre.length-.5),8);g.lineTo(X(pre.length-.5),H-18);g.stroke();g.setLineDash([]);
+  g.fillStyle='#86868b';g.font='11px -apple-system,Helvetica,Arial';g.fillText('before the test',34,16);g.fillText('test',X(pre.length)-10,16);
+  g.fillStyle='rgba(120,120,128,.18)';g.fillRect(X(0)-8,Y(delta),X(pre.length-1)-X(0)+16,Y(-delta)-Y(delta));
+  pre.forEach((v,i)=>{g.fillStyle='#6e6e73';g.beginPath();g.arc(X(i),Y(v),4,0,6.3);g.fill();});
+  const x=X(pre.length);g.strokeStyle=lo>0?'#1d8a3a':'#d70015';g.lineWidth=10;g.globalAlpha=.25;g.beginPath();g.moveTo(x,Y(lo));g.lineTo(x,Y(hi));g.stroke();g.globalAlpha=1;g.lineWidth=3;g.strokeStyle='#0071e3';g.beginPath();g.moveTo(x,Y(est-h));g.lineTo(x,Y(est+h));g.stroke();g.fillStyle='#0071e3';g.beginPath();g.arc(x,Y(est),5.5,0,6.3);g.fill();
+  const V=$('#hdV');if(lo>0){V.className='verdict ok';V.innerHTML=`<b>Lift survives</b>Even if the groups drifted apart by ${M.toFixed(1)} times the largest pre-test gap, the lift stays above zero. The result breaks at ${brk.toFixed(1)} times.`;}
+  else{V.className='verdict bad';V.innerHTML=`<b>Lift no longer distinguishable from drift</b>At ${M.toFixed(1)} times the largest pre-test gap, the range includes zero. Whether drift that large is plausible is a judgment about these markets, and it should be made out loud.`;}
+}
+$('#hdM').oninput=drawHD;
+
 /* ---------- workflow ---------- */
 (function(){
   const L=(k,t)=>`<a href="${k.startsWith('#')?k:V+k}">${t}</a>`;
@@ -1772,12 +2182,12 @@ function drawPL(){
     d:['Plot the distribution of treatment within each level of the controls. Look for groups that are always or never treated.','Check correlation among treatments you want to separate. If two channels move together, plan to report their sum.','Run a power calculation for the smallest effect worth acting on. Halving the detectable effect roughly quadruples the sample needed.'],
     o:'An overlap plot, a statement of which effects can be separated, and a minimum detectable effect.',
     x:'Trimming to the region of overlap would remove the customers the decision is about. The estimate would describe a different population.',
-    l:[L('#ident','Chapter 6')]},
+    l:[L('#ident','Chapter 6'),L('#mmm','Chapter 12')]},
    {t:'Choose the design',s:'Pick the weakest set of assumptions that still answers the question.',
     d:['If you can assign the treatment, randomize: user-level holdouts where spillover is small, geo experiments where it is not.','If something outside your control assigned it nearly at random, use the matching quasi-experiment.','If neither, use adjustment with the set from stage three and commit to stage seven.','Fix the analysis plan before looking at outcomes.'],
     o:'A design, its key assumption in one sentence, and the population its estimate will describe.',
     x:'The only available design answers a narrower question than the one in stage one. Tell the decision-maker before running it.',
-    l:['Design router below']},
+    l:['the design router and '+L('#sizing','sizing calculator')+' below']},
    {t:'Estimate',s:'One treatment per model.',
     d:['Use only controls fixed before the treatment was assigned.','In an experiment, add controls that predict the outcome to tighten the interval. In observational work, add only what the diagram requires.','With many controls and flexible learners, residualize both the outcome and the treatment and cross-fit.','Report the treatment row. Grey out the rest.'],
     o:'An effect estimate with an interval, in the units of the decision.',
@@ -1787,17 +2197,17 @@ function drawPL(){
     d:['Name the single assumption carrying the most weight.','Use the sensitivity tool that matches the design: an E-value or omitted-variable bound for adjustment, a parallel-trends robustness interval for difference-in-differences, a stationarity stress test for time-based geo analysis.','Express the breaking point in units people can judge, such as "a hidden factor twice as strong as seasonality."','Run placebo checks on untreated periods or regions. Treat a pass as the absence of one known problem.'],
     o:'A breakdown value: the size of violation at which the conclusion flips.',
     x:'The sensitivity-aware interval is no wider than the original. The range of violations you allowed was probably too narrow.',
-    l:[L('#limits','Chapter 10')]},
+    l:[L('#sens','sensitivity examples in Chapter 10')]},
    {t:'Report the boundary',s:'Say what is identified, under what, and what is not.',
     d:['Lead with the decision and the estimate.','List the assumptions the estimate depends on and the breakdown value for each.','State which requested numbers could not be identified, and what data or test would identify them.','Separate what the data taught you from what came from priors.'],
     o:'A one-page readout with three headings: identified, identified under assumptions, not identified.',
     x:'Someone asks for the effect of a control variable. That is a new question and returns to stage one.',
-    l:[L('#check','Five questions')]},
+    l:[L('#readout','a filled-in readout'),L('#check','Five questions')]},
    {t:'Close the loop',s:'Use each answer to make the next question cheaper.',
     d:['Feed experiment results into ongoing models as evidence about the model-implied lift for the same regions, weeks and spend, with carryover weeks included.','Check that the experiment and the model are measuring the same thing. A heavy-up test measures a marginal return and a go-dark test measures an average one.','Widen the experiment’s reported uncertainty before using it elsewhere, since conditions will differ.','Plan the next test where the diagrams from stage two disagreed or where sensitivity was worst.'],
     o:'An updated model, and a ranked list of the next experiments.',
     x:'The model and the experiment disagree sharply. Averaging them produces a number neither supports. Decide explicitly which one yields and say why.',
-    l:[L('#transport','Chapter 12'),L('faq.html#mmm-experiments','FAQ: experiments and MMM')]}];
+    l:[L('#transport','Chapter 13'),L('faq.html#mmm-experiments','FAQ: experiments and MMM')]}];
   const tl=$('#wfTL');
   WF.forEach((w,i)=>{const d=document.createElement('div');d.className='st rv';
     d.innerHTML=`<div class="n">${i+1}</div><h3>${w.t}</h3><div class="muted">${w.s}</div><div class="cols"><div><h5 style="color:var(--teal)">Do</h5><ul>${w.d.map(x=>'<li>'+x+'</li>').join('')}</ul></div><div><h5 style="color:var(--green)">Deliverable</h5>${w.o}<div class="links">See ${w.l.join(' · ')}</div></div><div><h5 style="color:var(--orange)">Stop and rethink if</h5>${w.x}</div></div>`;
@@ -1843,19 +2253,19 @@ const SRC={
  lra:{t:'Logic of Regression Adjustment',u:'Research/Research-Methodology/Logic-of-Regression-Adjustment',f:'Conditions for adjustment; one adjustment set identifies one effect',o:'Nafa, A. J. (2022). "These Are Not the Effects You Are Looking For."'},
  t2:{t:'Table 2 Fallacy',u:'Research/Research-Methodology/Table-2-Fallacy',f:'Why control coefficients are not effects',o:'Nafa (2022), as above; term from Westreich, D. & Greenland, S. (2013), American Journal of Epidemiology.'},
  npb:{t:'Nuisance Parameter Bias Simulation',u:'Research/Research-Methodology/Nuisance-Parameter-Bias-Simulation',f:'Coverage figures for control coefficients',o:'Nafa (2022), simulation study.'},
- ab:{t:'Activity Bias in Advertising',u:'Research/Research-Methodology/Activity-Bias-in-Advertising',f:'Yahoo! experiment versus observational estimates',o:'Lewis, R. A., Rao, J. M. & Reiley, D. H. (2011). "Here, There, and Everywhere: Correlated Online Behaviors Can Lead to Overestimates of the Effects of Advertising." SSRN 2080235.'},
+ ab:{t:'Activity Bias in Advertising',u:'Research/Research-Methodology/Activity-Bias-in-Advertising',f:'Yahoo! experiment versus observational estimates',o:'Lewis, R. A., Rao, J. M. & Reiley, D. H. (2011). "Here, There, and Everywhere: Correlated Online Behaviors Can Lead to Overestimates of the Effects of Advertising." Proceedings of the 20th International World Wide Web Conference; SSRN 2080235.'},
  dillon:{t:'Dillon et al - SHAP and Causal Insights - Overview',u:'Research/Model-Validation-and-Interpretability/Explanations,-Causality-and-Proxies/Dillon-et-al---SHAP-and-Causal-Insights/Dillon-et-al---SHAP-and-Causal-Insights---Overview',f:'Prediction tasks versus causal tasks; the retention example',o:'Dillon, E., LaRiviere, J., Lundberg, S., Roth, J. & Syrgkanis, V. "Be Careful When Interpreting Predictive Models in Search of Causal Insights." SHAP documentation; also Towards Data Science.'},
  dillonu:{t:'Dillon et al - Unobserved Confounding and Quasi-Experimental Remedies',u:'Research/Model-Validation-and-Interpretability/Explanations,-Causality-and-Proxies/Dillon-et-al---SHAP-and-Causal-Insights/Dillon-et-al---Unobserved-Confounding-and-Quasi-Experimental-Remedies',f:'Discount figures (\u22121.29, \u22121.08, +0.06); remedies under hidden confounding',o:'Dillon et al., as above. The three figures are the vault\u2019s own replication of the notebook\u2019s simulation.'},
  sens:{t:'Sensitivity Analysis in Observational Studies',u:'Research/Bayesian-Statistics/Causal-Inference/Sensitivity-and-Complex-Mechanisms/Sensitivity-Analysis-in-Observational-Studies',f:'E-value, untestable unconfoundedness, transparent parametrization',o:'Li, F., Ding, P. & Mealli, F. (2022). "Bayesian Causal Inference: A Critical Review," Sec. 6; VanderWeele, T. & Ding, P. (2017), Annals of Internal Medicine.'},
  gen:{t:'General Structure of Bayesian Causal Inference',u:'Research/Bayesian-Statistics/Causal-Inference/Bayesian-Inference/General-Structure-of-Bayesian-CI',f:'Statistical identifiability; posteriors for unidentified parameters',o:'Li, Ding & Mealli (2022), Sec. 3; Gustafson, P. (2015), Bayesian Inference for Partially Identified Models.'},
  qa1:{t:'Q: Uncovering Causal Estimates from Non-Experimental Data',u:'Questions-and-Answers/Q---Uncovering-Causal-Estimates-from-Non-Experimental-Data',f:'Quasi-experimental strategies and what each assumes',o:'Vault synthesis, drawing mainly on Angrist, J. & Pischke, J.-S. (2008), Mostly Harmless Econometrics, Chs. 2-6, and Li, Ding & Mealli (2022).'},
  qa2:{t:'Q: Covariate Adjustment for Precision vs Identification',u:'Questions-and-Answers/Q---Covariate-Adjustment-for-Precision-vs-Identification',f:'Bias that does not shrink with sample size; precision versus identification',o:'Vault synthesis across its notes on CUPED, regression adjustment, double ML and CausalImpact.'},
- bench:{t:'Experimental Benchmarks for Observational Ad Measurement',u:'Research/Market-Response-Models/User-Level-Ad-Experiments/Experimental-Benchmarks-for-Observational-Ad-Measurement',f:'Observational estimates versus randomized lift in real ad campaigns; loss of overlap under precise targeting',o:'Gordon, B., Zettelmeyer, F., Bhargava, N. & Chapsky, D. (2019). "A Comparison of Approaches to Advertising Measurement." Marketing Science 38(2); Gordon, B., Moakler, R. & Zettelmeyer, F. (2023). "Close Enough? A Large-Scale Exploration of Non-Experimental Approaches to Advertising Measurement."'},
+ bench:{t:'Experimental Benchmarks for Observational Ad Measurement',u:'Research/Market-Response-Models/User-Level-Ad-Experiments/Experimental-Benchmarks-for-Observational-Ad-Measurement',f:'Observational estimates versus randomized lift in real ad campaigns; loss of overlap under precise targeting',o:'Gordon, B., Zettelmeyer, F., Bhargava, N. & Chapsky, D. (2019). "A Comparison of Approaches to Advertising Measurement." Marketing Science 38(2); Gordon, B., Moakler, R. & Zettelmeyer, F. (2023). "Close Enough? A Large-Scale Exploration of Non-Experimental Approaches to Advertising Measurement." Marketing Science 42(4), 768-793.'},
  gordon:{t:'Gordon et al 2019 - Facebook Experiment Design and Exposure Endogeneity',u:'Research/Market-Response-Models/User-Level-Ad-Experiments/Gordon-et-al-2019---Facebook-Experiment-Design-and-Exposure-Endogeneity',f:'Activity, targeting and competition as sources of exposure selection',o:'Gordon, Zettelmeyer, Bhargava & Chapsky (2019), Secs. 1-2.'},
- meta:{t:'Metalearners for CATE',u:'Research/Bayesian-Statistics/Causal-Inference/Treatment-Effect-Estimation/Metalearners-for-CATE',f:'Conditional average treatment effects and the two-model (T-learner) approach to uplift',o:'K\u00fcnzel, S., Sekhon, J., Bickel, P. & Yu, B. (2019). "Metalearners for Estimating Heterogeneous Treatment Effects Using Machine Learning." PNAS 116(10).'},
+ meta:{t:'Metalearners for CATE',u:'Research/Bayesian-Statistics/Causal-Inference/Treatment-Effect-Estimation/Metalearners-for-CATE',f:'Conditional average treatment effects and the two-model (T-learner) approach to uplift',o:'K\u00fcnzel, S., Sekhon, J., Bickel, P. & Yu, B. (2019). "Metalearners for Estimating Heterogeneous Treatment Effects Using Machine Learning." PNAS 116(10), 4156-4165.'},
  elicit:{t:'Knowledge Elicitation (index)',u:'Research/Bayesian-Statistics/Causal-Inference/Knowledge-Elicitation/_Index',f:'Building a causal diagram from expert workshops and language-model drafts',o:'Yamashita, Kanno & Furuta (2020), HCII; Shaposhnyk, Zahorska & Yanushkevich (2025), arXiv; Liu, Yin, Zhang, Zhao & Feng (2025), Computational Linguistics 51(2).'},
  overlap:{t:'Common Support and Overlap',u:'Research/Econometrics/Identification-Strategies/Propensity-Score-Matching/Common-Support-and-Overlap',f:'Checking overlap; what trimming does to the estimand',o:'Stuart, E. (2010). "Matching Methods for Causal Inference: A Review and a Look Forward." Statistical Science; King & Zeng (2006); Crump et al. (2009).'},
- power:{t:'Power Analysis and Sample Size',u:'Research/Research-Methodology/Experimental-Design/Power-Analysis-and-Sample-Size',f:'Sizing experiments; detectable effect versus sample size',o:'Lewis, R. & Rao, J. (2015). "The Unfavorable Economics of Measuring the Returns to Advertising." Quarterly Journal of Economics; plus a review article on sample size calculation cited by the note.'},
+ power:{t:'Power Analysis and Sample Size',u:'Research/Research-Methodology/Experimental-Design/Power-Analysis-and-Sample-Size',f:'Sizing experiments; detectable effect versus sample size',o:'Lewis, R. & Rao, J. (2015). "The Unfavorable Economics of Measuring the Returns to Advertising." Quarterly Journal of Economics 130(4), 1941-1973; plus a review article on sample size calculation cited by the note.'},
  geo:{t:'Geo-Experiment Methodology - Overview',u:'Research/Market-Response-Models/Geo-Experiment-Methodology/Geo-Experiment-Methodology---Overview',f:'Geo experiment design, assumptions and pitfalls',o:'Vaver, J. & Koehler, J. (2011). "Measuring Ad Effectiveness Using Geo Experiments." Google; Kerman, J., Wang, P. & Vaver, J. (2017). "Estimating Ad Effectiveness Using Geo Experiments in a Time-Based Regression Framework." Google.'},
  iv:{t:'Instrumental Variables',u:'Research/Econometrics/Identification-Strategies/Instrumental-Variables',f:'Instrument requirements and what the estimate describes',o:'Angrist, J. & Pischke, J.-S. (2008). Mostly Harmless Econometrics, Ch. 4.'},
  unified:{t:'Q: A Unified View of Sensitivity to Assumption Violations',u:'Questions-and-Answers/Q---A-Unified-View-of-Sensitivity-to-Assumption-Violations',f:'Which sensitivity tool fits which design; breakdown values; placebo checks as falsification',o:'Vault synthesis across its notes on Honest DiD, sensitivity analysis in observational studies, Plausible GMM, synthetic control diagnostics and geo-test stationarity.'},
@@ -1866,21 +2276,56 @@ const SRC={
  degtiar:{t:'Degtiar Rose 2023 - Generalizability and Transportability Review',u:'Research/Evidence-Synthesis,-Generalization-and-Privacy/Causal-Transportability/Degtiar-Rose-2023---Generalizability-and-Transportability-Review/_Index',f:'Generalizing versus transporting; dissimilarity checks; the 1.8 versus 0.6 geo simulation',o:'Degtiar, I. & Rose, S. (2023). "A Review of Generalizability and Transportability." Annual Review of Statistics and Its Application. The simulation is the vault\u2019s own.'},
  dahabreh:{t:'Dahabreh 2020 - Extending Inferences from Trial to Target Population',u:'Research/Evidence-Synthesis,-Generalization-and-Privacy/Causal-Transportability/Dahabreh-2020---Extending-Inferences-from-Trial-to-Target-Population/_Index',f:'Outcome-model, inverse-odds and doubly robust transport estimators; the surgery trial figures',o:'Dahabreh, I., Robertson, S., Steingrimsson, J., Stuart, E. & Hern\u00e1n, M. (2020). "Extending Inferences from a Randomized Trial to a New Target Population." Statistics in Medicine 39(14).'},
  allcott:{t:'Allcott 2015 - Conclusions, Remedies and Marketing Implications',u:'Research/Evidence-Synthesis,-Generalization-and-Privacy/Causal-Transportability/Allcott-2015---Site-Selection-Bias-in-Program-Evaluation/Allcott-2015---Conclusions,-Remedies-and-Marketing-Implications',f:'Site selection bias and design-based remedies',o:'Allcott, H. (2015). "Site Selection Bias in Program Evaluation." Quarterly Journal of Economics 130(3).'},
- meager:{t:'Meager 2019 - Pooling Factors and Measuring External Validity',u:'Research/Evidence-Synthesis,-Generalization-and-Privacy/Meta-Analysis/Meager-2019---Bayesian-Hierarchical-Analysis-of-Microcredit/Meager-2019---Pooling-Factors-and-Measuring-External-Validity',f:'Pooling several experiments; predicting the next site',o:'Meager, R. (2019). "Understanding the Average Impact of Microcredit Expansions: A Bayesian Hierarchical Analysis of Seven Randomized Experiments." AEJ: Applied Economics 11(1).'},
+ meager:{t:'Meager 2019 - Pooling Factors and Measuring External Validity',u:'Research/Evidence-Synthesis,-Generalization-and-Privacy/Meta-Analysis/Meager-2019---Bayesian-Hierarchical-Analysis-of-Microcredit/Meager-2019---Pooling-Factors-and-Measuring-External-Validity',f:'Pooling several experiments; predicting the next site',o:'Meager, R. (2019). "Understanding the Average Impact of Microcredit Expansions: A Bayesian Hierarchical Analysis of Seven Randomized Experiments." AEJ: Applied Economics 11(1), 57-91.'},
  calib4:{t:'Q: Four Meanings of Calibration',u:'Questions-and-Answers/Q---Four-Meanings-of-Calibration',f:'Why fitting a model to lift tests is estimation and does not validate it',o:'Vault synthesis across its notes on simulation-based calibration, conformal prediction, forecast evaluation and model calibration.'},
  smm:{t:'Q: Using SMM to Calibrate Agent Based Models',u:'Questions-and-Answers/Q---Using-SMM-to-Calibrate-Agent-Based-Models',f:'Moment matching for structural parameters; different parameters reproducing the same moments',o:'Vault synthesis built on its simulation-based estimation notes; Duffie, D. & Singleton, K. (1993), Econometrica.'},
- pgmm:{t:'Plausible GMM - Overview',u:'Research/Econometrics/Plausible-GMM/Plausible-GMM---Overview',f:'Treating a matching condition as approximately true, with a prior on the violation',o:'Chernozhukov, V., Hansen, C., Kong, L. & Wang, W. (2026). "Plausible GMM: A Quasi-Bayesian Approach."'},
+ pgmm:{t:'Plausible GMM - Overview',u:'Research/Econometrics/Plausible-GMM/Plausible-GMM---Overview',f:'Treating a matching condition as approximately true, with a prior on the violation',o:'Chernozhukov, V., Hansen, C., Kong, L. & Wang, W. (2026). "Plausible GMM: A Quasi-Bayesian Approach." cemmap working paper CWP07/26.'},
  bggraphs:{t:null,o:'Background beyond the vault for mixed graphs, time-series, cyclic, SWIG, twin-network, interference and path diagrams: Richardson, T. & Spirtes, P. (2002), "Ancestral Graph Markov Models," Annals of Statistics; Richardson, T. & Robins, J. (2013), "Single World Intervention Graphs"; Balke, A. & Pearl, J. (1994), "Probabilistic Evaluation of Counterfactual Queries"; Peters, J., Janzing, D. & Sch\u00f6lkopf, B. (2017), Elements of Causal Inference; Ogburn, E. & VanderWeele, T. (2014), "Causal Diagrams for Interference"; Wright, S. (1921), "Correlation and Causation."'},
+ chanperry:{t:'Chan Perry 2017 - Challenges in Media Mix Modeling',u:'Research/Model-Validation-and-Interpretability/Simulation-Based-Method-Validation/Chan-Perry-2017---Challenges-in-Media-Mix-Modeling/_Index',f:'Why weekly media models are hard: demand-following spend, few rows, models that fit equally and disagree',o:'Chan, D. & Perry, M. (2017). "Challenges and Opportunities in Media Mix Modeling." Google Inc.'},
+ bgsens:{t:null,o:'Background beyond the vault for the two sensitivity calculators: Cinelli, C. & Hazlett, C. (2020). "Making Sense of Sensitivity: Extending Omitted Variable Bias." Journal of the Royal Statistical Society B 82(1), 39-67; Rambachan, A. & Roth, J. (2023). "A More Credible Approach to Parallel Trends." Review of Economic Studies 90(5), 2555-2591.'},
  pearl:{t:null,o:'Background beyond the vault: Pearl, J. (2009). Causality: Models, Reasoning, and Inference, 2nd ed. Cambridge University Press.'}
 };
 $$('.src').forEach(p=>{const ks=p.dataset.src.split(',');const vs=ks.filter(k=>SRC[k].t).map(k=>`<a href="${V+SRC[k].u}">${SRC[k].t}</a>`).join(' \u00b7 ');
   const os=[...new Set(ks.map(k=>SRC[k].o))].join(' ');p.innerHTML=`<b>Second Brain notes:</b> ${vs}<br><b>Original sources:</b> ${os}`;});
 const tb=$('#srcTable');Object.values(SRC).filter(s=>s.t).forEach(s=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${s.f}</td><td><a href="${V+s.u}">${s.t}</a></td><td>${s.o}</td>`;tb.appendChild(tr);});
 
+
+/* ---------- usability: search, shareable state, chart descriptions, print ---------- */
+(function(){
+  const q=$('#chQ'),res=$('#chRes'),grid=$('#chGrid');let idx=null;
+  function build(){idx=[];$$('.sec').forEach(sec=>{const link=$(`#chMenu a[href="#${sec.id}"]`),where=link?link.dataset.t:'';
+    $$('h2,h3,h4,summary,.lead',sec).forEach(e=>{const t=e.textContent.replace(/\s+/g,' ').trim();if(t.length>2)idx.push({t,l:t.toLowerCase(),e,where});});});}
+  q.addEventListener('input',()=>{const v=q.value.trim().toLowerCase();if(!v){res.innerHTML='';grid.style.display='';return;}if(!idx)build();grid.style.display='none';
+    const ws=v.split(/\s+/),hits=idx.filter(i=>ws.every(w=>i.l.includes(w))).slice(0,14);
+    res.innerHTML=hits.length?'':'<div class="none">Nothing on this page matches. The FAQ has its own search.</div>';
+    hits.forEach(h=>{const a=document.createElement('a');a.href='#';a.innerHTML=`${h.t.length>110?h.t.slice(0,110)+'…':h.t}<small>${h.where}</small>`;
+      a.onclick=ev=>{ev.preventDefault();setMenu(false);const d=h.e.closest('details');if(d)d.open=true;const y=h.e.getBoundingClientRect().top+scrollY-70;scrollTo({top:y,behavior:reduced?'auto':'smooth'});h.e.classList.remove('flash');void h.e.offsetWidth;h.e.classList.add('flash');};res.appendChild(a);});});
+  chBtn.addEventListener('click',()=>setTimeout(()=>{if(chMenu.classList.contains('open')&&innerWidth>700)q.focus();},60));
+
+  const ctl=()=>$$('input[type=range][id],input[type=checkbox][id]').filter(e=>!e.closest('.gnav')),segs=()=>$$('.seg[id]'),def={};
+  const cur=()=>{const o={};ctl().forEach(e=>o[e.id]=e.type==='checkbox'?(e.checked?'1':'0'):e.value);segs().forEach(s=>{const b=$('button.on',s);if(b)o[s.id]=b.dataset.v;});return o;};
+  window.__initState=()=>{Object.assign(def,cur());const m=new URLSearchParams(location.search).get('v');if(!m)return;
+    m.split('~').forEach(p=>{const i=p.indexOf('.');if(i<1)return;const id=p.slice(0,i),val=decodeURIComponent(p.slice(i+1)),e=document.getElementById(id);if(!e)return;
+      if(e.classList.contains('seg')){const b=$$('button',e).find(x=>x.dataset.v===val);if(b)b.click();}
+      else if(e.type==='checkbox'){e.checked=val==='1';e.dispatchEvent(new Event('change'));}
+      else if(e.type==='range'){e.value=val;e.dispatchEvent(new Event('input'));}});};
+  let st;const save=()=>{clearTimeout(st);st=setTimeout(()=>{const c=cur(),parts=Object.keys(c).filter(k=>c[k]!==def[k]).map(k=>k+'.'+encodeURIComponent(c[k]));
+    const u=location.pathname+(parts.length?'?v='+parts.join('~'):'')+location.hash;try{history.replaceState(null,'',u);}catch(e){}syncAria();},300);};
+  ['input','change','click'].forEach(ev=>document.addEventListener(ev,e=>{if(!e.target.closest||e.target.closest('.gnav'))return;save();},true));
+  $('#chLink').onclick=()=>{const on=$('#chMenu a.on'),u=location.origin+location.pathname+location.search+(on?on.getAttribute('href'):'');const ok=()=>{$('#chMsg').textContent='Link copied, with the current demo settings.';setTimeout(()=>$('#chMsg').textContent='',3000);};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(u).then(ok,()=>{$('#chMsg').textContent=u;});else $('#chMsg').textContent=u;};
+
+  window.syncAria=function(){$$('canvas').forEach(c=>{if(c.id==='heroC')return;const card=c.closest('.card')||c.parentElement,v=card&&$('.verdict',card),h=card&&$('h3,h4',card);
+    c.setAttribute('role','img');c.setAttribute('aria-label',((h?h.textContent+'. ':'')+(v?v.innerText:'Chart of simulated data.')).replace(/\s+/g,' ').slice(0,420));});};
+  $$('h3').forEach(h=>{if(/^Try it/.test(h.textContent)){const b=document.createElement('span');b.className='prov ill';b.textContent='Illustration';b.style.marginLeft='10px';h.appendChild(b);}});
+  let opened=[];addEventListener('beforeprint',()=>{opened=$$('details:not([open])');opened.forEach(d=>d.open=true);$$('.rv').forEach(e=>e.classList.add('in'));$$('.fill[data-w]').forEach(f=>f.style.width=f.dataset.w+'%');});
+  addEventListener('afterprint',()=>{opened.forEach(d=>d.open=false);});
+})();
+
 /* ---------- draw all ---------- */
-function drawAll(){drawTrap();jdraw.forEach(f=>f());drawBD();drawRidge();drawLG();drawEV();drawT2();drawTG();drawCL();drawPL();}
-$('#trapNv').textContent='800';drawAll();
-let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{drawTrap();jdraw.forEach(f=>f());drawRidge();drawLG();drawTG();drawCL();},150);});
+function drawAll(){drawTrap();jdraw.forEach(f=>f());drawBD();drawRidge();drawLG();drawEV();drawT2();drawTG();drawCL();drawPL();drawSZ();drawVO();drawPR();drawMM();drawOV();drawHD();}
+$('#trapNv').textContent='800';drawAll();window.__initState();syncAria();
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{drawTrap();jdraw.forEach(f=>f());drawRidge();drawLG();drawTG();drawCL();drawMM();drawHD();},150);});
 })();
 </script>
 </body>
