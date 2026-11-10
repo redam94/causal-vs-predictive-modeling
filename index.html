@@ -185,6 +185,18 @@ table.cmp td.num{font-variant-numeric:tabular-nums;font-weight:600}table.cmp tr.
 .steps li::before{content:counter(s);position:absolute;left:0;top:14px;width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--nodefill);display:flex;align-items:center;justify-content:center;font-weight:600}
 .steps li b{display:block;font-size:19px}
 .cand{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;margin:8px 0;background:rgba(120,120,128,.10);font-size:15px;transition:background .3s}.cand.ok{background:rgba(48,209,88,.16)}.cand .val{font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}.cand.no .val{color:var(--ink2);text-decoration:line-through}
+.gal{display:grid;grid-template-columns:280px 1fr;gap:24px;align-items:start}
+@media(max-width:900px){.gal{grid-template-columns:1fr}.gal .pick{display:flex;flex-wrap:wrap;gap:8px}.gal .pick button{width:auto}}
+.gal .pick button{display:block;width:100%;text-align:left;border:0;background:transparent;font:inherit;font-size:15px;padding:11px 14px;border-radius:12px;cursor:pointer;color:var(--ink);margin-bottom:2px;transition:background .2s}
+.gal .pick button:hover{background:rgba(120,120,128,.12)}
+.gal .pick button.on{background:var(--ink);color:var(--nodefill)}
+.gal .pick small{display:block;font-size:12px;opacity:.65}
+.me path{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}.me polygon{fill:currentColor}.me circle{fill:var(--nodefill);stroke:currentColor;stroke-width:2.2}
+.me.dash path{stroke-dasharray:6 6}.me.red{color:var(--red)}.me.blue{color:var(--blue)}.me.green{color:#1d8a3a}
+.me text{font-size:12px;font-family:var(--font);fill:var(--ink2);font-weight:600}
+.gfade{animation:gfade .5s ease}@keyframes gfade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}.legend span{font-size:12.5px;background:rgba(120,120,128,.12);padding:5px 11px;border-radius:980px}
+.legend b{font-family:ui-monospace,Menlo,monospace;margin-right:5px}
 .tl{position:relative;margin-top:40px}
 .tl::before{content:"";position:absolute;left:23px;top:10px;bottom:10px;width:2px;background:linear-gradient(var(--teal),var(--purple),#ff375f)}
 .tl .st{position:relative;padding:0 0 26px 70px}
@@ -207,7 +219,7 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
   <div class="wrap">
     <a class="brand" href="#top">Seeing vs. Doing</a>
     <div class="links">
-      <a href="#trap">The trap</a><a href="#two">Two questions</a><a href="#dags">DAGs</a><a href="#dsep">d-separation</a><a href="#do">do-calculus</a><a href="#ident">Identification</a><a href="#disc">Discovery</a><a href="#mec">Equivalence</a><a href="#summ">Summaries</a><a href="#limits">Limits</a><a href="#target">Targeting</a><a href="#transport">Transport</a><a href="#workflow">Workflow</a><a href="faq.html">FAQ</a><a href="#sources">Sources</a>
+      <a href="#trap">The trap</a><a href="#two">Two questions</a><a href="#dags">DAGs</a><a href="#dsep">d-separation</a><a href="#do">do-calculus</a><a href="#ident">Identification</a><a href="#disc">Discovery</a><a href="#mec">Equivalence</a><a href="#summ">Summaries</a><a href="#graphs">Graph types</a><a href="#limits">Limits</a><a href="#target">Targeting</a><a href="#transport">Transport</a><a href="#workflow">Workflow</a><a href="faq.html">FAQ</a><a href="#sources">Sources</a>
     </div>
   </div>
   <div id="prog"></div>
@@ -689,6 +701,59 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
   </div>
 </section>
 
+<!-- ============ GRAPH TYPES ============ -->
+<section class="sec light" id="graphs">
+  <div class="wrap">
+    <div class="eyebrow rv">Field guide &middot; Beyond the DAG</div>
+    <h2 class="big rv">One family. <span class="grad2">Many dialects.</span></h2>
+    <p class="lead rv">A DAG assumes every relevant variable is drawn, every arrow has a known direction, nothing loops, and there is one population at one moment. Real problems break each of those. For each broken assumption there is a graph built to say so honestly. Pick one to see what its marks mean.</p>
+
+    <div class="card mt rv">
+      <div class="gal">
+        <div class="pick" id="ggPick"></div>
+        <div>
+          <div class="split" style="gap:24px">
+            <svg class="dag" id="ggSvg" viewBox="0 0 420 260" role="img" aria-label="Example graph"></svg>
+            <div id="ggText"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll mt rv">
+      <table class="t">
+        <tr><th>Graph</th><th>What it adds to a DAG</th><th>Hidden common causes</th><th>Reach for it when</th></tr>
+        <tr><td><b>DAG</b></td><td>Nothing. The baseline.</td><td>Must be drawn as nodes</td><td>You can name every relevant variable and direction.</td></tr>
+        <tr><td><b>CPDAG</b></td><td>Undirected edges</td><td>Assumed absent</td><td>A discovery algorithm produced the graph.</td></tr>
+        <tr><td><b>ADMG</b></td><td>Two-headed edges</td><td>Shown as edges</td><td>You know confounding exists and cannot measure its source.</td></tr>
+        <tr><td><b>PAG</b></td><td>Circle marks, two-headed edges</td><td>Allowed and flagged</td><td>Discovery was run without assuming everything was measured.</td></tr>
+        <tr><td><b>Summary DAG</b></td><td>Cluster nodes</td><td>Same as the DAG it summarizes</td><td>The full diagram is too large to discuss.</td></tr>
+        <tr><td><b>Selection diagram</b></td><td>Square difference markers</td><td>Drawn as usual</td><td>A result must move from one population to another.</td></tr>
+        <tr><td><b>Time-series graph</b></td><td>Time-indexed copies of each variable</td><td>Drawn as usual</td><td>Effects carry over or outcomes feed back across periods.</td></tr>
+        <tr><td><b>Cyclic graph</b></td><td>Loops</td><td>Drawn as usual</td><td>Two variables settle each other within one period.</td></tr>
+        <tr><td><b>SWIG</b></td><td>Split treatment nodes, potential outcomes</td><td>Drawn as usual</td><td>You want to check an assumption stated in potential-outcome terms.</td></tr>
+        <tr><td><b>Twin network</b></td><td>A second, counterfactual copy of the world</td><td>Shared noise nodes</td><td>The question is "what would have happened to this unit?"</td></tr>
+        <tr><td><b>Interference graph</b></td><td>Arrows between units</td><td>Drawn as usual</td><td>One unit's treatment can affect another's outcome.</td></tr>
+        <tr><td><b>Path diagram</b></td><td>A number on each arrow</td><td>Curved two-headed arcs</td><td>You are willing to assume linear, additive effects.</td></tr>
+      </table>
+    </div>
+
+    <div class="grid2 mt">
+      <div class="rv">
+        <h3>How to choose</h3>
+        <p>Start with a DAG and ask which of its assumptions you cannot defend. If you cannot name every common cause, move to an ADMG. If software drew the graph, read it as a CPDAG or a PAG and treat every undirected edge or circle as an open question. If the effect unfolds over weeks, index the variables by time. If the result must travel, add difference markers.</p>
+        <p>These combine. A media problem with carryover, an unmeasured demand driver and a result to transport is a time-indexed graph with two-headed edges and square markers.</p>
+      </div>
+      <div class="rv d1">
+        <h3>What carries over, and what does not</h3>
+        <p>The path-blocking logic from Chapter 4 extends to most of these with small changes. Two-headed edges behave like a hidden fork. Circle marks mean a path might be open, so a safe reading treats it as open.</p>
+        <p>Loops are the exception. In a graph with feedback, the usual separation rules can fail, and a regression of one looped variable on the other has no clean causal reading. Unrolling the loop over time, or modeling the equilibrium explicitly, is the standard way out.</p>
+      </div>
+    </div>
+    <p class="src" data-src="mf,pc,sum,transp,bggraphs"></p>
+  </div>
+</section>
+
 <!-- ============ 10. LIMITS ============ -->
 <section class="sec white" id="limits">
   <div class="wrap">
@@ -1101,7 +1166,7 @@ footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
     <h2 class="mid rv">Where this comes from.</h2>
     <p class="lead rv">Research for this page was drawn from the <a href="https://redam94.github.io/second-brain/">Second Brain</a> knowledge base. Each row links the vault note that was used and names the original work that note is built on.</p>
     <div class="scroll mt rv"><table class="t" id="srcTable"><tr><th>Used for</th><th>Vault note</th><th>Original source behind the note</th></tr></table></div>
-    <p class="small muted mt2">The framing of identification as two separate locks, the interactive simulations, the media diagram in Chapter 9, and the character of Dana are this page's own synthesis and illustration, as are Marcus, the audience-targeting simulation, the sample regression table in the Table 2 close-up, Lena and the three simulators in Chapter 12, and the arrangement of the workflow and design router. Statements of the three do-calculus rules and the front-door formula follow Pearl (2009), <em>Causality</em>, 2nd ed., Cambridge University Press, which the vault references and lists as not yet fully covered. The E-value formula follows VanderWeele and Ding (2017), cited by the vault's sensitivity-analysis note.</p>
+    <p class="small muted mt2">The framing of identification as two separate locks, the interactive simulations, the media diagram in Chapter 9, and the character of Dana are this page's own synthesis and illustration, as are Marcus, the audience-targeting simulation, the sample regression table in the Table 2 close-up, Lena and the three simulators in Chapter 12, the example graphs in the field guide to graph types, and the arrangement of the workflow and design router. Statements of the three do-calculus rules and the front-door formula follow Pearl (2009), <em>Causality</em>, 2nd ed., Cambridge University Press, which the vault references and lists as not yet fully covered. The E-value formula follows VanderWeele and Ding (2017), cited by the vault's sensitivity-analysis note.</p>
   </div>
 </section>
 <footer><div class="wrap">Built as a single static file for GitHub Pages. No trackers, no external scripts. Simulated data throughout unless a source is named.</div></footer>
@@ -1560,6 +1625,106 @@ function drawPL(){
 }
 ['#plK','#plT'].forEach(i=>$(i).oninput=drawPL);
 
+
+/* ---------- graph gallery ---------- */
+(function(){
+  const svg=$('#ggSvg');
+  function ME(a,b,o={}){ // mixed-mark edge: m1/m2 in 'tail','arrow','circle'
+    const g=el('g',{class:'me '+(o.cls||'')},svg),r1=o.r1??26,r2=o.r2??26,m1=o.m1||'tail',m2=o.m2||'arrow';
+    const dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy)||1,nx=-dy/L,ny=dx/L,cv=o.curve||0,cx=(a.x+b.x)/2+nx*cv,cy=(a.y+b.y)/2+ny*cv;
+    const u=(px,py,qx,qy)=>{const l=Math.hypot(qx-px,qy-py)||1;return[(qx-px)/l,(qy-py)/l];};
+    const d1=u(cx,cy,a.x,a.y),d2=u(cx,cy,b.x,b.y);let sx=a.x-d1[0]*(r1+3),sy=a.y-d1[1]*(r1+3),ex=b.x-d2[0]*(r2+3),ey=b.y-d2[1]*(r2+3);
+    const end=(x,y,d,m)=>{if(m==='arrow'){const hs=11,bx=x-d[0]*hs,by=y-d[1]*hs;el('polygon',{points:`${x},${y} ${bx-d[1]*hs*.55},${by+d[0]*hs*.55} ${bx+d[1]*hs*.55},${by-d[0]*hs*.55}`},g);return[bx,by];}
+      if(m==='circle'){el('circle',{cx:x-d[0]*5,cy:y-d[1]*5,r:5},g);return[x-d[0]*10,y-d[1]*10];}return[x,y];};
+    const p=el('path',{},g);const E=end(ex,ey,d2,m2),St=end(sx,sy,d1,m1);p.setAttribute('d',`M ${St[0]} ${St[1]} Q ${cx} ${cy} ${E[0]} ${E[1]}`);
+    if(o.label){const t=el('text',{x:cx+nx*(cv>=0?12:-12),y:cy+ny*(cv>=0?12:-12)+4,'text-anchor':'middle'},g);t.textContent=o.label;}
+    return g;
+  }
+  function N(p,o={}){const r=o.r||26;if(o.type==='sq'){const g=el('g',{class:'node sq',transform:`translate(${p.x},${p.y})`},svg);el('rect',{x:-18,y:-18,width:36,height:36,rx:5},g);const t=el('text',{'text-anchor':'middle',dy:'.35em',class:'sym'},g);t.textContent=p.s;if(p.label){const c=el('text',{'text-anchor':'middle',y:p.capY??36,class:'cap'},g);c.textContent=p.label;}return g;}
+    if(o.type==='cl'){const g=el('g',{class:'node',transform:`translate(${p.x},${p.y})`},svg);el('rect',{x:-46,y:-22,width:92,height:44,rx:22,style:'fill:var(--nodefill);stroke:currentColor;stroke-width:2.2'},g);const t=el('text',{'text-anchor':'middle',dy:'.35em',class:'cap',style:'font-size:13px;font-weight:600;fill:currentColor'},g);t.textContent=p.s;return g;}
+    const g=node(svg,p,{r,cls:o.cls||''});if(o.type==='split'){el('line',{x1:0,y1:-r,x2:0,y2:r,stroke:'currentColor','stroke-width':2.2},g);g.querySelector('.sym').remove();[['X',-11],['x',11]].forEach(([c,x])=>{const t=el('text',{x,'text-anchor':'middle',dy:'.35em',class:'sym'},g);t.textContent=c;});}
+    if(p.s&&p.s.length>2){const t=g.querySelector('.sym');if(t)t.style.fontSize='12.5px';}return g;}
+  const P=(x,y,s,label,capY)=>({x,y,s,label,capY});
+  const G=[
+   {k:'dag',n:'DAG',t:'Directed acyclic graph',src:'vault',
+    draw(){const Z=P(210,50,'Z','Season',-34),X=P(80,190,'X','Ad spend'),Y=P(340,190,'Y','Sales');ME(Z,X);ME(Z,Y);ME(X,Y,{cls:'green'});N(Z);N(X,{cls:'tx'});N(Y,{cls:'oc'});},
+    lg:[['→','direct cause']],
+    w:'Every arrow has one direction, nothing loops, and anything that matters is drawn. All the rules in Chapters 3 to 5 are stated for this graph.',
+    u:'You are drawing from knowledge and can name every common cause, measured or otherwise.',
+    c:'It has no way to say "I do not know which way this arrow points" or "something unmeasured links these two" except by adding a node for it.'},
+   {k:'cpdag',n:'CPDAG',t:'Completed partially directed graph',src:'vault',
+    draw(){const A=P(70,60,'A','Awareness',-34),S=P(200,130,'S','Search interest',-34),Pr=P(70,205,'P','Price'),Y=P(345,205,'Y','Sales');ME(A,S,{m2:'tail',cls:'blue'});ME(S,Y);ME(Pr,Y);N(A);N(S);N(Pr);N(Y,{cls:'oc'});},
+    lg:[['→','every member of the class agrees'],['─','members disagree on direction']],
+    w:'A picture of a whole Markov equivalence class. Here the data settle that search interest and price both point into sales, because that collider leaves a signature. The awareness and search link stays undirected.',
+    u:'A discovery algorithm such as PC or GES produced your graph, and you assumed no hidden common causes.',
+    c:'Which way the plain lines point. Each is a direction the independence pattern cannot identify.'},
+   {k:'admg',n:'ADMG',t:'Acyclic directed mixed graph',src:'bg',
+    draw(){const Z=P(210,50,'Z','Season',-34),X=P(80,190,'X','Ad spend'),Y=P(340,190,'Y','Sales');ME(Z,X);ME(Z,Y);ME(X,Y,{cls:'green'});ME(X,Y,{m1:'arrow',m2:'arrow',curve:62,cls:'dash red',label:'hidden demand'});N(Z);N(X,{cls:'tx'});N(Y,{cls:'oc'});},
+    lg:[['→','direct cause'],['↔','share an unmeasured cause']],
+    w:'The hidden variable is removed from the picture and replaced by a two-headed edge between the things it drives. The graph now contains only measured variables and still records where confounding lives.',
+    u:'You know something unmeasured drives both treatment and outcome and want the diagram to say so without inventing nodes.',
+    c:'What the hidden cause is, or how strong. Here the two-headed edge between ad spend and sales means adjustment cannot identify the effect.'},
+   {k:'pag',n:'PAG',t:'Partial ancestral graph',src:'vault',
+    draw(){const A=P(70,70,'A','Promo',-34),B=P(70,200,'B','Weather'),C=P(210,135,'C','Store traffic',-34),D=P(350,135,'D','Sales',-34);ME(A,C,{m1:'circle',cls:'blue'});ME(B,C,{m1:'circle',cls:'blue'});ME(C,D);N(A);N(B);N(C);N(D,{cls:'oc'});},
+    lg:[['→','cause, no hidden confounder implied'],['o→','arrowhead certain, other end unknown'],['↔','hidden common cause'],['o─o','both ends unknown']],
+    w:'The output of discovery that allows for unmeasured variables. A circle is a mark the data could not settle. Promo o→ traffic says traffic does not cause promo, and leaves open whether promo causes traffic or a hidden factor drives both.',
+    u:'You ran FCI or a relative because you could not assume everything relevant was measured.',
+    c:'Anything at a circle. A cautious reader treats each one as a possible hidden confounder.'},
+   {k:'sum',n:'Summary DAG',t:'Cluster or summary causal graph',src:'vault',
+    draw(){const C=P(70,60,'Context'),M=P(70,200,'Media'),D=P(215,130,'Demand'),Y=P(355,130,'Sales');ME(C,M,{r1:24,r2:24});ME(C,D,{r1:30,r2:44});ME(M,D,{r1:30,r2:44});ME(D,Y,{r1:48,r2:48});ME(C,Y,{curve:-46,r1:40,r2:36});ME(M,Y,{curve:46,r1:40,r2:36});[C,M,D,Y].forEach(p=>N(p,{type:'cl'}));},
+    lg:[['→','some member of one cluster affects some member of the other']],
+    w:'Each node stands for a group of variables. Merging adds edges, so the summary claims less than the detailed diagram and never claims an independence that was not there.',
+    u:'The full diagram has dozens of nodes and the people who must check it need something they can hold in mind.',
+    c:'Relationships inside a cluster, and any independence that depended on the detail.'},
+   {k:'sel',n:'Selection diagram',t:'Graph for moving results between populations',src:'vault',
+    draw(){const X=P(80,195,'X','TV spend'),Y=P(340,195,'Y','Sales'),Z=P(210,105,'Z','Market size',-34),S=P(80,60,'S','may differ',-28);ME(X,Y,{cls:'green'});ME(Z,Y);ME(S,Z,{r1:20,cls:'red'});N(X,{cls:'tx'});N(Y,{cls:'oc'});N(Z);N(S,{type:'sq'});},
+    lg:[['■→','this mechanism may differ between test and target']],
+    w:'An ordinary causal diagram with square markers pointing at whatever may differ between the place you tested and the place you will act. No marker means "assumed the same in both".',
+    u:'An experimental result has to be applied to other markets, another season or another spend level. Chapter 12 uses it.',
+    c:'How large the difference is. It records where populations may differ, and the data must supply the rest.'},
+   {k:'ts',n:'Time-series graph',t:'Unrolled over time',src:'bg',
+    draw(){const a=P(90,70,'Sₜ₋₁','Spend last week',-34),b=P(300,70,'Sₜ','Spend this week',-34),c=P(90,200,'Yₜ₋₁','Sales last week'),d=P(300,200,'Yₜ','Sales this week');ME(a,c);ME(b,d,{cls:'green'});ME(a,d,{cls:'blue'});ME(c,d);ME(a,b);ME(c,b,{cls:'dash red'});[a,b,c,d].forEach(p=>N(p));},
+    lg:[['→','cause, never backward in time'],['blue','carryover from last week\u2019s spend'],['red','budget set from past sales']],
+    w:'Each variable gets one node per period. Carryover becomes an arrow from last week’s spend to this week’s sales. Feedback, such as budgets set from past sales, becomes an arrow from past sales to current spend, and the graph stays acyclic.',
+    u:'Effects decay over weeks, or outcomes feed back into future treatment. Media mix modeling is this case.',
+    c:'It grows quickly. The compact rolled-up version, with one node per variable, can contain loops and loses the timing.'},
+   {k:'cyc',n:'Cyclic graph',t:'Feedback within a period',src:'bg',
+    draw(){const B=P(110,150,'B','Ad budget'),Y=P(310,150,'Y','Sales'),Z=P(310,45,'Z','Season',-34);ME(B,Y,{curve:-34,cls:'green'});ME(Y,B,{curve:-34,cls:'red'});ME(Z,Y);N(B,{cls:'tx'});N(Y,{cls:'oc'});N(Z);},
+    lg:[['⇄','each causes the other']],
+    w:'Budget drives sales, and sales drive the budget when it is set as a share of revenue. Within one planning period the two settle each other, so the diagram has a loop.',
+    u:'Two quantities are determined jointly: price and demand, budget and revenue, bids and auction pressure.',
+    c:'The standard path-blocking rules can fail here. A regression of sales on budget blends both directions and has no clean causal reading.'},
+   {k:'swig',n:'SWIG',t:'Single-world intervention graph',src:'bg',
+    draw(){const Z=P(210,50,'Z','Season',-34),X=P(100,190,'','Ad spend: natural | set'),Y=P(330,190,'Y(x)','Sales if spend were x');ME(Z,{x:92,y:190},{r2:30});ME(Z,Y);ME({x:108,y:190},Y,{r1:22,cls:'green'});N(Z);N(X,{type:'split',cls:'tx'});N(Y,{cls:'oc'});},
+    lg:[['X | x','left: what would happen naturally; right: the value you set'],['Y(x)','outcome under that setting']],
+    w:'The treatment node is split in two. Arrows into it reach the natural value. Arrows out of it leave from the value you set. Outcomes are relabeled as potential outcomes, which lets you read "would the outcome under my setting be independent of what was naturally chosen?" straight off the graph.',
+    u:'Your team states assumptions in potential-outcome language and you want to check them against a diagram.',
+    c:'It describes one intervention at a time. Questions that compare two worlds for the same unit need the next graph.'},
+   {k:'twin',n:'Twin network',t:'Counterfactual graph',src:'bg',
+    draw(){const X=P(70,70,'X','Got the ad',-34),Y=P(70,200,'Y','Bought'),X2=P(350,70,'X*','Had not got it',-34),Y2=P(350,200,'Y*','Would have bought'),U=P(210,200,'U','Their own disposition');ME(X,Y);ME(X2,Y2,{cls:'blue'});ME(U,Y,{cls:'dash'});ME(U,Y2,{cls:'dash'});N(X);N(Y,{cls:'oc'});N(X2,{cls:'do'});N(Y2,{cls:'oc'});N(U,{cls:'hid'});},
+    lg:[['left','the world that happened'],['right','the world that might have'],['U','what the two worlds share']],
+    w:'Two copies of the model side by side. The same person, with the same unobserved disposition, appears in both: once as things were, once under a different treatment. It is the graph for "she saw the ad and bought. Would she have bought anyway?"',
+    u:'The question is about a specific unit after the fact: attribution, blame, or who was persuaded.',
+    c:'An answer from data alone. Individual counterfactuals need a full structural model, and usually only bounds are identified.'},
+   {k:'int',n:'Interference graph',t:'Spillover between units',src:'bg',
+    draw(){const a=P(90,70,'X₁','Ads in market 1',-34),b=P(330,70,'X₂','Ads in market 2',-34),c=P(90,200,'Y₁','Sales in market 1'),d=P(330,200,'Y₂','Sales in market 2');ME(a,c,{cls:'green'});ME(b,d,{cls:'green'});ME(a,d,{cls:'dash red'});ME(b,c,{cls:'dash red'});[a,b,c,d].forEach(p=>N(p));},
+    lg:[['green','effect on the same market'],['red','spillover into the other market']],
+    w:'Most causal methods assume one unit’s treatment leaves other units alone. Here it does not: people commute across market borders, share households, or see national coverage of a regional campaign.',
+    u:'Designing or reading a geo test, a marketplace experiment, or anything on a social network.',
+    c:'A simple treated-versus-control difference no longer measures the effect. Control units were partly treated.'},
+   {k:'path',n:'Path diagram',t:'Linear structural equation model',src:'bg',
+    draw(){const T=P(70,190,'TV','TV'),S=P(210,70,'S','Branded search',-34),Y=P(350,190,'Y','Sales');ME(T,S,{label:'0.4'});ME(S,Y,{label:'0.6'});ME(T,Y,{cls:'green',label:'0.2'});N(T,{cls:'tx'});N(S);N(Y,{cls:'oc'});},
+    lg:[['→ 0.4','a one-unit rise upstream moves the downstream variable by 0.4']],
+    w:'A DAG with a number on each arrow, under the assumption that effects are linear and add up. Multiply along a path and add across paths: the total effect of TV here is 0.2 + 0.4 × 0.6 = 0.44, of which 0.24 runs through search.',
+    u:'You are prepared to assume linearity and want to split a total effect into direct and indirect parts.',
+    c:'Anything about saturation, thresholds or interactions. The arithmetic is only as good as the straight-line assumption.'}
+  ];
+  const pick=$('#ggPick'),txt=$('#ggText');
+  function show(i){const g=G[i];$$('button',pick).forEach((b,j)=>b.classList.toggle('on',j===i));svg.innerHTML='';svg.classList.remove('gfade');void svg.getBoundingClientRect();svg.classList.add('gfade');g.draw();
+    txt.className='gfade';txt.innerHTML=`<div class="tag" style="color:var(--orange)">${g.t}</div><h3 style="margin-top:6px">${g.n}</h3><div class="legend">${g.lg.map(l=>`<span><b>${l[0]}</b>${l[1]}</span>`).join('')}</div><p>${g.w}</p><p class="small"><b>Use it when</b> ${g.u.charAt(0).toLowerCase()+g.u.slice(1)}</p><p class="small"><b>What it cannot say:</b> ${g.c}</p><p class="small muted">${g.src==='vault'?'Covered in the vault notes cited below.':'General background, outside the vault’s notes. See the references below.'}</p>`;}
+  G.forEach((g,i)=>{const b=document.createElement('button');b.innerHTML=`${g.n}<small>${g.t}</small>`;b.onclick=()=>show(i);pick.appendChild(b);});show(0);
+})();
+
 /* ---------- workflow ---------- */
 (function(){
   const L=(k,t)=>`<a href="${k.startsWith('#')?k:V+k}">${t}</a>`;
@@ -1681,6 +1846,7 @@ const SRC={
  calib4:{t:'Q: Four Meanings of Calibration',u:'Questions-and-Answers/Q---Four-Meanings-of-Calibration',f:'Why fitting a model to lift tests is estimation and does not validate it',o:'Vault synthesis across its notes on simulation-based calibration, conformal prediction, forecast evaluation and model calibration.'},
  smm:{t:'Q: Using SMM to Calibrate Agent Based Models',u:'Questions-and-Answers/Q---Using-SMM-to-Calibrate-Agent-Based-Models',f:'Moment matching for structural parameters; different parameters reproducing the same moments',o:'Vault synthesis built on its simulation-based estimation notes; Duffie, D. & Singleton, K. (1993), Econometrica.'},
  pgmm:{t:'Plausible GMM - Overview',u:'Research/Econometrics/Plausible-GMM/Plausible-GMM---Overview',f:'Treating a matching condition as approximately true, with a prior on the violation',o:'Chernozhukov, V., Hansen, C., Kong, L. & Wang, W. (2026). "Plausible GMM: A Quasi-Bayesian Approach."'},
+ bggraphs:{t:null,o:'Background beyond the vault for mixed graphs, time-series, cyclic, SWIG, twin-network, interference and path diagrams: Richardson, T. & Spirtes, P. (2002), "Ancestral Graph Markov Models," Annals of Statistics; Richardson, T. & Robins, J. (2013), "Single World Intervention Graphs"; Balke, A. & Pearl, J. (1994), "Probabilistic Evaluation of Counterfactual Queries"; Peters, J., Janzing, D. & Sch\u00f6lkopf, B. (2017), Elements of Causal Inference; Ogburn, E. & VanderWeele, T. (2014), "Causal Diagrams for Interference"; Wright, S. (1921), "Correlation and Causation."'},
  pearl:{t:null,o:'Background beyond the vault: Pearl, J. (2009). Causality: Models, Reasoning, and Inference, 2nd ed. Cambridge University Press.'}
 };
 $$('.src').forEach(p=>{const ks=p.dataset.src.split(',');const vs=ks.filter(k=>SRC[k].t).map(k=>`<a href="${V+SRC[k].u}">${SRC[k].t}</a>`).join(' \u00b7 ');
