@@ -1,0 +1,1462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seeing vs. Doing: A Field Guide to Causal Identification</title>
+<meta name="description" content="An interactive guide to DAGs, d-separation, do-calculus, causal discovery, Markov equivalence, and the trap of treating predictive models as causal.">
+<style>
+:root{
+  --ink:#1d1d1f;--ink2:#6e6e73;--line:#d2d2d7;--blue:#0071e3;--blue2:#2997ff;
+  --green:#30d158;--red:#ff453a;--orange:#ff9f0a;--purple:#bf5af2;--teal:#64d2ff;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Inter,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font);color:var(--ink);background:#fff;-webkit-font-smoothing:antialiased;line-height:1.47;font-size:17px;letter-spacing:-.012em}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+h1,h2,h3,h4{margin:0;letter-spacing:-.025em;line-height:1.07;font-weight:600}
+p{margin:0 0 1em}
+.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+.narrow{max-width:760px}
+
+/* nav */
+.gnav{position:sticky;top:0;z-index:50;height:48px;background:rgba(22,22,23,.78);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);color:#f5f5f7}
+.gnav .wrap{display:flex;align-items:center;height:48px;gap:22px}
+.gnav .brand{font-weight:600;font-size:15px;color:#f5f5f7;white-space:nowrap}
+.gnav .links{display:flex;gap:20px;overflow-x:auto;scrollbar-width:none;flex:1;justify-content:flex-end}
+.gnav .links::-webkit-scrollbar{display:none}
+.gnav .links a{color:#d2d2d7;font-size:12px;white-space:nowrap;opacity:.85}
+.gnav .links a:hover,.gnav .links a.on{opacity:1;color:#fff;text-decoration:none}
+#prog{position:absolute;left:0;bottom:0;height:2px;width:0;background:linear-gradient(90deg,var(--blue2),var(--purple))}
+
+/* sections */
+.sec{padding:120px 0;position:relative;overflow:hidden}
+.dark{background:#000;color:#f5f5f7;--ink:#f5f5f7;--ink2:#a1a1a6;--line:#424245;--blue:#2997ff;--card:#161617;--nodefill:#000}
+.light{background:#f5f5f7;--card:#fff;--nodefill:#fff}
+.white{background:#fff;--card:#f5f5f7;--nodefill:#fff}
+.eyebrow{font-size:19px;font-weight:600;color:var(--orange);margin-bottom:10px;letter-spacing:-.01em}
+.dark .eyebrow{color:var(--teal)}
+h2.big{font-size:clamp(40px,6.4vw,80px)}
+h2.mid{font-size:clamp(32px,4.6vw,56px)}
+h3{font-size:28px;margin-bottom:12px}
+h4{font-size:19px;margin-bottom:6px;letter-spacing:-.015em}
+.lead{font-size:clamp(19px,2.1vw,24px);line-height:1.38;color:var(--ink2);font-weight:500;margin-top:22px;max-width:820px}
+.lead b,.lead strong{color:var(--ink)}
+.center{text-align:center}.center .lead{margin-left:auto;margin-right:auto}
+.grad{background:linear-gradient(90deg,#64d2ff,#bf5af2 55%,#ff375f);-webkit-background-clip:text;background-clip:text;color:transparent}
+.grad2{background:linear-gradient(90deg,#ff9f0a,#ff375f);-webkit-background-clip:text;background-clip:text;color:transparent}
+.muted{color:var(--ink2)}
+.small{font-size:14px}
+.mt{margin-top:56px}.mt2{margin-top:28px}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.split{display:grid;grid-template-columns:1.05fr .95fr;gap:36px;align-items:start}
+@media(max-width:900px){.grid2,.grid3,.split{grid-template-columns:1fr}.grid4{grid-template-columns:1fr 1fr}.sec{padding:84px 0}}
+@media(max-width:560px){.grid4{grid-template-columns:1fr}}
+
+.card{background:var(--card);border-radius:28px;padding:32px}
+.card.tight{padding:24px;border-radius:22px}
+.card p:last-child{margin-bottom:0}
+.dark .card{border:1px solid #2a2a2d}
+.stat{font-size:clamp(44px,5.4vw,68px);font-weight:600;letter-spacing:-.035em;line-height:1}
+.stat.red{color:var(--red)}.stat.green{color:var(--green)}.stat.orange{color:var(--orange)}
+.pill{display:inline-block;border-radius:980px;padding:4px 12px;font-size:12px;font-weight:600;letter-spacing:0}
+.pill.open{background:rgba(255,69,58,.14);color:#d70015}.pill.ok{background:rgba(48,209,88,.16);color:#1d8a3a}.pill.blk{background:rgba(110,110,115,.16);color:var(--ink2)}
+.dark .pill.open{color:#ff6961}.dark .pill.ok{color:#30d158}
+.btn{display:inline-block;border:0;border-radius:980px;background:var(--blue);color:#fff;padding:11px 22px;font:inherit;font-size:16px;cursor:pointer}
+.btn:hover{filter:brightness(1.1);text-decoration:none}
+.btn.ghost{background:transparent;color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+.btn.sm{padding:7px 15px;font-size:14px}
+.btn:disabled{opacity:.35;cursor:default}
+.seg{display:inline-flex;background:rgba(120,120,128,.18);border-radius:11px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;color:var(--ink);font:inherit;font-size:14px;font-weight:500;padding:7px 14px;border-radius:8px;cursor:pointer}
+.seg button.on{background:var(--nodefill);box-shadow:0 1px 4px rgba(0,0,0,.18)}
+.dark .seg button.on{background:#48484a}
+label.ctl{display:block;font-size:14px;color:var(--ink2);margin:16px 0 4px}
+label.ctl b{color:var(--ink);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--blue)}
+.chk{display:flex;align-items:center;gap:8px;font-size:15px;margin-top:14px;cursor:pointer}
+canvas{display:block;width:100%}
+.math{font-family:"Times New Roman",Times,serif;font-style:italic;font-size:1.12em;letter-spacing:0}
+.formula{font-family:"Times New Roman",Times,serif;font-size:clamp(20px,2.6vw,30px);text-align:center;padding:26px 16px;border-radius:20px;background:rgba(120,120,128,.12);margin:22px 0;letter-spacing:0;overflow-x:auto}
+.src{font-size:12.5px;color:var(--ink2);margin-top:34px;padding-top:14px;border-top:1px solid var(--line);line-height:1.5}
+.src a{color:var(--blue)}
+details{border-top:1px solid var(--line);padding:16px 0}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;font-weight:600;font-size:19px;list-style:none;display:flex;justify-content:space-between;gap:16px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-weight:400;color:var(--ink2);font-size:24px;line-height:1}
+details[open] summary::after{content:"\2212"}
+details>div{padding-top:12px;color:var(--ink2)}
+details>div b{color:var(--ink)}
+table.t{width:100%;border-collapse:collapse;font-size:15px}
+table.t th,table.t td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink2);font-weight:600}
+.scroll{overflow-x:auto}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(34px);transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+.rv.d1{transition-delay:.12s}.rv.d2{transition-delay:.24s}.rv.d3{transition-delay:.36s}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}.flow line{animation:none!important}}
+
+/* hero */
+.hero{min-height:calc(100vh - 48px);display:flex;align-items:center;justify-content:center;text-align:center;position:relative;padding:80px 0}
+.hero canvas{position:absolute;inset:0;height:100%;opacity:.75}
+.hero .wrap{position:relative}
+.hero h1{font-size:clamp(48px,9vw,112px);letter-spacing:-.04em;line-height:1.02}
+.hero .lead{font-size:clamp(20px,2.5vw,28px);margin:28px auto 0;max-width:760px}
+.hero .cta{margin-top:34px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.chev{margin-top:60px;font-size:13px;color:#86868b;animation:bob 2.2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(8px)}}
+
+/* svg dags */
+svg.dag{width:100%;height:auto;display:block;overflow:visible;color:var(--ink);user-select:none}
+.edge line{stroke:currentColor;stroke-width:2.2;stroke-linecap:round;transition:opacity .5s,stroke .3s}
+.edge polygon{fill:currentColor;transition:opacity .5s}
+.edge{transition:opacity .5s,color .3s}
+.edge.flow line{stroke-dasharray:7 7;animation:dash .7s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-14}}
+.edge.dim{opacity:.16}
+.edge.hl{color:var(--blue)}.edge.hl line{stroke-width:4}
+.edge.bad{color:var(--red)}.edge.good{color:var(--green)}.edge.off{color:#a1a1a6}
+.edge.gone{opacity:0}
+.edge.cut{opacity:.18}.edge.cut line{stroke-dasharray:3 6}
+.node circle{fill:var(--nodefill);stroke:currentColor;stroke-width:2.2;transition:fill .3s,stroke .3s}
+.node .sym{font-weight:600;font-size:16px;fill:currentColor;font-family:var(--font)}
+.node .cap{font-size:12.5px;fill:var(--ink2);font-family:var(--font)}
+.node.click{cursor:pointer}
+.node.click:hover circle{stroke:var(--blue)}
+.node.cond circle{fill:var(--blue);stroke:var(--blue)}.node.cond .sym{fill:#fff}
+.node.tx circle{stroke:var(--orange);stroke-width:3}.node.oc circle{stroke:var(--green);stroke-width:3}
+.node.hid circle{stroke-dasharray:5 5;opacity:.55}.node.hid .sym{opacity:.55}
+.node.do circle{fill:var(--orange);stroke:var(--orange)}.node.do .sym{fill:#000}
+
+/* junction cards */
+.jx .status{display:flex;justify-content:space-between;align-items:center;margin:10px 0 6px;font-size:14px}
+.jx canvas{height:210px;border-radius:14px;background:rgba(120,120,128,.08)}
+.jx .r{font-variant-numeric:tabular-nums;font-weight:600}
+
+/* path list */
+.paths{list-style:none;margin:0;padding:0}
+.paths li{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 12px;border-radius:12px;font-size:15px;cursor:default;transition:background .2s}
+.paths li:hover{background:rgba(0,113,227,.08)}
+.paths .p{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13.5px}
+.paths small{display:block;color:var(--ink2);font-family:var(--font);font-size:12px}
+.verdict{border-radius:18px;padding:18px 20px;margin-top:16px;font-size:15.5px;transition:background .3s}
+.verdict.ok{background:rgba(48,209,88,.14)}.verdict.bad{background:rgba(255,69,58,.12)}.verdict.warn{background:rgba(255,159,10,.16)}
+.verdict b{display:block;font-size:19px;margin-bottom:4px}
+
+/* bars */
+.bar-row{display:grid;grid-template-columns:190px 1fr 90px;gap:14px;align-items:center;margin:14px 0;font-size:15px}
+.bar-row .track{height:26px;border-radius:8px;background:rgba(120,120,128,.14);overflow:hidden}
+.bar-row .fill{height:100%;width:0;border-radius:8px;transition:width 1.6s cubic-bezier(.2,.7,.2,1)}
+.bar-row .v{font-weight:600;text-align:right;font-variant-numeric:tabular-nums}
+@media(max-width:560px){.bar-row{grid-template-columns:1fr 70px}.bar-row .track{grid-column:1/-1;order:3}}
+.zbar{position:relative;height:34px;margin:8px 0 4px}
+.zbar .axis{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--ink2)}
+.zbar .f{position:absolute;top:5px;height:24px;border-radius:6px;transition:all .35s}
+
+.quad{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.quad{grid-template-columns:1fr}}
+.quad .card{border-radius:22px;padding:24px}
+.tag{font-size:12px;font-weight:600;letter-spacing:.03em;text-transform:uppercase}
+.tag.y,.tag .y{color:#1d8a3a}.tag.n,.tag .n{color:#d70015}.dark .tag.y,.dark .tag .y{color:var(--green)}.dark .tag.n,.dark .tag .n{color:var(--red)}.quad .tag{white-space:nowrap}
+.ivrow{display:grid;grid-template-columns:150px 1fr 150px;gap:12px;align-items:center;margin:14px 0;font-size:15px}.ivtrack{position:relative;height:30px;border-radius:8px;background:rgba(120,120,128,.12)}.ivband{position:absolute;top:8px;height:14px;border-radius:7px;transition:all .3s}.ivdot{position:absolute;top:5px;width:4px;height:20px;border-radius:2px;background:var(--ink);transition:left .3s}.ivtruth{position:absolute;top:-4px;bottom:-4px;width:2px;background:#1d8a3a}.ivzero{position:absolute;top:0;bottom:0;width:1px;background:var(--line)}
+@media(max-width:560px){.ivrow{grid-template-columns:1fr}}
+table.reg tr{cursor:pointer;transition:background .2s}table.reg tr:hover td{background:rgba(0,113,227,.06)}table.reg tr.sel td{background:rgba(0,113,227,.10)}table.reg td.num{font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,monospace;font-size:14px}
+table.cmp td.num{font-variant-numeric:tabular-nums;font-weight:600}table.cmp tr.sel td{background:rgba(41,151,255,.14)}table.cmp .win{color:var(--green)}table.cmp .lose{color:var(--red)}
+
+.pipe{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:stretch}
+.pipe .stage{background:var(--card);border-radius:22px;padding:22px}
+.pipe .arrow{display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:12px;color:var(--ink2);text-align:center;min-width:120px;padding:0 4px}
+.pipe .arrow span{font-size:30px;color:var(--ink);line-height:1}
+@media(max-width:900px){.pipe{grid-template-columns:1fr}.pipe .arrow span{transform:rotate(90deg)}}
+
+.mec{cursor:pointer;border:2px solid transparent;transition:border-color .25s,transform .25s}
+.mec:hover{transform:translateY(-3px)}
+.mec.c1.sel{border-color:var(--blue)}.mec.c2.sel{border-color:var(--orange)}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{counter-increment:s;position:relative;padding:14px 0 14px 54px;border-bottom:1px solid var(--line)}
+.steps li::before{content:counter(s);position:absolute;left:0;top:14px;width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--nodefill);display:flex;align-items:center;justify-content:center;font-weight:600}
+.steps li b{display:block;font-size:19px}
+.tl{position:relative;margin-top:40px}
+.tl::before{content:"";position:absolute;left:23px;top:10px;bottom:10px;width:2px;background:linear-gradient(var(--teal),var(--purple),#ff375f)}
+.tl .st{position:relative;padding:0 0 26px 70px}
+.tl .st .n{position:absolute;left:0;top:0;width:48px;height:48px;border-radius:50%;background:#000;border:2px solid var(--teal);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:19px}
+.tl .st h3{font-size:26px;margin-bottom:4px}
+.tl .cols{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:900px){.tl .cols{grid-template-columns:1fr}}
+.tl .cols>div{background:var(--card);border:1px solid #2a2a2d;border-radius:18px;padding:18px 20px;font-size:15px}
+.tl .cols h5{margin:0 0 6px;font-size:12px;letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+.tl ul{margin:0;padding-left:18px}.tl li{margin:4px 0}
+.tl .links{font-size:12.5px;color:var(--ink2);margin-top:10px}
+.router .opts{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.router .trail{font-size:13px;color:var(--ink2);margin-bottom:10px;min-height:20px}
+footer{background:#f5f5f7;color:#6e6e73;font-size:12px;padding:28px 0 50px}
+</style>
+</head>
+<body>
+
+<nav class="gnav">
+  <div class="wrap">
+    <a class="brand" href="#top">Seeing vs. Doing</a>
+    <div class="links">
+      <a href="#trap">The trap</a><a href="#two">Two questions</a><a href="#dags">DAGs</a><a href="#dsep">d-separation</a><a href="#do">do-calculus</a><a href="#ident">Identification</a><a href="#disc">Discovery</a><a href="#mec">Equivalence</a><a href="#summ">Summaries</a><a href="#limits">Limits</a><a href="#target">Targeting</a><a href="#workflow">Workflow</a><a href="faq.html">FAQ</a><a href="#sources">Sources</a>
+    </div>
+  </div>
+  <div id="prog"></div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero dark" id="top">
+  <canvas id="heroC" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="eyebrow rv">A field guide to causal identification</div>
+    <h1 class="rv d1">Seeing is one thing.<br><span class="grad">Doing is another.</span></h1>
+    <p class="lead rv d2">A model can forecast your business beautifully and still point you toward the wrong decision. This guide shows why, using diagrams you can click, drag and break.</p>
+    <div class="cta rv d3"><a class="btn" href="#trap">Start with the trap</a><a class="btn ghost" href="#dsep">Jump to the playground</a></div>
+    <div class="chev">Scroll</div>
+  </div>
+</header>
+
+<!-- ============ 1. THE TRAP ============ -->
+<section class="sec light" id="trap">
+  <div class="wrap">
+    <div class="eyebrow rv">Chapter 1 &middot; The trap</div>
+    <h2 class="big rv">The forecast was excellent. <span class="grad2">The advice was backwards.</span></h2>
+    <div class="split mt">
+      <div class="rv">
+        <p>Dana runs retention for a subscription product. Renewals slipped two points last quarter, the budget review is three weeks out, and she needs to know which levers to pull before she walks into that room.</p>
+        <p>Her team trains a gradient-boosted model on eight customer features. It predicts renewals well, and the explanation chart ranks the drivers neatly: discount, ad spend, bugs reported. So far, so useful.</p>
+        <p>Then the chart says something odd. Bigger discounts go with <em>fewer</em> renewals. Customers who report more bugs renew <em>more</em> often. Read as advice, the model recommends cutting discounts and shipping more bugs.</p>
+        <p>The first fix is the obvious one: control for everything. The team reruns the analysis with double machine learning and all seven other features as controls. The discount effect stays strongly negative, and the interval around it gets tight. The wrong answer now looks more convincing than it did before.</p>
+        <p>What finally settles it is a small randomized test. Discount depth is assigned by coin flip inside each salesperson's book of accounts. The real effect turns out to be small and positive. Salespeople had been offering their deepest discounts to the customers who seemed least interested, and that unrecorded lack of interest was driving both the discount and the cancellation.</p>
+        <p class="small muted">Dana is a dramatization. The numbers come from a simulation in the SHAP documentation where the true causal structure is known by construction, as replicated in the vault.</p>
+      </div>
+      <div>
+        <div class="card rv"><div class="small muted">Plain regression of renewal on discount</div><div class="stat red" data-count="-1.29" data-dec="2">0</div></div>
+        <div class="card rv d1" style="margin-top:16px"><div class="small muted">After adjusting for all 7 observed controls (s.e. 0.05)</div><div class="stat red" data-count="-1.08" data-dec="2">0</div></div>
+        <div class="card rv d2" style="margin-top:16px"><div class="small muted">True effect when you actually change the discount</div><div class="stat green" data-count="0.06" data-dec="2" data-plus="1">0</div></div>
+      </div>
+    </div>
+
+    <div class="card mt rv">
+      <div class="split">
+        <div>
+          <h3>Try it: the discount paradox</h3>
+          <p class="muted">Each dot is a customer. A hidden trait, how much they need the product, raises renewals and also lowers the discount a salesperson offers. Slide the controls and watch what a regression concludes.</p>
+          <div class="seg" id="trapMode"><button class="on" data-v="obs">Observe the business</button><button data-v="rct">Randomize discounts</button></div>
+          <label class="ctl">How strongly hidden need steers discounts: <b id="trapCv">100%</b></label>
+          <input type="range" id="trapC_" min="0" max="100" value="100">
+          <label class="ctl">Customers in the data: <b id="trapNv">800</b></label>
+          <input type="range" id="trapN" min="60" max="6000" step="20" value="800">
+          <label class="chk"><input type="checkbox" id="trapReveal"> Reveal the hidden trait (orange = low need, blue = high need)</label>
+          <div class="grid2" style="margin-top:20px;gap:12px">
+            <div><div class="small muted">Regression says</div><div style="font-size:30px;font-weight:600" id="trapEst">0</div><div class="small muted" id="trapCI"></div></div>
+            <div><div class="small muted">Truth (built into the simulation)</div><div style="font-size:30px;font-weight:600;color:#1d8a3a">+0.30</div><div class="small muted">renewal lift per unit of discount</div></div>
+          </div>
+          <div class="verdict" id="trapVerdict"></div>
+        </div>
+        <div><canvas id="trapC" style="height:440px;border-radius:18px;background:#f5f5f7"></canvas>
+          <div class="small muted" style="margin-top:8px"><span style="color:#d70015">&#9473;</span> fitted line &nbsp; <span style="color:#1d8a3a">&#9476;</span> true causal slope &nbsp; x: discount depth &nbsp; y: renewal likelihood</div></div>
+      </div>
+    </div>
+
+    <div class="grid2 mt">
+      <div class="rv">
+        <h3>More data made it worse</h3>
+        <p>Push the customer slider to the right while observing. The interval shrinks and stays centered on the wrong value. Sample size cures noise. Confounding is a different disease, and precision offers no protection against it.</p>
+        <p>Now switch to randomized discounts. The hidden trait is still there and still matters for renewal, yet the estimate lands on the truth, because a coin flip cannot be influenced by customer need.</p>
+      </div>
+      <div class="card rv d1" id="abBars">
+        <h4>This happens outside simulations</h4>
+        <p class="small muted">A display campaign on the Yahoo! front page, measured two ways. Effect on brand-related searches:</p>
+        <div class="bar-row"><div>Randomized experiment</div><div class="track"><div class="fill" data-w="0.45" style="background:var(--green);min-width:4px"></div></div><div class="v">+5.4%</div></div>
+        <div class="bar-row"><div>Observational, all controls</div><div class="track"><div class="fill" data-w="72.8" style="background:var(--orange)"></div></div><div class="v">+872%</div></div>
+        <div class="bar-row"><div>Observational, no controls</div><div class="track"><div class="fill" data-w="100" style="background:var(--red)"></div></div><div class="v">+1198%</div></div>
+        <p class="small muted">People who saw the ad that day were simply more active online that day. Day, session, page-view and time-spent controls left the estimate roughly 160 times too large.</p>
+      </div>
+    </div>
+    <p class="src" data-src="dillon,dillonu,ab,qa2"></p>
+  </div>
+</section>
+
+<!-- ============ 2. TWO QUESTIONS ============ -->
+<section class="sec dark" id="two">
+  <div class="wrap">
+    <div class="eyebrow rv">Chapter 2 &middot; Two questions</div>
+    <h2 class="big rv">What will happen?<br><span class="grad">What if I step in?</span></h2>
+    <p class="lead rv">These sound alike and they are answered by different mathematics. Mixing them up is the single most expensive habit in analytics.</p>
+    <div class="grid2 mt">
+      <div class="card rv">
+        <div class="tag" style="color:var(--teal)">Prediction task</div>
+        <h3 style="margin-top:8px">Seeing</h3>
+        <div class="formula" style="margin:14px 0">P(Y | X = x)</div>
+        <p class="muted">Among customers who <b style="color:#f5f5f7">happen to have</b> a big discount, how many renew? A predictive model answers this well. It quietly assumes everyone keeps behaving as they did, so the correlations it learned stay put.</p>
+        <p class="muted">Good for: forecasting demand, ranking leads, flagging churn risk, pricing risk.</p>
+      </div>
+      <div class="card rv d1">
+        <div class="tag" style="color:var(--orange)">Causal task</div>
+        <h3 style="margin-top:8px">Doing</h3>
+        <div class="formula" style="margin:14px 0">P(Y | do(X = x))</div>
+        <p class="muted">If we <b style="color:#f5f5f7">set</b> the discount ourselves, how many renew? Stepping in changes who gets what, which breaks the very correlations the predictive model relied on.</p>
+        <p class="muted">Needed for: budget allocation, pricing changes, feature launches, any choice among levers.</p>
+      </div>
+    </div>
+
+    <div class="card mt rv">
+      <div class="split">
+        <div>
+          <h3>Intervention is surgery on the diagram</h3>
+          <p class="muted">Customer need influences the discount a salesperson offers and also influences renewal. When you only watch, association travels along both routes from discount to renewal. When you intervene, you decide the discount, so whatever used to decide it is cut out.</p>
+          <div class="seg" id="surgSeg"><button class="on" data-v="see">See: observe X</button><button data-v="do">Do: set X</button></div>
+          <div class="formula" id="surgF">P(Renewal | Discount)</div>
+          <p class="muted" id="surgT">Two routes are open. The direct arrow carries the real effect. The route through customer need carries a spurious association. A regression blends them.</p>
+        </div>
+        <svg class="dag" id="surgSvg" viewBox="0 0 340 240" role="img" aria-label="Diagram showing customer need pointing to discount and renewal, with discount pointing to renewal"></svg>
+      </div>
+    </div>
+
+    <div class="mt rv narrow">
+      <h3>When is a predictive model enough for a causal question?</h3>
+      <p class="muted">Rarely. In the retention simulation, the explanation chart matched the true effect for exactly one kind of feature: one that is independent of the other features and independent of anything unmeasured that also affects the outcome. Macro-economic conditions behaved that way. Everything a human had a hand in choosing did not.</p>
+      <details><summary>Three ways an explanation chart drifts from the causal effect</summary><div>
+        <p><b>Observed confounding.</b> Ad spend had zero causal effect on renewal and still ranked as a top-three driver, because it moved together with features that do matter. Adjusting for the right measured controls repaired it.</p>
+        <p><b>Redundancy with a downstream feature.</b> Sales calls work partly by creating more product interactions. With both in the model, credit was split and the sales-call effect was understated. Dropping the downstream feature repaired it.</p>
+        <p><b>Unobserved confounding.</b> Discount and bugs reported both depend on unmeasured product need. No diagnostic based on the measured columns flagged them. Only randomization repaired it.</p>
+      </div></details>
+    </div>
+    <p class="src" data-src="dillon,dag"></p>
+  </div>
+</section>
+
+<!-- ============ 3. DAGS ============ -->
+<section class="sec white" id="dags">
+  <div class="wrap">
+    <div class="eyebrow rv">Chapter 3 &middot; Causal diagrams</div>
+    <h2 class="big rv">Draw what you believe.</h2>
+    <p class="lead rv">Data cannot tell you what causes what unless you add a model of how the world works. A <b>directed acyclic graph</b>, or DAG, is that model in its most compact form: circles for variables, arrows for direct causal influence, and no path that loops back to where it started.</p>
+    <div class="grid3 mt">
+      <div class="card rv"><h4>Arrows are modest claims</h4><p class="muted">An arrow from A to B says A <em>may</em> directly affect B. It leaves the size and shape of the effect open.</p></div>
+      <div class="card rv d1"><h4>Missing arrows are bold claims</h4><p class="muted">Leaving an arrow out says there is <em>no</em> direct effect. All the testable content of a diagram lives in the arrows you left out.</p></div>
+      <div class="card rv d2"><h4>Three shapes build everything</h4><p class="muted">Any middle node on any path is a fork, a chain or a collider. Learn how each behaves and you can read any diagram.</p></div>
+    </div>
+
+    <h3 class="mt rv" style="font-size:36px">The three junctions, live</h3>
+    <p class="muted rv narrow">Each panel simulates data from the little diagram above it and plots the two outer variables. Press the button to "condition" on the middle variable, which means looking only at cases where it takes a similar value.</p>
+    <div class="grid3 mt2">
+      <div class="card tight jx rv" data-j="fork">
+        <h4>Fork: a common cause</h4>
+        <svg class="dag" viewBox="0 0 260 78"></svg>
+        <div class="status"><span class="pill"></span><span>correlation <span class="r"></span></span></div>
+        <canvas></canvas>
+        <p class="small muted" style="margin:10px 0">Age drives both shoe size and reading skill. Children with big feet read better until you compare children of the same age.</p>
+        <button class="btn sm ghost">Condition on age</button>
+      </div>
+      <div class="card tight jx rv d1" data-j="chain">
+        <h4>Chain: a mediator</h4>
+        <svg class="dag" viewBox="0 0 260 78"></svg>
+        <div class="status"><span class="pill"></span><span>correlation <span class="r"></span></span></div>
+        <canvas></canvas>
+        <p class="small muted" style="margin:10px 0">A drug improves recovery by lowering blood pressure. Hold blood pressure fixed and the drug appears to do nothing.</p>
+        <button class="btn sm ghost">Condition on blood pressure</button>
+      </div>
+      <div class="card tight jx rv d2" data-j="coll">
+        <h4>Collider: a common effect</h4>
+        <svg class="dag" viewBox="0 0 260 78"></svg>
+        <div class="status"><span class="pill"></span><span>correlation <span class="r"></span></span></div>
+        <canvas></canvas>
+        <p class="small muted" style="margin:10px 0">Sport and study are unrelated. Both can win a bursary. Among bursary winners, weaker athletes must be stronger students.</p>
+        <button class="btn sm ghost">Look only at bursary winners</button>
+      </div>
+    </div>
+    <div class="scroll mt rv">
+      <table class="t">
+        <tr><th>Junction</th><th>Shape</th><th>Left alone</th><th>Conditioned on the middle</th><th>What it means for analysis</th></tr>
+        <tr><td><b>Fork</b></td><td class="math">A &larr; B &rarr; C</td><td>Open (spurious link)</td><td>Blocked</td><td>Adjust for common causes of treatment and outcome.</td></tr>
+        <tr><td><b>Chain</b></td><td class="math">A &rarr; B &rarr; C</td><td>Open (real effect flows)</td><td>Blocked</td><td>Leave mediators alone if you want the total effect.</td></tr>
+        <tr><td><b>Collider</b></td><td class="math">A &rarr; B &larr; C</td><td>Blocked</td><td>Open (spurious link created)</td><td>Never adjust for, or select on, a common effect.</td></tr>
+      </table>
+    </div>
+    <div class="mt2 rv narrow">
+      <p>Notice that the fork and the chain produce the same pattern in data: linked when left alone, unlinked after conditioning. Numbers alone cannot tell them apart. That fact returns with force in the chapter on equivalence classes.</p>
+      <p>Notice also what the collider does to the popular instinct that more control variables are always safer. Adding a collider to a regression manufactures an association that was never there. This kind of selection effect is often called Berkson's bias.</p>
+    </div>
+    <p class="src" data-src="dag,dagci"></p>
+  </div>
+</section>
+
+<!-- ============ 4. D-SEPARATION ============ -->
+<section class="sec light" id="dsep">
+  <div class="wrap">
+    <div class="eyebrow rv">Chapter 4 &middot; d-separation</div>
+    <h2 class="big rv">Which paths are open?</h2>
+    <p class="lead rv"><b>d-separation</b> is the rulebook for reading independence off a diagram. A path is blocked when it contains a fork or chain whose middle node you conditioned on, or a collider that you left alone along with everything downstream of it. Two variables are d-separated when every path between them is blocked.</p>
+
+    <div class="card mt rv">
+      <h3>The adjustment playground</h3>
+      <p class="muted" style="max-width:780px">You want the effect of <b style="color:var(--orange)">ad spend</b> on <b style="color:#1d8a3a">sales</b>. Click any other node to add it to your control set. The goal: close every non-causal path while leaving the causal ones untouched.</p>
+      <div class="split" style="margin-top:14px">
+        <div>
+          <svg class="dag" id="dsSvg" viewBox="0 0 720 450" role="img" aria-label="Interactive causal diagram"></svg>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+            <button class="btn sm ghost" data-ds="">Clear</button>
+            <button class="btn sm ghost" data-ds="D">Demand only</button>
+            <button class="btn sm ghost" data-ds="S,D">Season + Demand</button>
+            <button class="btn sm ghost" data-ds="S,E,D,M,W">Kitchen sink</button>
+          </div>
+          <label class="chk"><input type="checkbox" id="dsHide"> Consumer demand was never measured</label>
+        </div>
+        <div>
+          <div class="small muted" style="margin-bottom:6px">Every path from ad spend to sales. Hover to trace.</div>
+          <ul class="paths" id="dsPaths"></ul>
+          <div class="verdict" id="dsVerdict"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2 mt">
+      <div class="rv">
+        <h3>What to try</h3>
+        <p><b>Demand only.</b> It closes three backdoor paths and opens a fourth. Demand is a common cause on some paths and a collider on the path between season and economy. One variable, two roles.</p>
+        <p><b>Kitchen sink.</b> Controlling for site visits blocks part of the effect you came to measure. Controlling for loyalty sign-ups, a common effect of ads and sales, opens a brand new spurious path.</p>
+        <p><b>Unmeasured demand.</b> Tick the box and search for a set that works. There is none. That is what "not identified from the data on hand" looks like, and no estimator can repair it.</p>
+      </div>
+      <div class="rv d1">
+        <h3>The backdoor criterion</h3>
+        <p>A <b>backdoor path</b> is any path that begins with an arrow pointing <em>into</em> the treatment. Those paths carry confounding. A set of controls is a valid adjustment set when it</p>
+        <ol style="padding-left:20px"><li>blocks every backdoor path,</li><li>contains nothing downstream of the treatment, and</li><li>opens no new path by conditioning on a collider.</li></ol>
+        <p>Several valid sets can exist, and the smallest one is usually preferred. The set is a tool for one arrow only: it identifies the effect of the treatment, and says nothing reliable about the coefficients of the controls themselves.</p>
+      </div>
+    </div>
+    <details class="mt2"><summary>The formal definition</summary><div>
+      <p>For disjoint sets of nodes <span class="math">X</span>, <span class="math">Y</span>, <span class="math">S</span>: <span class="math">X</span> is d-separated from <span class="math">Y</span> given <span class="math">S</span> when every path between a member of <span class="math">X</span> and a member of <span class="math">Y</span> is blocked by <span class="math">S</span>. A path is blocked if (1) it contains a non-collider that is in <span class="math">S</span>, or (2) it contains a collider that is outside <span class="math">S</span> and has no descendant in <span class="math">S</span>.</p>
+      <p><b>Causal Markov assumption:</b> every d-separation in the graph implies the matching conditional independence in the data-generating distribution. <b>Faithfulness:</b> the only independencies in the distribution are the ones d-separation implies, so no effects cancel out by coincidence. Markov lets you go from graph to data. Faithfulness lets you go back.</p>
+    </div></details>
+    <details><summary>A note on one worked example in the vault</summary><div>
+      <p>The vault's DAG notes reproduce a tutorial example in which a collider <span class="math">W</span> sits between treatment and outcome (<span class="math">X &rarr; W &larr; Y</span>) and the listed adjustment sets include <span class="math">W</span>. This page follows the standard backdoor criterion instead, under which a common effect of treatment and outcome should be left out of the adjustment set. The playground above lets you see the bias that appears when it is included.</p>
+    </div></details>
+    <p class="src" data-src="dagci,dag,mf,lra"></p>
+  </div>
+</section>
+
+<!-- ============ 5. DO-CALCULUS ============ -->
+<section class="sec dark" id="do">
+  <div class="wrap">
+    <div class="eyebrow rv">Chapter 5 &middot; do-calculus</div>
+    <h2 class="big rv">Turning <span class="grad">do</span> into <span class="grad">see</span>.</h2>
+    <p class="lead rv">You have observational data, which speaks the language of seeing. Your question is about doing. <b>do-calculus</b> is a small set of rewriting rules that translates one into the other whenever the diagram allows it, and tells you honestly when it cannot be done.</p>
+
+    <div class="formula mt rv">P(Y | do(X = x)) &nbsp;=&nbsp; &Sigma;<sub>z</sub> &nbsp;P(Y | X = x, Z = z) &middot; P(Z = z)</div>
+    <p class="center muted rv">The backdoor adjustment formula. The left side is about an intervention nobody ran. The right side contains only quantities you can measure. In words: compare like with like inside each group of <span class="math">Z</span>, then average the groups by how common they are in the whole population.</p>
+
+    <div class="card mt rv">
+      <div class="split">
+        <div>
+          <h3>Backdoor calculator</h3>
+          <p class="muted">Two kinds of customer: high need and low need. In both groups a discount truly lifts renewal by 10 points. Change who receives discounts and compare the naive comparison with the adjusted one.</p>
+          <label class="ctl">Share of customers with high need: <b id="bdPzv"></b></label><input type="range" id="bdPz" min="5" max="95" value="50">
+          <label class="ctl">High-need customers who get a discount: <b id="bdAv"></b></label><input type="range" id="bdA" min="0" max="100" value="20">
+          <label class="ctl">Low-need customers who get a discount: <b id="bdBv"></b></label><input type="range" id="bdB" min="0" max="100" value="80">
+          <div class="scroll" style="margin-top:16px"><table class="t small" id="bdTable"></table></div>
+        </div>
+        <div>
+          <div class="small muted">Naive: renewal with discount minus renewal without</div>
+          <div class="zbar"><div class="axis"></div><div class="f" id="bdNaiveBar"></div></div>
+          <div style="font-size:30px;font-weight:600" id="bdNaive"></div>
+          <div class="small muted" style="margin-top:22px">Backdoor adjusted: stratify by need, then reweight</div>
+          <div class="zbar"><div class="axis"></div><div class="f" id="bdAdjBar" style="background:var(--green)"></div></div>
+          <div style="font-size:30px;font-weight:600;color:var(--green)" id="bdAdj"></div>
+          <div class="verdict" id="bdVerdict"></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="mt rv" style="font-size:36px">The three rules, in plain language</h3>
+    <div class="grid3 mt2">
+      <div class="card rv"><div class="tag" style="color:var(--teal)">Rule 1</div><h4 style="margin-top:6px">When an observation can be ignored</h4><p class="muted">If, in the diagram with arrows into the intervened variables removed, some observed variable is d-separated from the outcome, you may add or drop it from the conditioning without changing the answer.</p></div>
+      <div class="card rv d1"><div class="tag" style="color:var(--purple)">Rule 2</div><h4 style="margin-top:6px">When doing equals seeing</h4><p class="muted">If the only connection left between a variable and the outcome runs through its outgoing arrows, then setting it and observing it give the same result. Every backdoor is already closed. This is the rule behind adjustment.</p></div>
+      <div class="card rv d2"><div class="tag" style="color:var(--orange)">Rule 3</div><h4 style="margin-top:6px">When an action can be ignored</h4><p class="muted">If, once the relevant incoming arrows are removed, an intervened variable has no remaining route to the outcome, the intervention is irrelevant and can be deleted from the expression.</p></div>
+    </div>
+    <div class="mt rv narrow">
+      <p>Apply the rules in any order. If you can reach an expression with no <span class="math">do</span> in it, the effect is <b>identified</b>: it is a function of the observable distribution. The rules are also complete. When no sequence of them removes the <span class="math">do</span>, the effect cannot be computed from observational data under that diagram by any method at all.</p>
+      <details><summary>The rules, stated formally</summary><div>
+        <p>Write <span class="math">G<sub>X&#773;</sub></span> for the graph with arrows into <span class="math">X</span> removed and <span class="math">G<sub>Z&#818;</sub></span> for the graph with arrows out of <span class="math">Z</span> removed.</p>
+        <p><b>Rule 1.</b> <span class="math">P(y | do(x), z, w) = P(y | do(x), w)</span> if <span class="math">Y &perp; Z | X, W</span> in <span class="math">G<sub>X&#773;</sub></span>.</p>
+        <p><b>Rule 2.</b> <span class="math">P(y | do(x), do(z), w) = P(y | do(x), z, w)</span> if <span class="math">Y &perp; Z | X, W</span> in <span class="math">G<sub>X&#773; Z&#818;</sub></span>.</p>
+        <p><b>Rule 3.</b> <span class="math">P(y | do(x), do(z), w) = P(y | do(x), w)</span> if <span class="math">Y &perp; Z | X, W</span> in the graph with arrows into <span class="math">X</span> removed and arrows into those <span class="math">Z</span>-nodes that are not ancestors of any <span class="math">W</span>-node removed.</p>
+      </div></details>
+      <details><summary>Beyond the backdoor: the front door</summary><div>
+        <p>Sometimes the confounder is unmeasured and adjustment is impossible, yet the effect is still identified. If the treatment works entirely through a measured mediator <span class="math">M</span> that is itself shielded from the confounder, do-calculus yields the front-door formula:</p>
+        <p class="math" style="text-align:center">P(y | do(x)) = &Sigma;<sub>m</sub> P(m | x) &Sigma;<sub>x&prime;</sub> P(y | m, x&prime;) P(x&prime;)</p>
+        <p>The vault flags the front-door criterion as a gap in its own coverage, so treat this paragraph as general background from Pearl's <em>Causality</em>.</p>
+      </div></details>
+    </div>
+    <p class="src" data-src="dag,dosum,qa1,pearl"></p>
+  </div>
+</section>
+
+<!-- ============ 6. IDENTIFICATION ============ -->
+<section class="sec white" id="ident">
+  <div class="wrap">
+    <div class="eyebrow rv">Chapter 6 &middot; Identification</div>
+    <h2 class="big rv">Two locks. Two different keys.</h2>
+    <p class="lead rv">"Is it identified?" hides two separate questions. One is about your <b>assumptions</b>. The other is about your <b>data and model</b>. An analysis must pass both, and passing one tells you nothing about the other.</p>
+
+    <div class="pipe mt rv">
+      <div class="stage"><div class="tag" style="color:var(--orange)">What you want</div><h4 style="margin-top:6px">Causal quantity</h4><p class="muted small">The effect of setting ad spend, written with <span class="math">do</span> or with potential outcomes. It lives outside any statistical model.</p></div>
+      <div class="arrow"><b>Causal identification</b><span>&rarr;</span>needs a diagram and assumptions</div>
+      <div class="stage"><div class="tag" style="color:var(--purple)">What data could show</div><h4 style="margin-top:6px">Statistical quantity</h4><p class="muted small">A function of the distribution of observed variables, such as an adjusted difference in means.</p></div>
+      <div class="arrow"><b>Statistical identification</b><span>&rarr;</span>needs variation and a well-posed model</div>
+      <div class="stage"><div class="tag" style="color:#1d8a3a">What you report</div><h4 style="margin-top:6px">Estimate</h4><p class="muted small">A number with uncertainty, computed from a finite sample. Estimation error shrinks with more data. Failures at the two locks do not.</p></div>
+    </div>
+
+    <div class="grid2 mt">
+      <div class="rv">
+        <h3>Causal identification</h3>
+        <p>Imagine unlimited data on every variable you measured. Could the causal quantity be computed? If yes, it is causally identified. The answer depends on the diagram: which backdoor paths exist and whether measured variables can block them.</p>
+        <p>It is untestable from the data alone. Two diagrams with opposite causal conclusions can fit the same spreadsheet equally well.</p>
+      </div>
+      <div class="rv d1">
+        <h3>Statistical identification</h3>
+        <p>A parameter is statistically identified when different values of it produce different distributions of observable data. If two values fit every possible dataset equally well, no amount of data separates them.</p>
+        <p>This one concerns variation. Two channels that always move together, a treatment nobody in some group ever received, a model with more free knobs than the data can turn.</p>
+      </div>
+    </div>
+
+    <div class="quad mt">
+      <div class="card rv"><div class="tag y">Causal: yes &nbsp;&middot;&nbsp; Statistical: yes</div><h4 style="margin-top:8px">The estimate means what you think</h4><p class="muted small">A randomized test with enough spread in the treatment. Or an observational study with a defensible adjustment set and real overlap.</p></div>
+      <div class="card rv d1"><div class="tag"><span class="y">Causal: yes</span> <span class="muted">&nbsp;&middot;&nbsp;</span> <span class="n">Statistical: no</span></div><h4 style="margin-top:8px">Right question, no leverage</h4><p class="muted small">The diagram says adjusting for season is enough, yet TV only ever ran in December. The formula asks about TV in June, and June has no TV. The slider below shows the collinear version.</p></div>
+      <div class="card rv"><div class="tag"><span class="n">Causal: no</span> <span class="muted">&nbsp;&middot;&nbsp;</span> <span class="y">Statistical: yes</span></div><h4 style="margin-top:8px">A precise answer to a different question</h4><p class="muted small">The discount coefficient: standard error 0.05, wrong sign. The regression pinned down an association perfectly well. It was never the causal effect.</p></div>
+      <div class="card rv d1"><div class="tag n">Causal: no &nbsp;&middot;&nbsp; Statistical: no</div><h4 style="margin-top:8px">Nothing to stand on</h4><p class="muted small">Confounded channels that are also flighted together. Any number reported here reflects the modeler's choices more than the market.</p></div>
+    </div>
+
+    <div class="card mt rv">
+      <div class="split">
+        <div>
+          <h3>The ridge: when two channels move together</h3>
+          <p class="muted">TV and online video are planned as a package. The true effects are 1.0 and 0.5. As their spend becomes more correlated, the data can still pin down the <em>total</em>, while the split between them dissolves.</p>
+          <label class="ctl">Correlation between the two spends: <b id="rgRv"></b></label><input type="range" id="rgR" min="0" max="999" value="300">
+          <label class="ctl">Weeks of data: <b id="rgNv"></b></label><input type="range" id="rgN" min="52" max="1040" step="4" value="156">
+          <table class="t" style="margin-top:14px">
+            <tr><th>Quantity</th><th>Truth</th><th>What data allows (95%)</th></tr>
+            <tr><td>TV effect</td><td>1.0</td><td id="rg1"></td></tr>
+            <tr><td>Video effect</td><td>0.5</td><td id="rg2"></td></tr>
+            <tr><td><b>TV + Video</b></td><td>1.5</td><td id="rg3" style="font-weight:600"></td></tr>
+          </table>
+        </div>
+        <div><canvas id="rgC" style="height:400px;border-radius:18px;background:#fff"></canvas>
+          <div class="small muted" style="margin-top:8px">Blue region: combinations of the two effects the data cannot rule out. Dot: truth. Dashed line: every split with the same total.</div></div>
+      </div>
+    </div>
+
+    <div class="mt rv narrow">
+      <h3>A warning for Bayesian models</h3>
+      <p>A Bayesian model returns a posterior for every parameter, identified or otherwise. For a parameter the data cannot inform, the posterior is the prior with extra steps, and it stays that way at any sample size. A useful test: does this posterior keep depending heavily on the prior as data grows? If so, the parameter is weakly or partially identified, and honest reporting separates it from the parameters the data actually speak to. That practice has a name, transparent parametrization.</p>
+      <details><summary>The conditions adjustment needs, all three</summary><div>
+        <p><b>Conditional independence:</b> given the controls, treatment is as good as randomly assigned. <b>Sufficiency:</b> the controls block every backdoor path. <b>Overlap:</b> within every combination of controls, both treated and untreated cases occur. The first two are causal identification. The third is statistical identification. Regression will return a number when any of them fails.</p>
+      </div></details>
+      <details><summary>Adjusting for precision versus adjusting for identification</summary><div>
+        <p>The arithmetic of "controlling for" a variable is the same everywhere. Its job depends on one design fact: did a randomizer assign the treatment? If yes, controls only soak up noise, the estimate is unbiased with or without them, and the best controls are whatever predicts the outcome well. If no, the controls <em>are</em> the identification argument, a missing one creates a bias that never shrinks, and they must be chosen from the diagram instead of from goodness of fit. In both cases, variables measured after the treatment stay out.</p>
+      </div></details>
+    </div>
+    <p class="src" data-src="gen,lra,qa2,sens"></p>
+  </div>
+</section>
+
+<!-- ============ 7. DISCOVERY ============ -->
+<section class="sec light" id="disc">
+  <div class="wrap">
+    <div class="eyebrow rv">Chapter 7 &middot; Causal discovery</div>
+    <h2 class="big rv">Can data draw the diagram for you?</h2>
+    <p class="lead rv">Partly. <b>Causal discovery</b> algorithms search observational data for the footprints that causal structure leaves behind. They can recover a surprising amount, and they stop at a well-defined wall.</p>
+
+    <div class="card mt rv">
+      <div class="split">
+        <div>
+          <h3>The PC algorithm, step by step</h3>
+          <p class="muted">The hidden truth: <span class="math">X &rarr; Z &larr; Y</span> and <span class="math">Z &rarr; W</span>. PC starts by assuming everything is connected, then lets independence tests chip edges away.</p>
+          <div class="verdict warn" id="pcText" style="min-height:150px"></div>
+          <div style="display:flex;gap:8px;margin-top:14px;align-items:center">
+            <button class="btn sm ghost" id="pcBack">Back</button><button class="btn sm" id="pcNext">Next step</button>
+            <span class="small muted" id="pcStep"></span>
+          </div>
+        </div>
+        <svg class="dag" id="pcSvg" viewBox="0 0 480 290" role="img" aria-label="PC algorithm animation"></svg>
+      </div>
+    </div>
+
+    <div class="grid2 mt">
+      <div class="rv">
+        <h3>The two assumptions underneath</h3>
+        <p><b>Causal Markov.</b> If the diagram says two variables are d-separated, the data show them independent.</p>
+        <p><b>Faithfulness.</b> Every independence in the data comes from the diagram's structure. If a direct effect and an indirect effect happened to cancel exactly, the data would show independence, the algorithm would delete a real arrow, and nothing would warn you.</p>
+        <p>PC adds a third: no unmeasured common causes. Its cousin FCI relaxes that and marks edges where a hidden confounder may be present.</p>
+      </div>
+      <div class="rv d1">
+        <h3>Three families of methods</h3>
+        <div class="scroll"><table class="t small">
+          <tr><th>Method</th><th>Idea</th><th>Hidden confounders</th><th>Returns</th></tr>
+          <tr><td><b>PC</b></td><td>Independence tests</td><td>Assumed absent</td><td>Equivalence class</td></tr>
+          <tr><td><b>FCI</b></td><td>Independence tests</td><td>Tolerated</td><td>Partial ancestral graph</td></tr>
+          <tr><td><b>GES</b></td><td>Greedy search on a fit score such as BIC</td><td>Assumed absent</td><td>Equivalence class</td></tr>
+          <tr><td><b>LiNGAM, ANM</b></td><td>Asymmetry in the noise</td><td>Assumed absent</td><td>A single DAG, under extra assumptions</td></tr>
+          <tr><td><b>NOTEARS</b></td><td>Smooth optimization with an acyclicity penalty</td><td>Assumed absent</td><td>A weighted DAG</td></tr>
+        </table></div>
+        <p class="small muted" style="margin-top:10px">With unlimited data, PC and GES arrive at the same equivalence class. Bootstrapping shows which edges are stable, and a stable edge can still be wrong.</p>
+      </div>
+    </div>
+    <p class="src" data-src="cdo,pc,ges,mf,notears"></p>
+  </div>
+</section>
+
+<!-- ============ 8. MEC ============ -->
+<section class="sec white" id="mec">
+  <div class="wrap">
+    <div class="eyebrow rv">Chapter 8 &middot; Markov equivalence</div>
+    <h2 class="big rv">Different stories. Identical data.</h2>
+    <p class="lead rv">Several diagrams can imply exactly the same set of independencies. They form a <b>Markov equivalence class</b>, and independence-based discovery can identify the class and go no further. Click a diagram to see who shares its class.</p>
+    <div class="grid4 mt" id="mecGrid"></div>
+    <div class="card mt2 rv" id="mecInfo"></div>
+
+    <div class="grid2 mt">
+      <div class="rv">
+        <h3>What a class has in common</h3>
+        <p>Two DAGs are Markov equivalent exactly when they share</p>
+        <ol style="padding-left:20px"><li>the same <b>skeleton</b>: the same pairs joined by an edge, ignoring direction, and</li><li>the same <b>v-structures</b>: colliders <span class="math">A &rarr; B &larr; C</span> whose two parents are not joined to each other.</li></ol>
+        <p>The class is drawn as a <b>CPDAG</b>. Arrows appear where every member agrees. Plain lines appear where members disagree, and each plain line is a direction the data on hand does not identify.</p>
+      </div>
+      <div class="rv d1">
+        <h3>Why it matters for decisions</h3>
+        <p>Does awareness drive search interest, or does search interest drive awareness? If both orientations sit in the same class, the two diagrams fit your data identically and recommend different interventions.</p>
+        <p>Breaking the tie takes something from outside the independence pattern: an experiment, timing, domain knowledge, or stronger assumptions about how the data were generated.</p>
+      </div>
+    </div>
+
+    <div class="card mt rv">
+      <div class="split">
+        <div>
+          <h3>Escaping the class with noise</h3>
+          <p class="muted">Truth: <span class="math">X</span> causes <span class="math">Y</span>. Fit a line in each direction and plot what is left over against the predictor. In the true direction the leftovers should be unrelated to the predictor.</p>
+          <div class="seg" id="lgSeg"><button class="on" data-v="gauss">Bell-curve noise</button><button data-v="unif">Flat (uniform) noise</button></div>
+          <p class="muted mt2" id="lgText"></p>
+          <p class="small muted">This is the idea behind LiNGAM. It buys a direction at the price of assumptions: linear effects, non-Gaussian noise, no hidden confounder between the pair. If the assumed form is wrong, the result can mislead.</p>
+        </div>
+        <div class="grid2" style="gap:12px">
+          <div><div class="small" style="font-weight:600">Assume X &rarr; Y <span class="muted">(true)</span></div><canvas id="lgA" style="height:230px;border-radius:14px;background:#fff"></canvas><div class="small" id="lgAs"></div></div>
+          <div><div class="small" style="font-weight:600">Assume Y &rarr; X <span class="muted">(false)</span></div><canvas id="lgB" style="height:230px;border-radius:14px;background:#fff"></canvas><div class="small" id="lgBs"></div></div>
+        </div>
+      </div>
+    </div>
+    <p class="src" data-src="mf,pc,fcm"></p>
+  </div>
+</section>
+
+<!-- ============ 9. SUMMARY DAGS ============ -->
+<section class="sec dark" id="summ">
+  <div class="wrap">
+    <div class="eyebrow rv">Chapter 9 &middot; Summarizing causal DAGs</div>
+    <h2 class="big rv">Zoom out <span class="grad">without lying.</span></h2>
+    <p class="lead rv">Real diagrams grow to dozens of nodes, and nobody can reason over that in a meeting. A <b>summary causal DAG</b> groups related variables into clusters to make a smaller diagram that is still safe for causal reasoning.</p>
+
+    <div class="card mt rv">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+        <div><h3 style="margin:0">A media diagram, contracted</h3><div class="muted small" id="smCount"></div></div>
+        <div class="seg" id="smSeg"><button class="on" data-v="0">Full diagram</button><button data-v="1">Summary</button></div>
+      </div>
+      <svg class="dag" id="smSvg" viewBox="0 0 820 440" style="margin-top:10px" role="img" aria-label="Animation of a detailed DAG contracting to a summary DAG"></svg>
+      <p class="small muted">An illustrative diagram made for this page. The paper behind this chapter works a cloud-database example that goes from 12 nodes and 23 edges to 5 nodes and 9 edges.</p>
+    </div>
+
+    <div class="grid3 mt">
+      <div class="card rv"><h4>Merging means adding edges</h4><p class="muted">Contracting two nodes makes the cluster a neighbor of everything either one touched. Since a diagram's claims live in its missing arrows, a summary claims less than the original. It can lose detail and it cannot invent an independence.</p></div>
+      <div class="card rv d1"><h4>A summary stands for many diagrams</h4><p class="muted">Every fine-grained DAG that could collapse into the summary is "compatible" with it. A statement read off the summary is trusted only if it holds in all of them. The test for that is called <b>s-separation</b>: expand the clusters into their most connected version, then apply ordinary d-separation.</p></div>
+      <div class="card rv d2"><h4>do-calculus still works</h4><p class="muted">The three rules are sound and complete on summary DAGs. An effect identified in the summary is valid for every compatible diagram, so adjustment sets can be chosen at cluster level.</p></div>
+    </div>
+    <div class="mt rv narrow">
+      <p>There is a price. Finding the summary that adds the fewest edges for a given size is NP-hard, so practical tools use a greedy search. And a conservative summary may fail to show an independence that the detailed diagram does contain. You trade resolution for a diagram a room full of people can actually check, which also makes it more forgiving of a few wrong edges in the detailed version.</p>
+      <details><summary>What a valid summary must respect</summary><div>
+        <p><b>Size:</b> at most <span class="math">k</span> cluster nodes, with <span class="math">k</span> chosen by the user. <b>Dependencies preserved:</b> a directed connection in the original still appears between the corresponding clusters. <b>No spurious independence:</b> the summary never implies a conditional independence that the original does not. Clusters must also keep the diagram acyclic, which is why the example above groups variables that sit at the same stage of the funnel.</p>
+      </div></details>
+    </div>
+    <p class="src" data-src="sum,ssep,dosum"></p>
+  </div>
+</section>
+
+<!-- ============ 10. LIMITS ============ -->
+<section class="sec white" id="limits">
+  <div class="wrap">
+    <div class="eyebrow rv">Chapter 10 &middot; Honest limits</div>
+    <h2 class="big rv">What the data on hand <span class="grad2">cannot tell you.</span></h2>
+    <p class="lead rv">Mature causal work includes a list of things it does not know. Saying "this is not identified" is a finding, and it is usually the finding that saves the most money.</p>
+    <div class="grid3 mt">
+      <div class="card rv"><h4>Effects behind a hidden common cause</h4><p class="muted small">If a variable drives both the treatment and the outcome and you have no column for it, no adjustment set exists. Controls that are loosely related to it remove a fraction of the bias. In the retention example they removed about a sixth.</p></div>
+      <div class="card rv d1"><h4>Directions inside an equivalence class</h4><p class="muted small">Every plain line in a CPDAG is a question the independence pattern leaves open. A discovery algorithm that prints a fully directed graph from such data has made a choice for you.</p></div>
+      <div class="card rv d2"><h4>The effect for one individual</h4><p class="muted small">Each customer is seen either with the discount or without it, never both. Individual effects are unobservable in principle. Averages over groups are the most that can be identified.</p></div>
+      <div class="card rv"><h4>The other coefficients in the table</h4><p class="muted small">Controls are chosen to identify one arrow. Reading their coefficients as effects is the "Table 2 fallacy". In one simulation, 90% intervals for a confounded control contained the truth 0 to 1% of the time, and coverage fell as the sample grew from 2,500 to 10,000. The close-up below shows why.</p></div>
+      <div class="card rv d1"><h4>Effects where nothing varied</h4><p class="muted small">If a channel has only ever run at one spend level, or only alongside another channel, its separate effect at other levels is extrapolation from the model's functional form.</p></div>
+      <div class="card rv d2"><h4>Whether the diagram is right</h4><p class="muted small">"No unmeasured confounding" holds by design in a randomized experiment and cannot be tested in observational data. Some implications of a diagram can be checked. Its core causal claims rest on knowledge from outside the dataset.</p></div>
+    </div>
+
+
+    <div id="table2" class="mt">
+      <h3 class="rv" style="font-size:36px">Close-up: the Table 2 fallacy</h3>
+      <p class="lead rv" style="margin-top:10px">A regression prints a coefficient for every variable you put in it, with a standard error and a row of stars beside each one. Only one of those rows was designed to answer a causal question. The rest are scaffolding, and reading them as findings is one of the most common errors in applied analytics.</p>
+      <div class="split mt2">
+        <div class="rv">
+          <p>The name comes from epidemiology, where "Table 1" describes the sample and "Table 2" lists the full regression output. It works like this. You want the effect of TV on sales, so you pick controls that close TV's backdoor paths. The TV row now means something. Then the deck goes to a client, and someone asks what the model says about price, about promotions, about competitor activity. The numbers are right there in the table, each with its own stars, so they get read out as effects too.</p>
+          <p>Each of those controls would need its own diagram and its own adjustment set to earn a causal reading. The set that works for TV was never chosen to work for them, and three separate things go wrong.</p>
+          <ol style="padding-left:20px">
+            <li><b>Their own backdoors are still open.</b> Competitor price is driven by category demand, which also drives your sales. Nothing in the model blocks that path, because blocking it was never needed for TV.</li>
+            <li><b>You have blocked part of their effect.</b> If seasonality shapes sales partly by shaping how much TV gets bought, then holding TV fixed removes that route. The seasonality row shows a direct effect only, and the total effect is something else.</li>
+            <li><b>Each row may be a different kind of quantity.</b> One coefficient is a total effect, another a direct effect, a third a pure association. They sit in one column and look comparable. Ranking them against each other is meaningless.</li>
+          </ol>
+        </div>
+        <div class="card rv d1">
+          <h4>A typical results table. Click a row.</h4>
+          <div class="scroll"><table class="t reg" id="t2Reg">
+            <tr><th>Variable</th><th>Coef.</th><th>Std. err.</th><th></th></tr>
+            <tr data-k="tv"><td><b>TV spend</b></td><td class="num">0.48</td><td class="num">0.06</td><td>***</td></tr>
+            <tr data-k="price"><td>Competitor price</td><td class="num">0.37</td><td class="num">0.05</td><td>***</td></tr>
+            <tr data-k="promo"><td>Promotion depth</td><td class="num">0.22</td><td class="num">0.07</td><td>**</td></tr>
+            <tr data-k="season"><td>Seasonality index</td><td class="num">0.09</td><td class="num">0.04</td><td>*</td></tr>
+            <tr data-k="search"><td>Branded search</td><td class="num">0.61</td><td class="num">0.05</td><td>***</td></tr>
+          </table></div>
+          <div class="verdict" id="t2RegV" style="min-height:120px"></div>
+          <p class="small muted" style="margin-top:10px">Illustrative numbers. The readings follow the diagram used in the simulator below.</p>
+        </div>
+      </div>
+
+      <div class="card mt rv">
+        <div class="split">
+          <div>
+            <h3>See it fail</h3>
+            <p class="muted">One regression, two rows. <b>Ad spend</b> truly moves sales by +0.50. <b>Competitor price</b> truly does nothing here, and it is in the model because it influences ad spend and so closes a backdoor. Unmeasured category demand pushes competitor price and sales at the same time.</p>
+            <svg class="dag" id="t2Svg" viewBox="0 0 360 210" style="max-width:380px"></svg>
+            <label class="ctl">How strongly hidden demand moves competitor price: <b id="t2Av"></b></label><input type="range" id="t2A" min="0" max="100" value="80">
+            <label class="ctl">Weeks of data: <b id="t2Nv"></b></label><input type="range" id="t2N" min="60" max="6000" step="20" value="400">
+          </div>
+          <div>
+            <div class="small muted">90% intervals from one regression of sales on both variables. Green tick marks the truth.</div>
+            <div class="ivrow"><div><b>Ad spend</b><div class="small muted">the treatment</div></div><div class="ivtrack" id="t2X"></div><div class="small" id="t2Xs"></div></div>
+            <div class="ivrow"><div><b>Competitor price</b><div class="small muted">a control</div></div><div class="ivtrack" id="t2Z"></div><div class="small" id="t2Zs"></div></div>
+            <div style="display:flex;gap:12px;align-items:center;margin-top:18px;flex-wrap:wrap"><button class="btn sm" id="t2Run">Repeat the study 300 times</button><span class="small muted" id="t2Cov">How often does each interval contain the truth?</span></div>
+            <div class="verdict" id="t2V"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid2 mt">
+        <div class="rv">
+          <h3>The published evidence</h3>
+          <p class="muted">A simulation study fitted Bayesian regressions to 3,000 datasets generated from a known diagram. The treatment <span class="math">X</span> had a valid adjustment set. The controls did not. Share of 90% intervals that contained the true value:</p>
+          <div class="scroll"><table class="t small">
+            <tr><th>Row</th><th>n = 2,500</th><th>n = 5,000</th><th>n = 10,000</th></tr>
+            <tr><td><b>X</b>, the treatment</td><td>89%</td><td>89%</td><td>91%</td></tr>
+            <tr><td><b>Z</b>, confounded control</td><td style="color:#d70015">1%</td><td style="color:#d70015">1%</td><td style="color:#d70015">0%</td></tr>
+            <tr><td><b>L</b>, control</td><td style="color:#d70015">16%</td><td style="color:#d70015">11%</td><td style="color:#d70015">7%</td></tr>
+            <tr><td><b>J</b>, control</td><td style="color:#d70015">13%</td><td style="color:#d70015">7%</td><td style="color:#d70015">6%</td></tr>
+            <tr><td><b>W</b>, control</td><td style="color:#d70015">29%</td><td style="color:#d70015">21%</td><td style="color:#d70015">15%</td></tr>
+          </table></div>
+          <p class="small muted" style="margin-top:10px">Coverage for every control falls as the sample grows. When the hidden variable was disconnected from <span class="math">Z</span>, its coverage returned to 90 to 93%, which is the slider at zero in the simulator above. The choice between Bayesian and frequentist fitting made no difference to the problem.</p>
+        </div>
+        <div class="rv d1">
+          <h3>Where it hides in media work</h3>
+          <p><b>Media mix models.</b> The coefficients on price, promotion, distribution and seasonality are controls for the media effects. Reporting them as "what price does to sales" needs a separate argument.</p>
+          <p><b>Driver charts.</b> A ranked importance chart for a predictive model reads every feature as an effect at once. It is the Table 2 fallacy with better graphics.</p>
+          <p><b>Mediators in the control set.</b> Branded search and site traffic sit downstream of upper-funnel media. Their coefficients absorb credit that belongs to the channels that caused them, and the channel rows shrink to direct effects.</p>
+          <h4 style="margin-top:22px">Habits that prevent it</h4>
+          <p class="muted">Name one treatment per model. Report its row and grey out the rest. If a second effect matters, draw its diagram, choose its own adjustment set, and expect that set to add some variables and drop others. Keep a note in every deck stating which rows carry a causal reading.</p>
+        </div>
+      </div>
+    </div>
+    <h3 class="mt rv" style="font-size:36px">What you can still do</h3>
+    <ol class="steps mt2 rv">
+      <li><b>Randomize something.</b> A coin flip severs every arrow into the treatment, measured or otherwise. User-level holdouts and geo experiments are the standard tools in media.</li>
+      <li><b>Borrow partial randomization.</b> A random nudge toward treatment (instrumental variables), a staggered rollout (difference-in-differences), a sharp eligibility cutoff (regression discontinuity), or a weighted blend of untreated units (synthetic control). Each swaps "no hidden confounders" for a different assumption and often answers a narrower question, such as the effect for people the nudge actually moved.</li>
+      <li><b>Ask how wrong you could be.</b> Sensitivity analysis treats the unidentified part as a dial and reports how far it must turn to overturn the conclusion.</li>
+      <li><b>Report the boundary.</b> State which effects are identified under which assumptions, and which are not identified at all. Keep priors on unidentified parameters visibly separate from what the data taught you.</li>
+    </ol>
+
+    <div class="card mt rv">
+      <div class="split">
+        <div>
+          <h3>E-value calculator</h3>
+          <p class="muted">Suppose an observational study finds that exposed customers convert at some multiple of the unexposed rate. How strong would a hidden confounder have to be, in its link to both exposure and conversion, to fully explain that away?</p>
+          <label class="ctl">Observed risk ratio: <b id="evRv"></b></label><input type="range" id="evR" min="100" max="500" value="180">
+        </div>
+        <div class="center">
+          <div class="small muted">E-value</div>
+          <div class="stat" id="evOut" style="color:var(--blue)"></div>
+          <p class="muted" id="evText" style="margin-top:14px"></p>
+        </div>
+      </div>
+    </div>
+    <p class="src" data-src="dillonu,t2,npb,sens,qa1,ab"></p>
+  </div>
+</section>
+
+<!-- ============ 11. TARGETING ============ -->
+<section class="sec dark" id="target">
+  <div class="wrap">
+    <div class="eyebrow rv">Chapter 11 &middot; Worked example</div>
+    <h2 class="big rv">Who should see the ad?</h2>
+    <p class="lead rv">Audience targeting is where the seeing and doing questions get confused most profitably for everyone except the advertiser. This example follows one team through the confusion and out the other side.</p>
+
+    <div class="split mt">
+      <div class="rv">
+        <h3>The brief</h3>
+        <p>Marcus leads growth at a meal-kit company. He has $40,000 for the next flight, a list of 100,000 lapsed and prospective customers, and enough budget, at about $2 per person reached, to cover one in five of them. The CFO has stopped accepting conversion counts and wants one number: dollars per <em>incremental</em> order, meaning orders that would not have happened without the ad.</p>
+        <h3 style="margin-top:28px">Attempt one: a propensity model</h3>
+        <p>The data science team builds what most teams build first. They train a model on past behavior to predict who will order in the next 30 days, score the whole list, and target the top 20%. The model is accurate. The targeted audience converts at several times the list average, and the cost per order on the dashboard is the best the company has ever seen.</p>
+        <p>Then the quarter closes and total orders have barely moved. The dashboard says the campaign produced thousands of orders. The revenue line says it produced very few.</p>
+      </div>
+      <div class="rv d1">
+        <h3>Attempt two: prove it with the data on hand</h3>
+        <p>Marcus asks for a proper comparison. The analysts compare people who were shown ads with people who were not, and the exposed group orders far more often. That looks like vindication, until someone points out that the model chose the exposed group <em>because</em> they were likely to order. The comparison had measured the model's own selection.</p>
+        <p>So they match exposed and unexposed people on age, region and tenure. The gap shrinks and stays large. They try matching on the propensity score itself and hit a wall: nobody with a high score went unexposed, and nobody with a low score saw an ad. There are no comparable pairs to match.</p>
+        <h3 style="margin-top:28px">The turn</h3>
+        <p>What works is the cheapest idea on the table. For the next flight, 10% of every score band is held out at random and shown nothing. Three weeks later the answer is in, and it is uncomfortable. In the top-scoring band, held-out customers ordered almost as often as the ones who saw ads.</p>
+      </div>
+    </div>
+
+    <div class="card mt rv">
+      <div class="split">
+        <div>
+          <h3>Why it went wrong, in one diagram</h3>
+          <p class="muted">Purchase intent drives orders. The propensity model reads intent and uses it to decide who gets the ad. That puts an arrow from intent into exposure, which is a backdoor path the team built on purpose. Every comparison of exposed and unexposed people travels along it.</p>
+          <p class="muted">There is a second problem underneath. The model was trained to answer "who will order?" The budget decision needs "whose behavior will the ad change?" Those are the seeing and doing questions from Chapter 2, and the people who score highest on the first are often the ones who needed no persuading.</p>
+          <div class="seg" id="tgDagSeg"><button class="on" data-v="obs">Model decides exposure</button><button data-v="rct">Coin flip decides exposure</button></div>
+        </div>
+        <svg class="dag" id="tgSvg" viewBox="0 0 380 240" role="img" aria-label="Diagram: intent drives both model-based exposure and orders"></svg>
+      </div>
+    </div>
+
+    <div class="card mt rv">
+      <h3>Try it: three ways to pick an audience</h3>
+      <p class="muted" style="max-width:800px">Each dot is a customer. Left to right is how likely they are to order with no ad. Bottom to top is how much an ad raises that chance. In real life the vertical position is invisible, since nobody is observed both with and without the ad. The simulation shows it so you can see what each strategy is really buying.</p>
+      <div class="split" style="margin-top:14px">
+        <div>
+          <div class="seg" id="tgSeg"><button data-v="rand">Random</button><button class="on" data-v="prop">Propensity score</button><button data-v="up">Uplift model</button></div>
+          <label class="ctl">Share of the list the budget can reach: <b id="tgBv"></b></label><input type="range" id="tgB" min="5" max="60" value="20">
+          <div class="scroll" style="margin-top:16px"><table class="t cmp small" id="tgTable"></table></div>
+          <div class="verdict" id="tgV"></div>
+        </div>
+        <div><canvas id="tgC" style="height:440px;border-radius:18px;background:#0b0b0c"></canvas>
+          <div class="small muted" style="margin-top:8px">Bright dots: the audience this strategy buys. x: chance of ordering without an ad. y: added chance because of the ad.</div></div>
+      </div>
+    </div>
+
+    <div class="grid2 mt">
+      <div class="card rv">
+        <h4>Two measurements of the same propensity audience</h4>
+        <p class="small muted">Lift in order rate attributed to the campaign, from the simulation at the current budget.</p>
+        <div class="bar-row"><div>Exposed vs. unexposed</div><div class="track"><div class="fill" id="tgBar1" style="background:var(--red)"></div></div><div class="v" id="tgBar1v"></div></div>
+        <div class="bar-row"><div>Randomized holdout</div><div class="track"><div class="fill" id="tgBar2" style="background:var(--green);min-width:4px"></div></div><div class="v" id="tgBar2v"></div></div>
+        <p class="small muted">The first bar compares two different kinds of customer. The second compares the same kind of customer with and without the ad.</p>
+      </div>
+      <div class="card rv d1">
+        <h4>The same gap in real campaigns</h4>
+        <p class="small muted">Across 663 randomized ad experiments at Facebook, analysts re-estimated each one with observational methods and rich user data. Median lift, lower-funnel outcomes:</p>
+        <div class="bar-row"><div>Randomized experiment</div><div class="track"><div class="fill" style="background:var(--green);width:7.8%"></div></div><div class="v">5%</div></div>
+        <div class="bar-row"><div>Double machine learning</div><div class="track"><div class="fill" style="background:var(--orange);width:37.5%"></div></div><div class="v">24%</div></div>
+        <div class="bar-row"><div>Propensity score matching</div><div class="track"><div class="fill" style="background:var(--red);width:100%"></div></div><div class="v">64%</div></div>
+        <p class="small muted">The study's authors describe this as a problem with the data more than with the models. The delivery system selects on signals at the level of each auction, and user-level features cannot recover them. As targeting gets more precise, exposure becomes nearly deterministic and overlap disappears.</p>
+      </div>
+    </div>
+
+    <h3 class="mt rv" style="font-size:36px">Thinking causally, step by step</h3>
+    <ol class="steps mt2 rv">
+      <li><b>Write down the quantity you are buying.</b>For each kind of customer: the chance of ordering if shown the ad, minus the chance if not. This is the conditional average treatment effect, usually called uplift. A propensity score estimates only the second half of that subtraction.</li>
+      <li><b>Draw the diagram before touching the data.</b>Intent drives orders. Whatever chooses the audience must not be driven by intent in a way you cannot undo. If a model or a bidding algorithm assigns exposure, assume the backdoor is open.</li>
+      <li><b>Ask whether the effect is identified in the data you already have.</b>In past campaign logs it usually is not. Causal identification fails because the delivery system used signals you never see. Statistical identification fails too, because deterministic targeting leaves no high-score customers unexposed. Say so plainly instead of fitting another model.</li>
+      <li><b>Create the variation you need.</b>Hold out a random slice of every segment you might target, including the ones the current model dislikes. This closes the backdoor by design and restores overlap everywhere.</li>
+      <li><b>Model the difference, on randomized data.</b>Fit one model for held-out customers and one for exposed customers, then subtract their predictions. Rank the list by that difference. More refined versions exist for unbalanced groups, and they all need the same randomized foundation.</li>
+      <li><b>Judge audiences by dollars per incremental order.</b>Use holdouts inside each audience to measure it. Expect the winning audience to show a <em>lower</em> raw conversion rate than the propensity audience. That is what it looks like when you stop paying for orders you would have received anyway.</li>
+    </ol>
+
+    <div class="grid3 mt">
+      <div class="card rv"><h4>The payoff</h4><p class="muted">Marcus's second flight targets on uplift. The dashboard conversion rate drops by nearly half and the room gets nervous. The holdout readout arrives a few weeks later: incremental orders have more than doubled on the same budget, and dollars per incremental order has fallen by more than half.</p></div>
+      <div class="card rv d1"><h4>What stays unidentified</h4><p class="muted">Nobody can label an individual as a persuadable. Uplift is identified for groups, on average. The four-way sorting of customers into sure things, persuadables and lost causes is a useful picture and each person's membership remains unknowable.</p></div>
+      <div class="card rv d2"><h4>Comparing two targeting methods</h4><p class="muted">The same logic settles a contest between a new method and the current one. Randomize people to be targeted by each method, keep a holdout inside each arm, and compare dollars per incremental conversion. Conversion rate of the chosen audience rewards whichever method is better at finding people who were going to convert.</p></div>
+    </div>
+    <details class="mt2"><summary>Why platform optimization makes this worse</summary><div>
+      <p>Three separate mechanisms push likely converters into the exposed group. <b>Activity:</b> seeing an ad requires being online, and people who are online more also convert more online. <b>Targeting:</b> the delivery system learns who meets its objective and bids harder for them. <b>Competition:</b> exposure depends on winning auctions against rival advertisers, whose own targeting shapes who is left. A randomized holdout survives all three because the held-out group faces the same machinery.</p>
+    </div></details>
+    <p class="src" data-src="bench,gordon,meta,ab,dillonu,qa2"></p>
+  </div>
+</section>
+
+<!-- ============ 12. CHECKLIST ============ -->
+<section class="sec light" id="check">
+  <div class="wrap">
+    <div class="eyebrow rv">Before you act on a model</div>
+    <h2 class="big rv">Five questions.</h2>
+    <ol class="steps mt rv">
+      <li><b>Is this a seeing question or a doing question?</b>Forecasts, rankings and risk scores are seeing. Choosing a lever is doing, and a driver chart from a predictive model does not answer it.</li>
+      <li><b>Have you drawn the diagram?</b>Put the treatment, the outcome, and everything that influences both on one page. Argue about the missing arrows, since those carry the claims.</li>
+      <li><b>Is the effect causally identified with what you measured?</b>Find the backdoor paths. If a measured set blocks them all without touching mediators or colliders, proceed. If none does, say so and move to question five.</li>
+      <li><b>Does the data contain the variation to estimate it?</b>Check overlap and collinearity. A tight interval reflects sample size and model structure. It carries no information about whether the first lock was opened.</li>
+      <li><b>How wrong could the assumptions be, and can you run a test?</b>Run a sensitivity analysis, then design the smallest experiment that would settle the open question.</li>
+    </ol>
+
+    <h3 class="mt rv" style="font-size:36px">Glossary</h3>
+    <div class="mt2 rv">
+      <details><summary>Adjustment set</summary><div>The variables you control for in order to block backdoor paths for one specific treatment and outcome.</div></details>
+      <details><summary>Backdoor path</summary><div>A path from treatment to outcome that starts with an arrow pointing into the treatment. It carries confounding.</div></details>
+      <details><summary>Collider</summary><div>A variable with two arrows pointing into it on a path. It blocks the path until you condition on it or on something downstream of it.</div></details>
+      <details><summary>Confounder</summary><div>A common cause of treatment and outcome.</div></details>
+      <details><summary>CPDAG</summary><div>The drawing of a Markov equivalence class: arrows where all members agree, plain lines where they differ.</div></details>
+      <details><summary>d-separation</summary><div>The graphical test for whether every path between two sets of variables is blocked by a conditioning set.</div></details>
+      <details><summary>do-operator</summary><div>Notation for an intervention. <span class="math">do(X = x)</span> means setting <span class="math">X</span> to <span class="math">x</span> by outside action, which removes the arrows into <span class="math">X</span>.</div></details>
+      <details><summary>Faithfulness</summary><div>The assumption that independencies in the data arise only from the diagram's structure and never from exact cancellation.</div></details>
+      <details><summary>Identification, causal</summary><div>The causal quantity can be written as a function of the distribution of observed variables, given the assumed diagram.</div></details>
+      <details><summary>Identification, statistical</summary><div>Different parameter values imply different distributions of observed data, so enough data could tell them apart.</div></details>
+      <details><summary>Mediator</summary><div>A variable on the causal path between treatment and outcome. Controlling for it removes part of the effect.</div></details>
+      <details><summary>Overlap (positivity)</summary><div>Within every group defined by the controls, both treated and untreated cases exist.</div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORKFLOW ============ -->
+<section class="sec dark" id="workflow">
+  <div class="wrap">
+    <div class="eyebrow rv">The practitioner's workflow</div>
+    <h2 class="big rv">From question <span class="grad">to defensible answer.</span></h2>
+    <p class="lead rv">Everything on this page, arranged in the order you would actually do it. Each stage names what to produce and the signal that should send you back a step. Most analyses that go wrong skipped stage two or stage three.</p>
+    <div class="tl" id="wfTL"></div>
+
+    <div class="card mt rv router">
+      <div class="split">
+        <div>
+          <h3>Design router</h3>
+          <p class="muted">Stage five is where most of the leverage is. Answer a few questions about what you can control and the router names the design, what it assumes, and what it will estimate.</p>
+          <div class="trail" id="rtTrail"></div>
+          <h4 id="rtQ"></h4>
+          <div class="opts" id="rtOpts"></div>
+          <button class="btn sm ghost" id="rtReset" style="margin-top:18px">Start over</button>
+        </div>
+        <div class="verdict" id="rtOut" style="margin-top:0;min-height:260px"></div>
+      </div>
+    </div>
+
+    <div class="center mt rv">
+      <h3 style="font-size:36px">Still have questions?</h3>
+      <p class="lead">The FAQ answers the ones practitioners ask most, from "can I read SHAP values as drivers?" to "how do I put an experiment into an MMM?"</p>
+      <div style="margin-top:26px"><a class="btn" href="faq.html">Open the FAQ</a></div>
+    </div>
+    <p class="src" data-src="elicit,sum,dagci,overlap,power,geo,iv,qa1,unified,sens,mmmprior,t2,pitfalls,qa2"></p>
+  </div>
+</section>
+
+<!-- ============ SOURCES ============ -->
+<section class="sec white" id="sources">
+  <div class="wrap">
+    <div class="eyebrow rv">Sources</div>
+    <h2 class="mid rv">Where this comes from.</h2>
+    <p class="lead rv">Research for this page was drawn from the <a href="https://redam94.github.io/second-brain/">Second Brain</a> knowledge base. Each row links the vault note that was used and names the original work that note is built on.</p>
+    <div class="scroll mt rv"><table class="t" id="srcTable"><tr><th>Used for</th><th>Vault note</th><th>Original source behind the note</th></tr></table></div>
+    <p class="small muted mt2">The framing of identification as two separate locks, the interactive simulations, the media diagram in Chapter 9, and the character of Dana are this page's own synthesis and illustration, as are Marcus, the audience-targeting simulation, the sample regression table in the Table 2 close-up, and the arrangement of the workflow and design router. Statements of the three do-calculus rules and the front-door formula follow Pearl (2009), <em>Causality</em>, 2nd ed., Cambridge University Press, which the vault references and lists as not yet fully covered. The E-value formula follows VanderWeele and Ding (2017), cited by the vault's sensitivity-analysis note.</p>
+  </div>
+</section>
+<footer><div class="wrap">Built as a single static file for GitHub Pages. No trackers, no external scripts. Simulated data throughout unless a source is named.</div></footer>
+
+<script>
+(()=>{
+"use strict";
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const NS='http://www.w3.org/2000/svg';
+const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+function rng(seed){let a=seed>>>0;const u=()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};const n=()=>{let x=0;while(x===0)x=u();return Math.sqrt(-2*Math.log(x))*Math.cos(2*Math.PI*u());};return{u,n};}
+function setup(c){const r=c.getBoundingClientRect(),d=window.devicePixelRatio||1;c.width=Math.max(1,Math.round(r.width*d));c.height=Math.max(1,Math.round(r.height*d));const g=c.getContext('2d');g.setTransform(d,0,0,d,0,0);g.clearRect(0,0,r.width,r.height);return{g,w:r.width,h:r.height};}
+function mean(a){let s=0;for(const v of a)s+=v;return s/(a.length||1);}
+function corr(a,b){const n=a.length;if(n<3)return 0;const ma=mean(a),mb=mean(b);let sab=0,saa=0,sbb=0;for(let i=0;i<n;i++){const x=a[i]-ma,y=b[i]-mb;sab+=x*y;saa+=x*x;sbb+=y*y;}return sab/Math.sqrt(saa*sbb||1);}
+function ols(x,y){const n=x.length,mx=mean(x),my=mean(y);let sxx=0,sxy=0;for(let i=0;i<n;i++){sxx+=(x[i]-mx)**2;sxy+=(x[i]-mx)*(y[i]-my);}const b=sxy/(sxx||1),a=my-b*mx;let rss=0;for(let i=0;i<n;i++)rss+=(y[i]-a-b*x[i])**2;return{b,a,se:Math.sqrt(rss/Math.max(1,n-2)/(sxx||1)),mx,my};}
+const fmt=(v,d=2)=>(v>=0?'+':'\u2212')+Math.abs(v).toFixed(d);
+function seg(id,cb){const box=$(id);box.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$$('button',box).forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v);});}
+
+/* ---------- SVG graph helpers ---------- */
+function edge(parent,a,b,o={}){
+  const g=el('g',{class:'edge '+(o.cls||'')},parent),ln=el('line',{},g),hd=el('polygon',{},g);
+  g._set=(a,b,directed=true,r1=o.r1??o.r??24,r2=o.r2??o.r??24)=>{
+    const dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,hs=11;
+    const x1=a.x+ux*r1,y1=a.y+uy*r1,tx=b.x-ux*(r2+3),ty=b.y-uy*(r2+3),bx=tx-ux*hs,by=ty-uy*hs;
+    ln.setAttribute('x1',x1);ln.setAttribute('y1',y1);ln.setAttribute('x2',directed?bx:tx);ln.setAttribute('y2',directed?by:ty);
+    hd.setAttribute('points',`${tx},${ty} ${bx-uy*hs*.55},${by+ux*hs*.55} ${bx+uy*hs*.55},${by-ux*hs*.55}`);
+    hd.style.display=directed?'':'none';
+  };
+  g._set(a,b,o.directed!==false);return g;
+}
+function node(parent,p,o={}){
+  const r=o.r||24,g=el('g',{class:'node '+(o.cls||''),transform:`translate(${p.x},${p.y})`},parent);
+  el('circle',{r},g);const t=el('text',{'text-anchor':'middle',dy:'.35em',class:'sym'},g);t.textContent=p.s||'';
+  if(p.label){const c=el('text',{'text-anchor':'middle',y:p.capY??(r+18),class:'cap'},g);c.textContent=p.label;}
+  return g;
+}
+
+const V='https://redam94.github.io/second-brain/';
+/* ---------- reveal, counters, nav ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;e.target.classList.add('in');
+  $$('[data-count]',e.target).concat(e.target.matches('[data-count]')?[e.target]:[]).forEach(countUp);io.unobserve(e.target);}),{threshold:.14});
+$$('.rv').forEach(e=>io.observe(e));
+function countUp(n){if(n._done)return;n._done=1;const to=+n.dataset.count,dec=+(n.dataset.dec||0),plus=n.dataset.plus;const t0=performance.now(),D=reduced?1:1300;
+  (function f(t){const k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3),v=to*e;n.textContent=(v<0?'\u2212':(plus?'+':''))+Math.abs(v).toFixed(dec);if(k<1)requestAnimationFrame(f);})(t0);}
+const bars=$('#abBars');new IntersectionObserver((es,o)=>{if(es[0].isIntersecting){$$('.fill',bars).forEach(f=>f.style.width=f.dataset.w+'%');o.disconnect();}},{threshold:.4}).observe(bars);
+const links=$$('.gnav .links a').filter(a=>a.getAttribute('href').startsWith('#')),secs=links.map(a=>$(a.getAttribute('href')));
+function onScroll(){const h=document.documentElement,p=h.scrollTop/(h.scrollHeight-h.clientHeight||1);$('#prog').style.width=(p*100)+'%';
+  let cur=-1;secs.forEach((s,i)=>{if(s&&s.getBoundingClientRect().top<140)cur=i;});links.forEach((a,i)=>a.classList.toggle('on',i===cur));}
+addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+/* ---------- hero ---------- */
+(function hero(){
+  const c=$('#heroC');let W,H,g,nodes=[],edges=[],parts=[];const R=rng(5);
+  function init(){({g,w:W,h:H}=setup(c));nodes=[];edges=[];parts=[];const N=Math.max(10,Math.round(W/90));
+    for(let i=0;i<N;i++)nodes.push({x:(i+.5)/N*W+(R.u()-.5)*60,y:H*(.12+R.u()*.76),p:R.u()*6.28,s:.3+R.u()*.5});
+    for(let i=0;i<N;i++)for(let j=i+1;j<Math.min(N,i+4);j++)if(R.u()<.55)edges.push([i,j]);
+    edges.forEach((e,k)=>{parts.push({e:k,t:R.u(),v:.0025+R.u()*.004});});}
+  function frame(t){g.clearRect(0,0,W,H);const P=nodes.map(n=>({x:n.x+Math.sin(t/2400*n.s+n.p)*14,y:n.y+Math.cos(t/2000*n.s+n.p)*14}));
+    g.lineWidth=1;g.strokeStyle='rgba(100,210,255,.20)';edges.forEach(([a,b])=>{g.beginPath();g.moveTo(P[a].x,P[a].y);g.lineTo(P[b].x,P[b].y);g.stroke();});
+    parts.forEach(p=>{p.t+=p.v;if(p.t>1)p.t=0;const[a,b]=edges[p.e];const x=P[a].x+(P[b].x-P[a].x)*p.t,y=P[a].y+(P[b].y-P[a].y)*p.t;g.fillStyle='rgba(191,90,242,.9)';g.beginPath();g.arc(x,y,2.2,0,6.3);g.fill();});
+    P.forEach(p=>{g.fillStyle='#000';g.strokeStyle='rgba(100,210,255,.55)';g.lineWidth=1.5;g.beginPath();g.arc(p.x,p.y,6,0,6.3);g.fill();g.stroke();});
+    if(!reduced)requestAnimationFrame(frame);}
+  init();requestAnimationFrame(frame);addEventListener('resize',()=>{init();if(reduced)frame(0);});
+})();
+
+/* ---------- 1. discount paradox ---------- */
+const trap={n:800,c:1,mode:'obs',reveal:false};
+function drawTrap(){
+  const {g,w,h}=setup($('#trapC')),R=rng(11),N=trap.n,xs=[],ys=[],us=[];
+  for(let i=0;i<N;i++){const u=R.n();let x=trap.mode==='obs'?0.25-0.09*trap.c*u+0.05*R.n():0.05+0.4*R.u();x=Math.min(.5,Math.max(0,x));
+    const y=0.47+0.30*x+0.12*u+0.06*R.n();xs.push(x);ys.push(y);us.push(u);}
+  const f=ols(xs,ys),pad=34,X=x=>pad+x/.5*(w-pad-12),Y=y=>h-pad-(y-.05)/1.0*(h-pad-12);
+  g.strokeStyle='#d2d2d7';g.lineWidth=1;g.beginPath();g.moveTo(pad,10);g.lineTo(pad,h-pad);g.lineTo(w-8,h-pad);g.stroke();
+  g.fillStyle='#86868b';g.font='12px -apple-system,Helvetica,Arial';g.fillText('0%',pad-4,h-pad+16);g.fillText('50% discount',w-90,h-pad+16);g.save();g.translate(14,h/2+30);g.rotate(-Math.PI/2);g.fillText('renewal',0,0);g.restore();
+  const step=Math.max(1,Math.floor(N/1400));
+  for(let i=0;i<N;i+=step){g.fillStyle=trap.reveal?(us[i]<0?'rgba(255,149,0,.55)':'rgba(0,113,227,.5)'):'rgba(60,60,67,.28)';g.beginPath();g.arc(X(xs[i]),Y(ys[i]),2.6,0,6.3);g.fill();}
+  g.lineWidth=2.5;g.setLineDash([7,6]);g.strokeStyle='#1d8a3a';g.beginPath();g.moveTo(X(0),Y(f.my+0.3*(0-f.mx)));g.lineTo(X(.5),Y(f.my+0.3*(.5-f.mx)));g.stroke();
+  g.setLineDash([]);g.strokeStyle='#d70015';g.lineWidth=3;g.beginPath();g.moveTo(X(0),Y(f.a));g.lineTo(X(.5),Y(f.a+f.b*.5));g.stroke();
+  const lo=f.b-1.96*f.se,hi=f.b+1.96*f.se,miss=(0.3<lo||0.3>hi),est=$('#trapEst');
+  est.textContent=fmt(f.b);est.style.color=miss?'#d70015':'#1d8a3a';$('#trapCI').textContent='95% interval '+fmt(lo)+' to '+fmt(hi);
+  const v=$('#trapVerdict');
+  if(miss&&f.b<0){v.className='verdict bad';v.innerHTML='<b>Confidently wrong</b>The data say discounts hurt renewals. The interval is tight and excludes the truth. Add customers and it only gets tighter.';}
+  else if(miss){v.className='verdict warn';v.innerHTML='<b>Biased</b>Right sign, wrong size. The hidden trait is still leaking into the estimate.';}
+  else{v.className='verdict ok';v.innerHTML='<b>On target</b>'+(trap.mode==='rct'?'Randomization cut the link between hidden need and discount. The trait still exists and no longer distorts the comparison.':'With no link between hidden need and discount there is nothing to confound, so the plain regression is fine.');}
+}
+seg('#trapMode',v=>{trap.mode=v;$('#trapC_').disabled=v==='rct';drawTrap();});
+$('#trapC_').oninput=e=>{trap.c=e.target.value/100;$('#trapCv').textContent=e.target.value+'%';drawTrap();};
+$('#trapN').oninput=e=>{trap.n=+e.target.value;$('#trapNv').textContent=(+e.target.value).toLocaleString();drawTrap();};
+$('#trapReveal').onchange=e=>{trap.reveal=e.target.checked;drawTrap();};
+
+/* ---------- 2. surgery ---------- */
+(function(){
+  const svg=$('#surgSvg'),P={Z:{x:170,y:44,s:'Z',label:'Customer need',capY:-32},X:{x:56,y:170,s:'X',label:'Discount'},Y:{x:284,y:170,s:'Y',label:'Renewal'}};
+  const zx=edge(svg,P.Z,P.X,{cls:'bad flow'}),zy=edge(svg,P.Z,P.Y,{cls:'bad flow'}),xy=edge(svg,P.X,P.Y,{cls:'good flow'});
+  const sc=el('text',{x:96,y:100,'font-size':26,opacity:0,style:'transition:opacity .5s'},svg);sc.textContent='\u2702';
+  node(svg,P.Z);const nx=node(svg,P.X,{cls:'tx'});node(svg,P.Y,{cls:'oc'});
+  seg('#surgSeg',v=>{const d=v==='do';zx.setAttribute('class','edge '+(d?'cut off':'bad flow'));zy.setAttribute('class','edge '+(d?'off':'bad flow'));sc.setAttribute('opacity',d?1:0);nx.setAttribute('class','node '+(d?'do':'tx'));
+    $('#surgF').textContent=d?'P(Renewal | do(Discount))':'P(Renewal | Discount)';
+    $('#surgT').textContent=d?'The arrow into discount is gone, because you are the one choosing it now. Customer need still affects renewal, and it can no longer masquerade as a discount effect. Only the real effect remains.':'Two routes are open. The direct arrow carries the real effect. The route through customer need carries a spurious association. A regression blends them.';});
+})();
+
+/* ---------- 3. junctions ---------- */
+const jdraw=[];
+$$('.jx').forEach((card,idx)=>{
+  const type=card.dataset.j,svg=$('svg',card),cv=$('canvas',card),btn=$('button',card),pill=$('.pill',card),rEl=$('.r',card);let cond=false;
+  const lab={fork:['Shoe size','Age','Reading'],chain:['Drug','Blood pressure','Recovery'],coll:['Sport','Bursary','Study']}[type];
+  const A={x:40,y:30,s:'A',label:lab[0]},B={x:130,y:30,s:'B',label:lab[1]},C={x:220,y:30,s:'C',label:lab[2]};
+  const e1=type==='fork'?edge(svg,B,A,{r:20}):edge(svg,A,B,{r:20}),e2=type==='coll'?edge(svg,C,B,{r:20}):edge(svg,B,C,{r:20});
+  node(svg,A,{r:20});const nb=node(svg,B,{r:20});node(svg,C,{r:20});
+  const R=rng(21+idx),N=700,a=[],b=[],c=[];
+  for(let i=0;i<N;i++){let x,y,z;if(type==='fork'){y=R.n();x=y+.6*R.n();z=y+.6*R.n();}else if(type==='chain'){x=R.n();y=x+.5*R.n();z=y+.5*R.n();}else{x=R.n();z=R.n();y=x+z+.4*R.n();}a.push(x);b.push(y);c.push(z);}
+  const sel=i=>type==='coll'?b[i]>1.3:Math.abs(b[i])<.22;
+  function draw(){
+    const {g,w,h}=setup(cv),X=v=>w/2+v*w/8.4,Y=v=>h/2-v*h/8.4,sa=[],sc=[];
+    for(let i=0;i<N;i++){const s=!cond||sel(i);if(s){sa.push(a[i]);sc.push(c[i]);}
+      g.fillStyle=s?(cond?'rgba(0,113,227,.75)':'rgba(60,60,67,.42)'):'rgba(60,60,67,.09)';g.beginPath();g.arc(X(a[i]),Y(c[i]),2.4,0,6.3);g.fill();}
+    if(sa.length>3){const f=ols(sa,sc);g.strokeStyle=cond?'#0071e3':'#1d1d1f';g.lineWidth=2;g.beginPath();g.moveTo(X(-3.4),Y(f.a-3.4*f.b));g.lineTo(X(3.4),Y(f.a+3.4*f.b));g.stroke();}
+    g.fillStyle='#86868b';g.font='11px -apple-system,Helvetica,Arial';g.fillText(lab[0]+' \u2192',w-74,h-8);g.fillText('\u2191 '+lab[2],8,14);
+    const r=corr(sa,sc),open=Math.abs(r)>.12;rEl.textContent=fmt(r);
+    const good=type==='chain'&&!cond;pill.textContent=open?(good?'Path open: real effect':'Path open: spurious'):'Path blocked';pill.className='pill '+(open?(good?'ok':'open'):'blk');
+    const cls='edge '+(open?(good?'good flow':'bad flow'):'off');e1.setAttribute('class',cls);e2.setAttribute('class',cls);nb.setAttribute('class','node'+(cond?' cond':''));
+  }
+  btn.onclick=()=>{cond=!cond;btn.dataset.t=btn.dataset.t||btn.textContent;btn.textContent=cond?'Release':btn.dataset.t;draw();};
+  jdraw.push(draw);
+});
+
+/* ---------- 4. d-separation playground ---------- */
+(function(){
+  const svg=$('#dsSvg');
+  const NDS={S:{x:120,y:84,s:'S',label:'Season',capY:-36},E:{x:600,y:84,s:'E',label:'Economy',capY:-36},D:{x:360,y:118,s:'D',label:'Consumer demand',capY:-36},
+    X:{x:120,y:300,s:'X',label:'Ad spend'},M:{x:360,y:222,s:'M',label:'Site visits',capY:-34},Y:{x:600,y:300,s:'Y',label:'Sales'},W:{x:360,y:386,s:'W',label:'Loyalty sign-ups'}};
+  const EDG=[['S','X'],['S','D'],['E','D'],['E','Y'],['D','X'],['D','Y'],['X','M'],['M','Y'],['X','Y'],['X','W'],['Y','W']];
+  const has=(a,b)=>EDG.some(e=>e[0]===a&&e[1]===b),eEl={},nEl={};
+  EDG.forEach(([a,b])=>{eEl[a+b]=edge(svg,NDS[a],NDS[b],{r:28});});
+  Object.keys(NDS).forEach(k=>{const fixed=k==='X'||k==='Y';nEl[k]=node(svg,NDS[k],{r:28,cls:fixed?(k==='X'?'tx':'oc'):'click'});
+    if(!fixed)nEl[k].addEventListener('click',()=>{if(k==='D'&&hidden)return;Z.has(k)?Z.delete(k):Z.add(k);render();});});
+  const Z=new Set();let hidden=false;
+  const kids=n=>EDG.filter(e=>e[0]===n).map(e=>e[1]);
+  function desc(n,acc=new Set()){kids(n).forEach(k=>{if(!acc.has(k)){acc.add(k);desc(k,acc);}});return acc;}
+  const nbrs=n=>EDG.filter(e=>e[0]===n||e[1]===n).map(e=>e[0]===n?e[1]:e[0]);
+  const paths=[];(function dfs(p){const last=p[p.length-1];if(last==='Y'){paths.push(p);return;}nbrs(last).forEach(k=>{if(!p.includes(k))dfs(p.concat(k));});})(['X']);
+  paths.sort((a,b)=>{const ca=has(a[0],a[1])?0:1,cb=has(b[0],b[1])?0:1;return ca-cb||a.length-b.length;});
+  function info(p){
+    let causal=true;for(let i=0;i<p.length-1;i++)if(!has(p[i],p[i+1]))causal=false;
+    const type=causal?'causal':(has(p[0],p[1])?'side':'backdoor');let blocked=false,why='';
+    for(let i=1;i<p.length-1;i++){const a=p[i-1],c=p[i],b=p[i+1],col=has(a,c)&&has(b,c);
+      if(col){const act=Z.has(c)||[...desc(c)].some(d=>Z.has(d));if(!act){blocked=true;why=why||('collider '+c+' left alone');}}
+      else if(Z.has(c)){blocked=true;why=why||('controlled for '+c);}}
+    let str=p[0];for(let i=0;i<p.length-1;i++)str+=(has(p[i],p[i+1])?' \u2192 ':' \u2190 ')+p[i+1];
+    return{type,blocked,why,str};
+  }
+  function render(){
+    Object.keys(nEl).forEach(k=>{if(k==='X'||k==='Y')return;nEl[k].setAttribute('class','node click'+(Z.has(k)?' cond':'')+(k==='D'&&hidden?' hid':''));});
+    const ul=$('#dsPaths');ul.innerHTML='';let openBias=0,blockedCausal=0,hiddenOpen=false;
+    paths.forEach(p=>{const f=info(p);if(f.type!=='causal'&&!f.blocked){openBias++;if(p.includes('D')&&hidden)hiddenOpen=true;}if(f.type==='causal'&&f.blocked)blockedCausal++;
+      const li=document.createElement('li');const tl={causal:'causal path',backdoor:'backdoor path',side:'path through a common effect'}[f.type];
+      const cls=f.type==='causal'?(f.blocked?'open':'ok'):(f.blocked?'blk':'open');const txt=f.type==='causal'?(f.blocked?'blocked (bad)':'open (good)'):(f.blocked?'blocked':'open (bias)');
+      li.innerHTML=`<span class="p">${f.str}<small>${tl}${f.blocked?': '+f.why:''}</small></span><span class="pill ${cls}">${txt}</span>`;
+      li.onmouseenter=()=>{Object.values(eEl).forEach(e=>e.classList.add('dim'));for(let i=0;i<p.length-1;i++){const e=eEl[p[i]+p[i+1]]||eEl[p[i+1]+p[i]];e.classList.remove('dim');e.classList.add('hl');}};
+      li.onmouseleave=()=>Object.values(eEl).forEach(e=>e.classList.remove('dim','hl'));ul.appendChild(li);});
+    const v=$('#dsVerdict'),set=Z.size?'{'+[...Z].join(', ')+'}':'the empty set';
+    if(hidden&&hiddenOpen&&openBias){v.className='verdict bad';v.innerHTML='<b>Not identified with the data on hand</b>The path X \u2190 D \u2192 Y runs through a variable you never measured. No combination of the remaining columns can close it. An experiment, an instrument, or a way to measure demand is required.';}
+    else if(openBias){v.className='verdict bad';v.innerHTML=`<b>Biased</b>Controlling for ${set} leaves ${openBias} non-causal path${openBias>1?'s':''} open. The estimate would mix the ad effect with something else.`;}
+    else if(blockedCausal){v.className='verdict warn';v.innerHTML='<b>Overcontrolled</b>The backdoors are closed, and you also blocked a route the real effect travels along. The estimate would understate what ads do.';}
+    else{v.className='verdict ok';v.innerHTML=`<b>Identified by adjustment</b>${set.charAt(0).toUpperCase()+set.slice(1)} satisfies the backdoor criterion. Given this diagram, the adjusted comparison equals the effect of intervening on ad spend.`;}
+  }
+  $$('[data-ds]').forEach(b=>b.onclick=()=>{Z.clear();b.dataset.ds.split(',').filter(Boolean).forEach(k=>{if(!(k==='D'&&hidden))Z.add(k);});render();});
+  $('#dsHide').onchange=e=>{hidden=e.target.checked;if(hidden)Z.delete('D');render();};
+  render();
+})();
+
+/* ---------- 5. backdoor calculator ---------- */
+function drawBD(){
+  const pz=$('#bdPz').value/100,a=$('#bdA').value/100,b=$('#bdB').value/100,y11=.9,y01=.8,y10=.4,y00=.3;
+  $('#bdPzv').textContent=Math.round(pz*100)+'%';$('#bdAv').textContent=Math.round(a*100)+'%';$('#bdBv').textContent=Math.round(b*100)+'%';
+  const px=pz*a+(1-pz)*b,noOverlap=(a===0||a===1||b===0||b===1);
+  const n=1000,c=[[pz*a,y11,'High need, discount'],[pz*(1-a),y01,'High need, no discount'],[(1-pz)*b,y10,'Low need, discount'],[(1-pz)*(1-b),y00,'Low need, no discount']];
+  $('#bdTable').innerHTML='<tr><th>Group</th><th>Per 1,000 customers</th><th>Renewal rate</th></tr>'+c.map(r=>`<tr><td>${r[2]}</td><td>${Math.round(r[0]*n)}</td><td>${r[0]>0?Math.round(r[1]*100)+'%':'no one here'}</td></tr>`).join('');
+  const bar=(id,v,col)=>{const e=$(id),wd=Math.min(50,Math.abs(v)*100);e.style.width=wd+'%';e.style.left=v>=0?'50%':(50-wd)+'%';if(col)e.style.background=col;};
+  const V=$('#bdVerdict');
+  if(px===0||px===1){$('#bdNaive').textContent='undefined';bar('#bdNaiveBar',0);}
+  else{const w1=pz*a/px,w0=pz*(1-a)/(1-px),naive=(w1*y11+(1-w1)*y10)-(w0*y01+(1-w0)*y00);
+    $('#bdNaive').textContent=fmt(naive*100,1)+' pts';$('#bdNaive').style.color=naive<0?'var(--red)':(Math.abs(naive-.1)<.015?'var(--green)':'var(--orange)');bar('#bdNaiveBar',naive,naive<0?'var(--red)':'var(--orange)');
+    if(!noOverlap){if(Math.abs(naive-.1)<.015){V.className='verdict ok';V.innerHTML='<b>Seeing equals doing here</b>Both groups get discounts at the same rate, as they would under randomization. Need no longer predicts discount, so there is no backdoor to close.';}
+      else if(naive<0){V.className='verdict bad';V.innerHTML='<b>Simpson\u2019s paradox</b>Discounts help in both groups and appear to hurt overall, because discounted customers are mostly the low-need ones who renew less anyway.';}
+      else{V.className='verdict warn';V.innerHTML='<b>Confounded</b>The naive comparison is off because the discounted and undiscounted pools contain different mixes of customer.';}}}
+  if(noOverlap){$('#bdAdj').textContent='cannot compute';bar('#bdAdjBar',0);V.className='verdict warn';V.innerHTML='<b>No overlap</b>The formula needs a renewal rate for a group that has no customers in it. The effect is causally identified by the diagram and statistically unidentified in this data. Any number produced here would come from extrapolation.';}
+  else{$('#bdAdj').textContent='+10.0 pts';bar('#bdAdjBar',.1,'var(--green)');}
+}
+['#bdPz','#bdA','#bdB'].forEach(i=>$(i).oninput=drawBD);
+
+/* ---------- 6. ridge ---------- */
+function drawRidge(){
+  const r=$('#rgR').value/1000,n=+$('#rgN').value,s=4;$('#rgRv').textContent=r.toFixed(3);$('#rgNv').textContent=n;
+  const sd=s/Math.sqrt(n*(1-r*r)),sds=s*Math.sqrt(2/(n*(1+r)));
+  const iv=(m,d)=>(m-1.96*d).toFixed(2)+' to '+(m+1.96*d).toFixed(2);
+  $('#rg1').textContent=iv(1,sd);$('#rg2').textContent=iv(.5,sd);$('#rg3').textContent=iv(1.5,sds);
+  $('#rg1').style.color=$('#rg2').style.color=sd>.5?'#d70015':'';
+  const {g,w,h}=setup($('#rgC')),pad=34,X=v=>pad+(v+1.5)/5*(w-pad-10),Y=v=>h-pad-(v+2)/5*(h-pad-10);
+  g.strokeStyle='#e5e5ea';g.lineWidth=1;for(let v=-1;v<=3;v++){g.beginPath();g.moveTo(X(v),10);g.lineTo(X(v),h-pad);g.stroke();g.beginPath();g.moveTo(pad,Y(v-.5));g.lineTo(w-10,Y(v-.5));g.stroke();}
+  g.fillStyle='#86868b';g.font='12px -apple-system,Helvetica,Arial';g.fillText('TV effect \u2192',w-90,h-10);g.fillText('\u2191 Video effect',pad+6,20);
+  g.save();g.beginPath();g.rect(pad,10,w-pad-10,h-pad-10);g.clip();
+  g.setLineDash([6,6]);g.strokeStyle='#86868b';g.beginPath();g.moveTo(X(-1.5),Y(3));g.lineTo(X(3.5),Y(-2));g.stroke();g.setLineDash([]);
+  const l1=Math.sqrt(5.99*s*s/(n*(1-r))),l2=Math.sqrt(5.99*s*s/(n*(1+r)));g.beginPath();
+  for(let k=0;k<=120;k++){const t=k/120*2*Math.PI,u=l1*Math.cos(t),v=l2*Math.sin(t),bx=1+(u+v)/Math.SQRT2,by=.5+(-u+v)/Math.SQRT2;k?g.lineTo(X(bx),Y(by)):g.moveTo(X(bx),Y(by));}
+  g.closePath();g.fillStyle='rgba(0,113,227,.22)';g.fill();g.strokeStyle='#0071e3';g.lineWidth=2;g.stroke();g.restore();
+  g.fillStyle='#1d1d1f';g.beginPath();g.arc(X(1),Y(.5),5,0,6.3);g.fill();
+}
+['#rgR','#rgN'].forEach(i=>$(i).oninput=drawRidge);
+
+/* ---------- 7. PC stepper ---------- */
+(function(){
+  const svg=$('#pcSvg'),P={X:{x:80,y:60,s:'X'},Y:{x:80,y:230,s:'Y'},Z:{x:230,y:145,s:'Z'},W:{x:400,y:145,s:'W'}};
+  const pairs=[['X','Y'],['X','Z'],['Y','Z'],['X','W'],['Y','W'],['Z','W']],E={};pairs.forEach(([a,b])=>E[a+b]=edge(svg,P[a],P[b],{directed:false}));
+  Object.values(P).forEach(p=>node(svg,p));
+  const steps=[
+    {t:'<b>Start: suspect everything</b>Connect every pair with an undirected edge. Nothing has been ruled out yet.',gone:[],dir:[]},
+    {t:'<b>Test pairs on their own</b>X and Y turn out to be independent. Remove that edge and note that it took an empty conditioning set to separate them.',gone:['XY'],dir:[]},
+    {t:'<b>Test pairs given one neighbor</b>Once Z is held fixed, W is independent of both X and Y. Remove those two edges and record Z as the set that separated them.',gone:['XY','XW','YW'],dir:[]},
+    {t:'<b>Find the colliders</b>X and Y are not connected, both touch Z, and Z was not needed to separate them. Z must be a common effect: X \u2192 Z \u2190 Y. If Z were a fork or chain, X and Y would have looked dependent until Z was held fixed.',gone:['XY','XW','YW'],dir:['XZ','YZ']},
+    {t:'<b>Propagate</b>If the last edge pointed W \u2192 Z, a new collider would appear at Z, and the tests in step 3 showed none. So Z \u2192 W. In this lucky case every arrow is recovered. Often some edges stay undirected.',gone:['XY','XW','YW'],dir:['XZ','YZ','ZW']}];
+  let i=0;function show(){const s=steps[i];pairs.forEach(([a,b])=>{const k=a+b,e=E[k];e._set(P[a],P[b],s.dir.includes(k));e.setAttribute('class','edge'+(s.gone.includes(k)?' gone':'')+(s.dir.includes(k)?' hl':''));});
+    $('#pcText').innerHTML=s.t;$('#pcStep').textContent='Step '+(i+1)+' of '+steps.length;$('#pcBack').disabled=i===0;$('#pcNext').textContent=i===steps.length-1?'Start over':'Next step';}
+  $('#pcNext').onclick=()=>{i=i===steps.length-1?0:i+1;show();};$('#pcBack').onclick=()=>{if(i>0){i--;show();}};show();
+})();
+
+/* ---------- 8. MEC ---------- */
+(function(){
+  const grid=$('#mecGrid'),info=$('#mecInfo');
+  const D=[{n:'A \u2192 B \u2192 C',d:[1,1],c:1,s:'Chain'},{n:'A \u2190 B \u2190 C',d:[-1,-1],c:1,s:'Reversed chain'},{n:'A \u2190 B \u2192 C',d:[-1,1],c:1,s:'Fork'},{n:'A \u2192 B \u2190 C',d:[1,-1],c:2,s:'Collider'}];
+  const A={x:36,y:34,s:'A'},B={x:120,y:34,s:'B'},C={x:204,y:34,s:'C'};
+  const cards=D.map(d=>{const c=document.createElement('div');c.className='card tight mec rv c'+d.c;c.innerHTML=`<svg class="dag" viewBox="0 0 240 70"></svg><div class="small" style="font-weight:600;margin-top:6px">${d.s}</div>`;
+    const s=$('svg',c);d.d[0]>0?edge(s,A,B,{r:20}):edge(s,B,A,{r:20});d.d[1]>0?edge(s,B,C,{r:20}):edge(s,C,B,{r:20});[A,B,C].forEach(p=>node(s,p,{r:20}));grid.appendChild(c);io.observe(c);return c;});
+  function pick(k){const cls=D[k].c;cards.forEach((c,i)=>c.classList.toggle('sel',D[i].c===cls));
+    info.innerHTML=cls===1?'<div class="split"><div><div class="tag" style="color:var(--blue)">Equivalence class of three</div><h3 style="margin-top:8px">A and C are related until you hold B fixed</h3><p class="muted">The chain, its reverse and the fork all say exactly this and nothing more. No dataset of any size can favor one over another on independence grounds. In the first, changing A moves C. In the fork, changing A does nothing to C at all.</p></div><div class="center"><div class="small muted">What discovery reports (CPDAG)</div><div class="formula">A &nbsp;&#9472;&#9472;&nbsp; B &nbsp;&#9472;&#9472;&nbsp; C</div><div class="small muted">Two plain lines. Two unidentified directions.</div></div></div>'
+      :'<div class="split"><div><div class="tag" style="color:var(--orange)">A class of one</div><h3 style="margin-top:8px">A and C are unrelated until you hold B fixed</h3><p class="muted">Only the collider produces this signature, so the data can identify it uniquely. This is why discovery algorithms hunt for colliders first: they are the one place where directions show through in observational data.</p></div><div class="center"><div class="small muted">What discovery reports (CPDAG)</div><div class="formula">A &rarr; B &larr; C</div><div class="small muted">Fully directed. Identified.</div></div></div>';}
+  cards.forEach((c,i)=>c.onclick=()=>pick(i));pick(0);
+})();
+
+/* ---------- LiNGAM ---------- */
+let lgMode='gauss';
+function drawLG(){
+  const R=rng(77),N=1500,x=[],y=[];const d=()=>lgMode==='gauss'?R.n():(R.u()-.5)*3.464;
+  for(let i=0;i<N;i++){const a=d(),e=.8*d();x.push(a);y.push(a+e);}
+  const f=ols(x,y),r=ols(y,x),ra=x.map((v,i)=>y[i]-f.a-f.b*v),rb=y.map((v,i)=>x[i]-r.a-r.b*v);
+  const dep=(p,q)=>Math.abs(corr(p.map(v=>v*v),q.map(v=>v*v)));
+  function plot(id,p,q,sid){const {g,w,h}=setup($(id)),sx=Math.max(...p.map(Math.abs))*1.1,sy=Math.max(...q.map(Math.abs))*1.25;
+    g.strokeStyle='#e5e5ea';g.beginPath();g.moveTo(0,h/2);g.lineTo(w,h/2);g.stroke();
+    for(let i=0;i<N;i+=1){g.fillStyle='rgba(0,113,227,.35)';g.beginPath();g.arc(w/2+p[i]/sx*w/2,h/2-q[i]/sy*h/2,1.9,0,6.3);g.fill();}
+    g.fillStyle='#86868b';g.font='11px -apple-system,Helvetica,Arial';g.fillText('predictor \u2192',w-70,h-6);g.fillText('\u2191 leftover',6,13);
+    const s=dep(p,q),ok=s<.09;$(sid).innerHTML=ok?'<span style="color:#1d8a3a">Leftovers look unrelated to the predictor</span>':'<span style="color:#d70015">Leftover spread depends on the predictor</span>';return ok;}
+  const a=plot('#lgA',x,ra,'#lgAs'),b=plot('#lgB',y,rb,'#lgBs');
+  $('#lgText').textContent=(a&&b)?'With bell-curve noise both directions pass the check. The two models are indistinguishable, so the direction is not identified. The data are equally happy with X causing Y and Y causing X.':'With flat noise the wrong direction gives itself away: the leftovers form a diamond, wide in the middle and pinched at the ends. Only X causing Y leaves clean, unrelated leftovers, so the direction is identified.';
+}
+seg('#lgSeg',v=>{lgMode=v;drawLG();});
+
+/* ---------- 9. summary DAG ---------- */
+(function(){
+  const svg=$('#smSvg');
+  const CL=[{k:'C',name:'Market context',x:110,y:220,col:'#64d2ff'},{k:'U',name:'Upper-funnel media',x:300,y:110,col:'#bf5af2'},{k:'D',name:'Demand signals',x:455,y:300,col:'#ff9f0a'},{k:'L',name:'Lower funnel',x:610,y:150,col:'#30d158'},{k:'O',name:'Outcome',x:745,y:300,col:'#ff375f'}];
+  const ND=[['Season','C',100,70],['Economy','C',100,220],['Competitor price','C',100,370],['TV','U',285,60],['Video','U',285,175],['Social','U',285,290],['Awareness','D',450,120],['Search interest','D',450,270],['Paid search','L',600,360],['Site visits','L',620,190],['Sales','O',755,270]];
+  const ED=[[0,3],[0,7],[0,10],[0,8],[1,10],[1,7],[2,10],[3,6],[4,6],[5,6],[5,9],[6,7],[7,8],[7,9],[8,9],[9,10],[3,10]];
+  const ci=k=>CL.findIndex(c=>c.k===k),members=CL.map(c=>ND.map((n,i)=>n[1]===c.k?i:-1).filter(i=>i>=0));
+  const end=ND.map((n,i)=>{const c=CL[ci(n[1])],m=members[ci(n[1])],j=m.indexOf(i),a=j/m.length*2*Math.PI-Math.PI/2,rad=m.length>1?19:0;return{x:c.x+rad*Math.cos(a),y:c.y+rad*Math.sin(a)};});
+  const sumSet=new Set();ED.forEach(([a,b])=>{const ca=ND[a][1],cb=ND[b][1];if(ca!==cb)sumSet.add(ca+cb);});const SE=[...sumSet];
+  const gB=el('g',{},svg),gS=el('g',{},svg),gF=el('g',{},svg),gN=el('g',{},svg);
+  const bub=CL.map(c=>{const g=el('g',{opacity:0},gB);el('circle',{cx:c.x,cy:c.y,r:46,fill:c.col,'fill-opacity':.16,stroke:c.col,'stroke-width':2},g);const t=el('text',{x:c.x,y:c.y<200?c.y-58:c.y+68,'text-anchor':'middle',class:'cap',style:'font-size:14px;font-weight:600;fill:#f5f5f7'},g);t.textContent=c.name;return g;});
+  const sE=SE.map(k=>edge(gS,CL[ci(k[0])],CL[ci(k[1])],{r:48,cls:''}));gS.setAttribute('opacity',0);
+  const fE=ED.map(([a,b])=>edge(gF,{x:ND[a][2],y:ND[a][3]},{x:ND[b][2],y:ND[b][3]},{r:20}));
+  const nE=ND.map(n=>{const g=el('g',{class:'node'},gN);const c=el('circle',{r:20,stroke:CL[ci(n[1])].col},g);c.style.stroke=CL[ci(n[1])].col;const t=el('text',{'text-anchor':'middle',y:36,class:'cap'},g);t.textContent=n[0];return{g,c,t};});
+  let T=0,target=0,raf=0;
+  function draw(t){const e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,pos=ND.map((n,i)=>({x:n[2]+(end[i].x-n[2])*e,y:n[3]+(end[i].y-n[3])*e})),r=20-12*e;
+    nE.forEach((o,i)=>{o.g.setAttribute('transform',`translate(${pos[i].x},${pos[i].y})`);o.c.setAttribute('r',r);o.t.setAttribute('opacity',Math.max(0,1-e*2.2));});
+    fE.forEach((g,i)=>{const[a,b]=ED[i];g._set(pos[a],pos[b],true,r,r);});gF.setAttribute('opacity',Math.max(0,1-e*1.6));
+    bub.forEach(b=>b.setAttribute('opacity',e));gS.setAttribute('opacity',Math.max(0,(e-.45)/.55));
+    $('#smCount').textContent=e<.5?`${ND.length} nodes, ${ED.length} arrows`:`${CL.length} clusters, ${SE.length} arrows. The one pair left unconnected, demand signals and outcome, is the claim that survives: demand signals reach sales only through lower-funnel activity.`;}
+  function tick(){T+=(target>T?1:-1)*.022;if((target===1&&T>=1)||(target===0&&T<=0)){T=target;draw(T);return;}draw(T);raf=requestAnimationFrame(tick);}
+  seg('#smSeg',v=>{target=+v;cancelAnimationFrame(raf);if(reduced){T=target;draw(T);}else tick();});draw(0);
+})();
+
+/* ---------- 10. E-value ---------- */
+function drawEV(){const rr=$('#evR').value/100,e=rr+Math.sqrt(rr*(rr-1));$('#evRv').textContent=rr.toFixed(2);$('#evOut').textContent=e.toFixed(2);
+  $('#evText').textContent=rr<1.01?'With no observed association there is nothing to explain away.':`A hidden factor would need to be associated with both exposure and conversion by a risk ratio of at least ${e.toFixed(2)}, beyond the measured controls, to reduce this finding to nothing. ${e<2?'A confounder of that strength is easy to imagine in media data. Treat the finding as fragile.':e<4?'Ask whether anything unmeasured in this market could plausibly be that strong.':'That is a strong confounder. The finding is fairly robust, though strength of evidence is still a judgment call.'}`;}
+$('#evR').oninput=drawEV;
+
+
+/* ---------- Table 2 close-up ---------- */
+(function(){
+  const notes={
+    tv:['ok','Identified effect','The controls were chosen to close the backdoor paths into TV spend. Under the diagram, this coefficient is the effect of changing TV. It is the only row the model was designed to answer.'],
+    price:['bad','An association','Category demand moves competitor pricing and your sales together, and demand is not in the model. This number mixes whatever price does with whatever demand does. Its stars describe precision only.'],
+    promo:['warn','A partial, possibly biased, direct effect','Promotions are planned alongside media, so part of what they do runs through TV timing, which is held fixed here. Their own confounders, such as inventory pressure, are also uncontrolled.'],
+    season:['warn','A direct effect only','Seasonality drives sales and also drives how much TV is bought. With TV in the model, the route through TV is blocked. The row understates what seasonality does in total.'],
+    search:['bad','A mediator soaking up credit','Branded search is caused by TV and by demand. Including it steals part of the TV effect and opens a path through demand. Its large coefficient reflects where it sits in the diagram.']};
+  const tb=$('#t2Reg'),v=$('#t2RegV');
+  function pick(k){$$('tr[data-k]',tb).forEach(r=>r.classList.toggle('sel',r.dataset.k===k));const n=notes[k];v.className='verdict '+n[0];v.innerHTML='<b>'+n[1]+'</b>'+n[2];}
+  $$('tr[data-k]',tb).forEach(r=>r.onclick=()=>pick(r.dataset.k));pick('price');
+  const svg=$('#t2Svg'),P={U:{x:180,y:36,s:'U',label:'Category demand (hidden)',capY:-30},Z:{x:60,y:110,s:'Z',label:'Competitor price',capY:44},X:{x:180,y:170,s:'X',label:'Ad spend'},Y:{x:300,y:110,s:'Y',label:'Sales',capY:44}};
+  edge(svg,P.U,P.Z,{cls:'bad flow',r:22});edge(svg,P.U,P.Y,{cls:'bad flow',r:22});edge(svg,P.Z,P.X,{r:22});edge(svg,P.X,P.Y,{cls:'good',r:22});
+  node(svg,P.U,{r:22,cls:'hid'});node(svg,P.Z,{r:22,cls:'cond'});node(svg,P.X,{r:22,cls:'tx'});node(svg,P.Y,{r:22,cls:'oc'});
+})();
+function t2fit(n,a,seed){
+  const R=rng(seed);let sx=0,sz=0,sy=0;const X=[],Z=[],Y=[];
+  for(let i=0;i<n;i++){const u=R.n(),z=a*u+R.n(),x=.8*z+R.n(),y=.5*x+1.0*u+R.n();X.push(x);Z.push(z);Y.push(y);sx+=x;sz+=z;sy+=y;}
+  const mx=sx/n,mz=sz/n,my=sy/n;let Sxx=0,Szz=0,Sxz=0,Sxy=0,Szy=0;
+  for(let i=0;i<n;i++){const x=X[i]-mx,z=Z[i]-mz,y=Y[i]-my;Sxx+=x*x;Szz+=z*z;Sxz+=x*z;Sxy+=x*y;Szy+=z*y;}
+  const det=Sxx*Szz-Sxz*Sxz,bx=(Szz*Sxy-Sxz*Szy)/det,bz=(Sxx*Szy-Sxz*Sxy)/det;let rss=0;
+  for(let i=0;i<n;i++){const e=(Y[i]-my)-bx*(X[i]-mx)-bz*(Z[i]-mz);rss+=e*e;}
+  const s2=rss/(n-3);return{bx,bz,sx:Math.sqrt(s2*Szz/det),sz:Math.sqrt(s2*Sxx/det)};
+}
+function ivDraw(id,sid,b,se,truth){
+  const t=$(id),lo=-.5,hi=1.5,pc=v=>Math.max(0,Math.min(100,(v-lo)/(hi-lo)*100)),l=b-1.645*se,h=b+1.645*se,ok=truth>=l&&truth<=h;
+  t.innerHTML=`<div class="ivzero" style="left:${pc(0)}%"></div><div class="ivband" style="left:${pc(l)}%;width:${Math.max(.6,pc(h)-pc(l))}%;background:${ok?'rgba(48,209,88,.55)':'rgba(255,69,58,.6)'}"></div><div class="ivdot" style="left:calc(${pc(b)}% - 2px)"></div><div class="ivtruth" style="left:${pc(truth)}%"></div>`;
+  $(sid).innerHTML=`<b style="color:${ok?'#1d8a3a':'#d70015'}">${fmt(b)}</b> &plusmn; ${(1.645*se).toFixed(2)}<br><span class="muted">truth ${fmt(truth)}</span>`;return ok;
+}
+function drawT2(){
+  const a=$('#t2A').value/100,n=+$('#t2N').value;$('#t2Av').textContent=Math.round(a*100)+'%';$('#t2Nv').textContent=n.toLocaleString();
+  const f=t2fit(n,a,31),okx=ivDraw('#t2X','#t2Xs',f.bx,f.sx,.5),okz=ivDraw('#t2Z','#t2Zs',f.bz,f.sz,0),V=$('#t2V');
+  $('#t2Cov').textContent='How often does each interval contain the truth?';
+  if(!okz){V.className='verdict bad';V.innerHTML='<b>Same table, one right row and one wrong row</b>The ad spend interval sits on the truth. The competitor price interval is tight, starred, and nowhere near zero. Add weeks and it gets narrower around the same wrong value.';}
+  else{V.className='verdict ok';V.innerHTML='<b>Both rows land</b>With hidden demand disconnected from competitor price, that control happens to have no open backdoor. This is luck in the diagram, and nothing in the regression output tells you whether you have it.';}
+}
+['#t2A','#t2N'].forEach(i=>$(i).oninput=drawT2);
+$('#t2Run').onclick=()=>{const a=$('#t2A').value/100,n=Math.min(+$('#t2N').value,3000);let cx=0,cz=0;const K=300;
+  for(let k=0;k<K;k++){const f=t2fit(n,a,1000+k);if(Math.abs(f.bx-.5)<=1.645*f.sx)cx++;if(Math.abs(f.bz)<=1.645*f.sz)cz++;}
+  $('#t2Cov').innerHTML=`Ad spend: <b style="color:#1d8a3a">${Math.round(cx/K*100)}%</b> of intervals contain the truth. Competitor price: <b style="color:${cz/K>.8?'#1d8a3a':'#d70015'}">${Math.round(cz/K*100)}%</b>.`;};
+
+/* ---------- Targeting ---------- */
+const TG=(function(){
+  const R=rng(101),N=3000,b=[],tau=[],sc={rand:[],prop:[],up:[]};
+  for(let i=0;i<N;i++){const z=R.n(),r=R.u(),bi=1/(1+Math.exp(-(-2.2+1.8*z)));let t=.12*Math.exp(-((z-.5)**2)/.8)*(.4+1.2*r);t=Math.max(0,Math.min(t,.98-bi));
+    b.push(bi);tau.push(t);sc.rand.push(R.u());sc.prop.push(bi+.02*R.n());sc.up.push(t+.015*R.n());}
+  const ord={};for(const k in sc)ord[k]=[...Array(N).keys()].sort((i,j)=>sc[k][j]-sc[k][i]);
+  return{N,b,tau,ord};
+})();
+const tg={strat:'prop'};
+function tgStats(k,frac){
+  const {N,b,tau,ord}=TG,m=Math.max(1,Math.round(N*frac)),inS=new Uint8Array(N);let sb=0,st=0;
+  for(let j=0;j<m;j++){const i=ord[k][j];inS[i]=1;sb+=b[i];st+=tau[i];}
+  let ob=0;for(let i=0;i<N;i++)if(!inS[i])ob+=b[i];const scale=100000/N,cost=2*m*scale;
+  return{inS,m,rate:(sb+st)/m,base:sb/m,inc:st*scale,orders:(sb+st)*scale,cpa:cost/((sb+st)*scale),cpi:cost/(st*scale),naive:((sb+st)/m)/(ob/(N-m))-1,hold:(st/m)/(sb/m)};
+}
+function drawTG(){
+  const frac=$('#tgB').value/100;$('#tgBv').textContent=Math.round(frac*100)+'%';
+  const S={rand:tgStats('rand',frac),prop:tgStats('prop',frac),up:tgStats('up',frac)},names={rand:'Random',prop:'Propensity score',up:'Uplift model'},keys=['rand','prop','up'];
+  const best=(f,lo)=>keys.reduce((a,k)=>(lo?f(S[k])<f(S[a]):f(S[k])>f(S[a]))?k:a,keys[0]),bRate=best(s=>s.rate),bCpa=best(s=>s.cpa,1),bInc=best(s=>s.inc),bCpi=best(s=>s.cpi,1);
+  const money=v=>'$'+(v>=100?Math.round(v).toLocaleString():v.toFixed(1));
+  $('#tgTable').innerHTML='<tr><th>Strategy</th><th>Audience order rate</th><th>$ per order<br>(dashboard)</th><th>Incremental orders</th><th>$ per incremental order</th></tr>'+keys.map(k=>{const s=S[k];
+    return `<tr class="${k===tg.strat?'sel':''}"><td><b>${names[k]}</b></td><td class="num ${k===bRate?'win':''}">${(s.rate*100).toFixed(1)}%</td><td class="num ${k===bCpa?'win':''}">${money(s.cpa)}</td><td class="num ${k===bInc?'win':''}">${Math.round(s.inc).toLocaleString()}</td><td class="num ${k===bCpi?'win':(k==='prop'?'lose':'')}">${money(s.cpi)}</td></tr>`;}).join('');
+  const s=S[tg.strat],V=$('#tgV');
+  if(tg.strat==='prop'){V.className='verdict bad';V.innerHTML=`<b>Best dashboard, weak result</b>This audience orders at ${(s.rate*100).toFixed(0)}%, and ${(s.base/s.rate*100).toFixed(0)}% of those orders would have arrived with no ad at all. Its incremental orders are ${s.inc>S.rand.inc*1.15?'somewhat above':(s.inc<S.rand.inc*.87?'below':'about the same as')} what picking names at random would produce.`;}
+  else if(tg.strat==='up'){V.className='verdict ok';V.innerHTML=`<b>Worse dashboard, far better result</b>The audience order rate falls to ${(s.rate*100).toFixed(0)}%, and incremental orders are ${(s.inc/S.prop.inc).toFixed(1)} times the propensity audience on the same spend. Dollars per incremental order drop from ${money(S.prop.cpi)} to ${money(s.cpi)}.`;}
+  else{V.className='verdict warn';V.innerHTML=`<b>The honest baseline</b>Random selection is the bar any targeting method has to clear on incremental terms. It also happens to be the only strategy here whose results can be read without a holdout.`;}
+  const {g,w,h}=setup($('#tgC')),pad=36,X=v=>pad+v*(w-pad-12),Y=v=>h-pad-v/.22*(h-pad-14),{N,b,tau}=TG;
+  g.strokeStyle='#3a3a3c';g.lineWidth=1;g.beginPath();g.moveTo(pad,10);g.lineTo(pad,h-pad);g.lineTo(w-8,h-pad);g.stroke();
+  g.fillStyle='#86868b';g.font='12px -apple-system,Helvetica,Arial';g.fillText('0%',pad-4,h-pad+16);g.fillText('orders without ad → 100%',w-170,h-pad+16);g.save();g.translate(14,h/2+60);g.rotate(-Math.PI/2);g.fillText('added by the ad →',0,0);g.restore();
+  const col={rand:'255,159,10',prop:'255,69,58',up:'48,209,88'}[tg.strat];
+  for(let i=0;i<N;i++)if(!s.inS[i]){g.fillStyle='rgba(152,152,157,.22)';g.beginPath();g.arc(X(b[i]),Y(tau[i]),2.2,0,6.3);g.fill();}
+  for(let i=0;i<N;i++)if(s.inS[i]){g.fillStyle='rgba('+col+',.85)';g.beginPath();g.arc(X(b[i]),Y(tau[i]),2.8,0,6.3);g.fill();}
+  g.fillStyle='rgba(245,245,247,.75)';g.font='600 13px -apple-system,Helvetica,Arial';g.fillText('Lost causes',X(.02),Y(.012)-26);g.fillText('Persuadables',X(.2),Y(.205));g.fillText('Sure things',X(.8),Y(.012)-26);
+  const p=S.prop,mx=Math.max(p.naive,p.hold,.01);$('#tgBar1').style.width='100%';$('#tgBar2').style.width=Math.max(.5,p.hold/p.naive*100)+'%';
+  $('#tgBar1v').textContent='+'+Math.round(p.naive*100)+'%';$('#tgBar2v').textContent='+'+Math.round(p.hold*100)+'%';
+}
+seg('#tgSeg',v=>{tg.strat=v;drawTG();});$('#tgB').oninput=drawTG;
+(function(){
+  const svg=$('#tgSvg'),P={I:{x:190,y:44,s:'I',label:'Purchase intent',capY:-32},M:{x:70,y:118,s:'M',label:'Model score',capY:-30},A:{x:70,y:196,s:'A',label:'Sees ad'},Y:{x:310,y:196,s:'Y',label:'Orders'},C:{x:190,y:140,s:'◎',label:'Coin flip',capY:-28}};
+  const im=edge(svg,P.I,P.M,{cls:'bad flow',r:22}),ma=edge(svg,P.M,P.A,{cls:'bad flow',r:22}),iy=edge(svg,P.I,P.Y,{cls:'bad flow',r:22}),ay=edge(svg,P.A,P.Y,{cls:'good flow',r:22}),ca=edge(svg,P.C,P.A,{cls:'gone',r:22});
+  node(svg,P.I,{r:22});const nm=node(svg,P.M,{r:22});node(svg,P.A,{r:22,cls:'tx'});node(svg,P.Y,{r:22,cls:'oc'});const nc=node(svg,P.C,{r:22});nc.style.transition='opacity .5s';nc.style.opacity=0;
+  seg('#tgDagSeg',v=>{const r=v==='rct';ma.setAttribute('class','edge '+(r?'cut off':'bad flow'));im.setAttribute('class','edge '+(r?'off':'bad flow'));iy.setAttribute('class','edge '+(r?'off':'bad flow'));ca.setAttribute('class','edge '+(r?'good':'gone'));nc.style.opacity=r?1:0;});
+})();
+
+
+/* ---------- workflow ---------- */
+(function(){
+  const L=(k,t)=>`<a href="${k.startsWith('#')?k:V+k}">${t}</a>`;
+  const WF=[
+   {t:'Frame the decision',s:'Write the question as an action someone could take.',
+    d:['Name the lever, the outcome, the population and the time window.','Decide whether this is a seeing question (forecast, rank, flag) or a doing question (choose, change, allocate).','State the quantity in words: "the change in weekly orders if we raise TV spend by 20% for eight weeks."'],
+    o:'A one-sentence estimand that a non-analyst would agree is the thing they want to know.',
+    x:'The question is a forecast. A predictive model is the right tool and the rest of this workflow is optional.',
+    l:[L('#two','Chapter 2')]},
+   {t:'Draw the diagram',s:'Get the assumptions out of heads and onto a page.',
+    d:['List the treatment, the outcome, and everything that plausibly influences both.','Run a short workshop with the people who plan and buy the media. Record each proposed link as cause, condition and effect.','A language model can draft a first structure. Treat every proposed arrow as a suggestion that a human must confirm.','Add the variables you cannot measure. Draw them dashed.','If the diagram passes about fifteen nodes, cluster it into a summary for discussion.'],
+    o:'A DAG with every missing arrow defended, plus a list of unmeasured variables.',
+    x:'Two experts draw opposite arrows. Keep both diagrams and carry both forward. Where they imply different answers is where an experiment pays for itself.',
+    l:[L('#dags','Chapter 3'),L('#summ','Chapter 9')]},
+   {t:'Check causal identification',s:'With unlimited data on what you measured, could you answer the question?',
+    d:['List every path from treatment to outcome and mark each as causal or non-causal.','Look for a measured set that blocks every backdoor path and contains nothing downstream of the treatment.','If discovery software drew part of your diagram, check which edges it left undirected.'],
+    o:'Either a named adjustment set, or a written statement that the effect is not identified from this data and why.',
+    x:'An open backdoor runs through an unmeasured variable. Stop modeling and go to stage five to change the design.',
+    l:[L('#dsep','Chapter 4'),L('#do','Chapter 5'),L('#mec','Chapter 8')]},
+   {t:'Check the data can carry it',s:'Identification on paper still needs variation in the spreadsheet.',
+    d:['Plot the distribution of treatment within each level of the controls. Look for groups that are always or never treated.','Check correlation among treatments you want to separate. If two channels move together, plan to report their sum.','Run a power calculation for the smallest effect worth acting on. Halving the detectable effect roughly quadruples the sample needed.'],
+    o:'An overlap plot, a statement of which effects can be separated, and a minimum detectable effect.',
+    x:'Trimming to the region of overlap would remove the customers the decision is about. The estimate would describe a different population.',
+    l:[L('#ident','Chapter 6')]},
+   {t:'Choose the design',s:'Pick the weakest set of assumptions that still answers the question.',
+    d:['If you can assign the treatment, randomize: user-level holdouts where spillover is small, geo experiments where it is not.','If something outside your control assigned it nearly at random, use the matching quasi-experiment.','If neither, use adjustment with the set from stage three and commit to stage seven.','Fix the analysis plan before looking at outcomes.'],
+    o:'A design, its key assumption in one sentence, and the population its estimate will describe.',
+    x:'The only available design answers a narrower question than the one in stage one. Tell the decision-maker before running it.',
+    l:['Design router below']},
+   {t:'Estimate',s:'One treatment per model.',
+    d:['Use only controls fixed before the treatment was assigned.','In an experiment, add controls that predict the outcome to tighten the interval. In observational work, add only what the diagram requires.','With many controls and flexible learners, residualize both the outcome and the treatment and cross-fit.','Report the treatment row. Grey out the rest.'],
+    o:'An effect estimate with an interval, in the units of the decision.',
+    x:'The estimate moves a lot when a post-treatment variable such as site traffic or branded search enters or leaves. It was acting as a mediator or collider.',
+    l:[L('#table2','Table 2 close-up')]},
+   {t:'Stress test',s:'Find out how wrong the assumptions would have to be.',
+    d:['Name the single assumption carrying the most weight.','Use the sensitivity tool that matches the design: an E-value or omitted-variable bound for adjustment, a parallel-trends robustness interval for difference-in-differences, a stationarity stress test for time-based geo analysis.','Express the breaking point in units people can judge, such as "a hidden factor twice as strong as seasonality."','Run placebo checks on untreated periods or regions. Treat a pass as the absence of one known problem.'],
+    o:'A breakdown value: the size of violation at which the conclusion flips.',
+    x:'The sensitivity-aware interval is no wider than the original. The range of violations you allowed was probably too narrow.',
+    l:[L('#limits','Chapter 10')]},
+   {t:'Report the boundary',s:'Say what is identified, under what, and what is not.',
+    d:['Lead with the decision and the estimate.','List the assumptions the estimate depends on and the breakdown value for each.','State which requested numbers could not be identified, and what data or test would identify them.','Separate what the data taught you from what came from priors.'],
+    o:'A one-page readout with three headings: identified, identified under assumptions, not identified.',
+    x:'Someone asks for the effect of a control variable. That is a new question and returns to stage one.',
+    l:[L('#check','Five questions')]},
+   {t:'Close the loop',s:'Use each answer to make the next question cheaper.',
+    d:['Feed experiment results into ongoing models as evidence about the model-implied lift for the same regions, weeks and spend, with carryover weeks included.','Check that the experiment and the model are measuring the same thing. A heavy-up test measures a marginal return and a go-dark test measures an average one.','Widen the experiment’s reported uncertainty before using it elsewhere, since conditions will differ.','Plan the next test where the diagrams from stage two disagreed or where sensitivity was worst.'],
+    o:'An updated model, and a ranked list of the next experiments.',
+    x:'The model and the experiment disagree sharply. Averaging them produces a number neither supports. Decide explicitly which one yields and say why.',
+    l:[L('faq.html#mmm-experiments','FAQ: experiments and MMM')]}];
+  const tl=$('#wfTL');
+  WF.forEach((w,i)=>{const d=document.createElement('div');d.className='st rv';
+    d.innerHTML=`<div class="n">${i+1}</div><h3>${w.t}</h3><div class="muted">${w.s}</div><div class="cols"><div><h5 style="color:var(--teal)">Do</h5><ul>${w.d.map(x=>'<li>'+x+'</li>').join('')}</ul></div><div><h5 style="color:var(--green)">Deliverable</h5>${w.o}<div class="links">See ${w.l.join(' · ')}</div></div><div><h5 style="color:var(--orange)">Stop and rethink if</h5>${w.x}</div></div>`;
+    tl.appendChild(d);io.observe(d);});
+
+  const T={
+   start:{q:'Can you decide who, or which markets, receive the treatment?',o:[['Yes, I control assignment','rand'],['No, it already happened or someone else decides','nat']]},
+   rand:{q:'Can you assign it person by person without one person’s exposure affecting another’s outcome?',o:[['Yes','R_user'],['No: shared screens, offline sales, or no user-level delivery','R_geo']]},
+   nat:{q:'Did anything outside the business assign the treatment in a way unrelated to the outcome?',o:[['A random nudge or encouragement','R_iv'],['A staggered rollout across groups','R_did'],['A sharp eligibility cutoff','R_rd'],['One treated market, many untreated ones','R_sc'],['None of these','obs']]},
+   obs:{q:'Does your diagram show a measured set of variables that blocks every backdoor path?',o:[['Yes','R_adj'],['No, or I am unsure','R_no']]}};
+  const R={
+   R_user:['ok','Randomized user-level holdout','<p><b>Assumes:</b> assignment was truly random and held-out users were not exposed.</p><p><b>Estimates:</b> the average effect for the people eligible to be targeted.</p><p><b>Watch for:</b> small effects against noisy outcomes. Size the test first, and use pre-period behavior as a covariate to tighten the interval.</p>'],
+   R_geo:['ok','Geo experiment','<p><b>Assumes:</b> treatment and control regions are comparable, and with few regions, that their relationship stays stable from the pretest into the test.</p><p><b>Estimates:</b> incremental return on the spend change in the treated regions.</p><p><b>Watch for:</b> too few regions, a cooldown too short for lagged effects, and spillover across region borders. Stratify assignment on pretest volume.</p>'],
+   R_iv:['warn','Instrumental variables','<p><b>Assumes:</b> the nudge shifts treatment, and affects the outcome only through treatment. The second part cannot be tested and must be argued.</p><p><b>Estimates:</b> the effect for people whose behavior the nudge changed. That group may differ from the one your decision is about.</p><p><b>Watch for:</b> a nudge that barely moves treatment.</p>'],
+   R_did:['warn','Difference-in-differences','<p><b>Assumes:</b> treated and untreated groups would have followed the same trend without the treatment.</p><p><b>Estimates:</b> the average effect on the groups that were treated.</p><p><b>Watch for:</b> a clean-looking pre-period, which is weak evidence. Report how large a trend difference the conclusion can survive.</p>'],
+   R_rd:['warn','Regression discontinuity','<p><b>Assumes:</b> units just above and just below the cutoff are alike, and nobody can manipulate which side they land on.</p><p><b>Estimates:</b> the effect for units near the cutoff only.</p><p><b>Watch for:</b> bunching at the threshold and jumps in pre-treatment characteristics.</p>'],
+   R_sc:['warn','Synthetic control','<p><b>Assumes:</b> a weighted blend of untreated markets tracks the treated one before the change and would have continued to.</p><p><b>Estimates:</b> the effect on that one treated market.</p><p><b>Watch for:</b> a poor pre-period fit and donor markets that were themselves affected. Use placebo runs on the donors for inference.</p>'],
+   R_adj:['warn','Adjustment, with a sensitivity analysis','<p><b>Assumes:</b> the diagram is right and no unmeasured common cause remains. This is the strongest assumption on the list.</p><p><b>Estimates:</b> the average effect in the region where treated and untreated units overlap.</p><p><b>Watch for:</b> evidence from real ad campaigns that rich controls still leave large bias. Report a breakdown value alongside the estimate, and plan a test.</p>'],
+   R_no:['bad','Not identified from this data','<p>No estimator will fix this, and a model will still return a number if asked.</p><p><b>Options:</b> measure the missing variable, create variation with a holdout or geo test, or report an honest range that shows how the answer depends on the unmeasured factor.</p><p><b>Tell the decision-maker</b> what test would settle it and what it would cost.</p>']};
+  let trail=[];
+  function show(k){
+    if(R[k]){const r=R[k];$('#rtQ').textContent='';$('#rtOpts').innerHTML='';$('#rtOut').className='verdict '+r[0];$('#rtOut').innerHTML='<b>'+r[1]+'</b>'+r[2];}
+    else{const n=T[k];$('#rtQ').textContent=n.q;$('#rtOpts').innerHTML='';n.o.forEach(([t,to])=>{const b=document.createElement('button');b.className='btn sm ghost';b.textContent=t;b.onclick=()=>{trail.push(t);show(to);};$('#rtOpts').appendChild(b);});
+      if(k==='start'){$('#rtOut').className='verdict';$('#rtOut').style.background='rgba(120,120,128,.14)';$('#rtOut').innerHTML='<b>Your design appears here</b><span class="muted">Designs are ordered by how much they ask you to assume. Randomization asks least.</span>';}}
+    if(R[k])$('#rtOut').style.background='';$('#rtTrail').textContent=trail.join('  ›  ');
+  }
+  $('#rtReset').onclick=()=>{trail=[];show('start');};show('start');
+})();
+
+/* ---------- sources (rendered) ---------- */
+const SRC={
+ dag:{t:'Directed Acyclic Graphs',u:'Research/Econometrics/Foundations/Directed-Acyclic-Graphs',f:'DAG basics, junctions, backdoor formula',o:'Harrison, G. (2023). "Unlock the Secrets of Causal Inference with a Master Class in Directed Acyclic Graphs." Towards Data Science, 6 April 2023. The note also draws on Pearl & Mackenzie, The Book of Why.'},
+ dagci:{t:'DAGs and Causal Identification',u:'Research/Econometrics/Identification-Strategies/DAGs-and-Causal-Identification',f:'d-separation, valid adjustment sets, the three junction examples',o:'Harrison, G. (2023), Towards Data Science, as above.'},
+ mf:{t:'Markov and Faithfulness Assumptions',u:'Research/Causal-Discovery/Constraint-and-Score-Based-Discovery/Markov-and-Faithfulness-Assumptions',f:'Formal d-separation, Markov, faithfulness, equivalence classes, CPDAGs',o:'Glymour, C., Zhang, K. & Spirtes, P. (2019). "Review of Causal Discovery Methods Based on Graphical Models." Frontiers in Genetics 10:524, Sec. 2.'},
+ cdo:{t:'Causal Discovery - Overview',u:'Research/Causal-Discovery/Constraint-and-Score-Based-Discovery/Causal-Discovery---Overview',f:'Method families and comparison table',o:'Glymour, Zhang & Spirtes (2019), Secs. 1-3, 8 and Table 1.'},
+ pc:{t:'PC Algorithm and Constraint-Based Discovery',u:'Research/Causal-Discovery/Constraint-and-Score-Based-Discovery/PC-Algorithm-and-Constraint-Based-Discovery',f:'PC walk-through, FCI',o:'Glymour, Zhang & Spirtes (2019), Secs. 3.1-3.2, Figs. 1-2.'},
+ ges:{t:'GES and Score-Based Discovery',u:'Research/Causal-Discovery/Constraint-and-Score-Based-Discovery/GES-and-Score-Based-Discovery',f:'Score-based search',o:'Glymour, Zhang & Spirtes (2019), Sec. 3.3; Chickering (2003).'},
+ fcm:{t:'Functional Causal Models (LiNGAM, ANM)',u:'Research/Causal-Discovery/Constraint-and-Score-Based-Discovery/Functional-Causal-Models-%28LiNGAM,-ANM%29',f:'Noise asymmetry and direction beyond the equivalence class',o:'Glymour, Zhang & Spirtes (2019), Sec. 4, Fig. 3.'},
+ notears:{t:'NOTEARS - Overview',u:'Research/Causal-Discovery/NOTEARS---Overview',f:'Continuous-optimization structure learning',o:'Zheng, X., Aragam, B., Ravikumar, P. & Xing, E. (2018). "DAGs with NO TEARS: Continuous Optimization for Structure Learning." NeurIPS.'},
+ sum:{t:'Summary Causal DAGs',u:'Research/Bayesian-Statistics/Causal-Inference/Foundations/Summary-Causal-DAGs',f:'Summary DAG definition, node contraction, NP-hardness',o:'Zeng et al. (2025). "Causal DAG Summarization (Full Version)," Secs. 2-3.'},
+ ssep:{t:'s-Separation in Summary DAGs',u:'Research/Bayesian-Statistics/Causal-Inference/Foundations/s-Separation-in-Summary-DAGs',f:'Reading independence from a summary',o:'Zeng et al. (2025), Sec. 4.2.'},
+ dosum:{t:'Do-Calculus in Summary Causal DAGs',u:'Research/Bayesian-Statistics/Causal-Inference/Foundations/Do-Calculus-in-Summary-Causal-DAGs',f:'do-calculus background; soundness and completeness on summaries',o:'Zeng et al. (2025), Sec. 6; builds on Pearl\u2019s do-calculus and the Shpitser-Pearl completeness result.'},
+ lra:{t:'Logic of Regression Adjustment',u:'Research/Research-Methodology/Logic-of-Regression-Adjustment',f:'Conditions for adjustment; one adjustment set identifies one effect',o:'Nafa, A. J. (2022). "These Are Not the Effects You Are Looking For."'},
+ t2:{t:'Table 2 Fallacy',u:'Research/Research-Methodology/Table-2-Fallacy',f:'Why control coefficients are not effects',o:'Nafa (2022), as above; term from Westreich, D. & Greenland, S. (2013), American Journal of Epidemiology.'},
+ npb:{t:'Nuisance Parameter Bias Simulation',u:'Research/Research-Methodology/Nuisance-Parameter-Bias-Simulation',f:'Coverage figures for control coefficients',o:'Nafa (2022), simulation study.'},
+ ab:{t:'Activity Bias in Advertising',u:'Research/Research-Methodology/Activity-Bias-in-Advertising',f:'Yahoo! experiment versus observational estimates',o:'Lewis, R. A., Rao, J. M. & Reiley, D. H. (2011). "Here, There, and Everywhere: Correlated Online Behaviors Can Lead to Overestimates of the Effects of Advertising." SSRN 2080235.'},
+ dillon:{t:'Dillon et al - SHAP and Causal Insights - Overview',u:'Research/Model-Validation-and-Interpretability/Explanations,-Causality-and-Proxies/Dillon-et-al---SHAP-and-Causal-Insights/Dillon-et-al---SHAP-and-Causal-Insights---Overview',f:'Prediction tasks versus causal tasks; the retention example',o:'Dillon, E., LaRiviere, J., Lundberg, S., Roth, J. & Syrgkanis, V. "Be Careful When Interpreting Predictive Models in Search of Causal Insights." SHAP documentation; also Towards Data Science.'},
+ dillonu:{t:'Dillon et al - Unobserved Confounding and Quasi-Experimental Remedies',u:'Research/Model-Validation-and-Interpretability/Explanations,-Causality-and-Proxies/Dillon-et-al---SHAP-and-Causal-Insights/Dillon-et-al---Unobserved-Confounding-and-Quasi-Experimental-Remedies',f:'Discount figures (\u22121.29, \u22121.08, +0.06); remedies under hidden confounding',o:'Dillon et al., as above. The three figures are the vault\u2019s own replication of the notebook\u2019s simulation.'},
+ sens:{t:'Sensitivity Analysis in Observational Studies',u:'Research/Bayesian-Statistics/Causal-Inference/Sensitivity-and-Complex-Mechanisms/Sensitivity-Analysis-in-Observational-Studies',f:'E-value, untestable unconfoundedness, transparent parametrization',o:'Li, F., Ding, P. & Mealli, F. (2022). "Bayesian Causal Inference: A Critical Review," Sec. 6; VanderWeele, T. & Ding, P. (2017), Annals of Internal Medicine.'},
+ gen:{t:'General Structure of Bayesian Causal Inference',u:'Research/Bayesian-Statistics/Causal-Inference/Bayesian-Inference/General-Structure-of-Bayesian-CI',f:'Statistical identifiability; posteriors for unidentified parameters',o:'Li, Ding & Mealli (2022), Sec. 3; Gustafson, P. (2015), Bayesian Inference for Partially Identified Models.'},
+ qa1:{t:'Q: Uncovering Causal Estimates from Non-Experimental Data',u:'Questions-and-Answers/Q---Uncovering-Causal-Estimates-from-Non-Experimental-Data',f:'Quasi-experimental strategies and what each assumes',o:'Vault synthesis, drawing mainly on Angrist, J. & Pischke, J.-S. (2008), Mostly Harmless Econometrics, Chs. 2-6, and Li, Ding & Mealli (2022).'},
+ qa2:{t:'Q: Covariate Adjustment for Precision vs Identification',u:'Questions-and-Answers/Q---Covariate-Adjustment-for-Precision-vs-Identification',f:'Bias that does not shrink with sample size; precision versus identification',o:'Vault synthesis across its notes on CUPED, regression adjustment, double ML and CausalImpact.'},
+ bench:{t:'Experimental Benchmarks for Observational Ad Measurement',u:'Research/Market-Response-Models/User-Level-Ad-Experiments/Experimental-Benchmarks-for-Observational-Ad-Measurement',f:'Observational estimates versus randomized lift in real ad campaigns; loss of overlap under precise targeting',o:'Gordon, B., Zettelmeyer, F., Bhargava, N. & Chapsky, D. (2019). "A Comparison of Approaches to Advertising Measurement." Marketing Science 38(2); Gordon, B., Moakler, R. & Zettelmeyer, F. (2023). "Close Enough? A Large-Scale Exploration of Non-Experimental Approaches to Advertising Measurement."'},
+ gordon:{t:'Gordon et al 2019 - Facebook Experiment Design and Exposure Endogeneity',u:'Research/Market-Response-Models/User-Level-Ad-Experiments/Gordon-et-al-2019---Facebook-Experiment-Design-and-Exposure-Endogeneity',f:'Activity, targeting and competition as sources of exposure selection',o:'Gordon, Zettelmeyer, Bhargava & Chapsky (2019), Secs. 1-2.'},
+ meta:{t:'Metalearners for CATE',u:'Research/Bayesian-Statistics/Causal-Inference/Treatment-Effect-Estimation/Metalearners-for-CATE',f:'Conditional average treatment effects and the two-model (T-learner) approach to uplift',o:'K\u00fcnzel, S., Sekhon, J., Bickel, P. & Yu, B. (2019). "Metalearners for Estimating Heterogeneous Treatment Effects Using Machine Learning." PNAS 116(10).'},
+ elicit:{t:'Knowledge Elicitation (index)',u:'Research/Bayesian-Statistics/Causal-Inference/Knowledge-Elicitation/_Index',f:'Building a causal diagram from expert workshops and language-model drafts',o:'Yamashita, Kanno & Furuta (2020), HCII; Shaposhnyk, Zahorska & Yanushkevich (2025), arXiv; Liu, Yin, Zhang, Zhao & Feng (2025), Computational Linguistics 51(2).'},
+ overlap:{t:'Common Support and Overlap',u:'Research/Econometrics/Identification-Strategies/Propensity-Score-Matching/Common-Support-and-Overlap',f:'Checking overlap; what trimming does to the estimand',o:'Stuart, E. (2010). "Matching Methods for Causal Inference: A Review and a Look Forward." Statistical Science; King & Zeng (2006); Crump et al. (2009).'},
+ power:{t:'Power Analysis and Sample Size',u:'Research/Research-Methodology/Experimental-Design/Power-Analysis-and-Sample-Size',f:'Sizing experiments; detectable effect versus sample size',o:'Lewis, R. & Rao, J. (2015). "The Unfavorable Economics of Measuring the Returns to Advertising." Quarterly Journal of Economics; plus a review article on sample size calculation cited by the note.'},
+ geo:{t:'Geo-Experiment Methodology - Overview',u:'Research/Market-Response-Models/Geo-Experiment-Methodology/Geo-Experiment-Methodology---Overview',f:'Geo experiment design, assumptions and pitfalls',o:'Vaver, J. & Koehler, J. (2011). "Measuring Ad Effectiveness Using Geo Experiments." Google; Kerman, J., Wang, P. & Vaver, J. (2017). "Estimating Ad Effectiveness Using Geo Experiments in a Time-Based Regression Framework." Google.'},
+ iv:{t:'Instrumental Variables',u:'Research/Econometrics/Identification-Strategies/Instrumental-Variables',f:'Instrument requirements and what the estimate describes',o:'Angrist, J. & Pischke, J.-S. (2008). Mostly Harmless Econometrics, Ch. 4.'},
+ unified:{t:'Q: A Unified View of Sensitivity to Assumption Violations',u:'Questions-and-Answers/Q---A-Unified-View-of-Sensitivity-to-Assumption-Violations',f:'Which sensitivity tool fits which design; breakdown values; placebo checks as falsification',o:'Vault synthesis across its notes on Honest DiD, sensitivity analysis in observational studies, Plausible GMM, synthetic control diagnostics and geo-test stationarity.'},
+ mmmprior:{t:'Q: Using Experiment Results as Priors in a Bayesian MMM',u:'Questions-and-Answers/Q---Using-Experiment-Results-as-Priors-in-a-Bayesian-MMM',f:'Feeding experiments into ongoing models; estimand mismatch; conflict between sources',o:'Vault synthesis; the note states that much of its protocol is synthesis and cites Jin et al. on Bayesian MMM priors, Gelman et al. on prior-likelihood conflict, and Blake, Nosko & Tadelis (2015).'},
+ pitfalls:{t:'Q: Common Pitfalls in Statistical Modeling',u:'Questions-and-Answers/Q---Common-Pitfalls-in-Statistical-Modeling',f:'Forking paths, underpowered tests, model checking',o:'Vault synthesis drawing on McElreath, Statistical Rethinking; Gelman et al., Bayesian Data Analysis and "Bayesian Workflow" (2020); Gelman & Loken (2013).'},
+ pearl:{t:null,o:'Background beyond the vault: Pearl, J. (2009). Causality: Models, Reasoning, and Inference, 2nd ed. Cambridge University Press.'}
+};
+$$('.src').forEach(p=>{const ks=p.dataset.src.split(',');const vs=ks.filter(k=>SRC[k].t).map(k=>`<a href="${V+SRC[k].u}">${SRC[k].t}</a>`).join(' \u00b7 ');
+  const os=[...new Set(ks.map(k=>SRC[k].o))].join(' ');p.innerHTML=`<b>Second Brain notes:</b> ${vs}<br><b>Original sources:</b> ${os}`;});
+const tb=$('#srcTable');Object.values(SRC).filter(s=>s.t).forEach(s=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${s.f}</td><td><a href="${V+s.u}">${s.t}</a></td><td>${s.o}</td>`;tb.appendChild(tr);});
+
+/* ---------- draw all ---------- */
+function drawAll(){drawTrap();jdraw.forEach(f=>f());drawBD();drawRidge();drawLG();drawEV();drawT2();drawTG();}
+$('#trapNv').textContent='800';drawAll();
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{drawTrap();jdraw.forEach(f=>f());drawRidge();drawLG();drawTG();},150);});
+})();
+</script>
+</body>
+</html>

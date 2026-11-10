@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FAQ: Seeing vs. Doing</title>
+<meta name="description" content="Practitioner questions on causal identification, DAGs, controls, experiments, sensitivity analysis, media mix models and audience targeting.">
+<style>
+:root{--ink:#1d1d1f;--ink2:#6e6e73;--line:#d2d2d7;--blue:#0071e3;--green:#30d158;--red:#ff453a;--orange:#ff9f0a;--purple:#bf5af2;--teal:#64d2ff;
+--font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Inter,Helvetica,Arial,sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font);color:var(--ink);background:#f5f5f7;-webkit-font-smoothing:antialiased;line-height:1.5;font-size:17px;letter-spacing:-.012em}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+h1,h2,h3{margin:0;letter-spacing:-.025em;line-height:1.08;font-weight:600}
+.wrap{max-width:900px;margin:0 auto;padding:0 22px}
+.gnav{position:sticky;top:0;z-index:50;height:48px;background:rgba(22,22,23,.78);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px)}
+.gnav .wrap{display:flex;align-items:center;height:48px;gap:22px;max-width:1080px}
+.gnav .brand{font-weight:600;font-size:15px;color:#f5f5f7;white-space:nowrap}
+.gnav .links{display:flex;gap:20px;flex:1;justify-content:flex-end;overflow-x:auto;scrollbar-width:none}
+.gnav .links a{color:#d2d2d7;font-size:12px;white-space:nowrap}.gnav .links a.on{color:#fff}
+.hero{background:#000;color:#f5f5f7;padding:96px 0 84px;text-align:center}
+.eyebrow{font-size:19px;font-weight:600;color:var(--teal);margin-bottom:10px}
+.hero h1{font-size:clamp(44px,8vw,88px);letter-spacing:-.04em}
+.grad{background:linear-gradient(90deg,#64d2ff,#bf5af2 55%,#ff375f);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{font-size:clamp(19px,2.2vw,24px);color:#a1a1a6;font-weight:500;max-width:680px;margin:22px auto 0;line-height:1.38}
+.search{margin:34px auto 0;max-width:560px;position:relative}
+.search input{width:100%;font:inherit;font-size:17px;padding:14px 20px;border-radius:980px;border:1px solid #424245;background:#1d1d1f;color:#f5f5f7;outline:none}
+.search input:focus{border-color:#2997ff;box-shadow:0 0 0 4px rgba(41,151,255,.25)}
+.cats{position:sticky;top:48px;z-index:40;background:rgba(245,245,247,.86);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.cats .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:12px;padding-bottom:12px;scrollbar-width:none}
+.cats button{border:0;font:inherit;font-size:14px;font-weight:500;padding:7px 15px;border-radius:980px;background:rgba(120,120,128,.14);color:var(--ink);cursor:pointer;white-space:nowrap}
+.cats button.on{background:var(--ink);color:#fff}
+main{padding:36px 0 90px}
+.group h2{font-size:32px;margin:46px 0 14px}
+.qa{background:#fff;border-radius:22px;margin:10px 0;overflow:hidden;transition:box-shadow .3s}
+.qa[open]{box-shadow:0 8px 30px rgba(0,0,0,.07)}
+.qa summary{cursor:pointer;list-style:none;padding:20px 24px;font-weight:600;font-size:19px;display:flex;justify-content:space-between;gap:18px;letter-spacing:-.015em}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary::after{content:"+";font-weight:400;font-size:26px;line-height:.9;color:var(--ink2);transition:transform .3s}
+.qa[open] summary::after{transform:rotate(45deg)}
+.qa .a{padding:0 24px 22px;animation:fade .45s ease}
+@keyframes fade{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.qa .a p{margin:0 0 12px}.qa .a ul,.qa .a ol{margin:0 0 12px;padding-left:22px}.qa .a li{margin:4px 0}
+.short{background:rgba(0,113,227,.08);border-radius:14px;padding:12px 16px;margin-bottom:14px;font-weight:500}
+.short b{color:var(--blue);font-size:12px;letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:2px}
+.src{font-size:12.5px;color:var(--ink2);border-top:1px solid var(--line);padding-top:12px;margin-top:14px;line-height:1.5}
+.more{font-size:14px;margin-top:6px}
+table{width:100%;border-collapse:collapse;font-size:14.5px;margin-bottom:12px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink2)}
+.scroll{overflow-x:auto}
+.none{text-align:center;color:var(--ink2);padding:50px 0;display:none}
+mark{background:rgba(255,214,10,.5);border-radius:3px;padding:0 1px}
+footer{color:#6e6e73;font-size:12px;padding:0 0 50px;text-align:center}
+@media(prefers-reduced-motion:reduce){.qa .a{animation:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<nav class="gnav"><div class="wrap"><a class="brand" href="index.html">Seeing vs. Doing</a>
+<div class="links"><a href="index.html#trap">The guide</a><a href="index.html#dsep">Playground</a><a href="index.html#target">Targeting example</a><a href="index.html#workflow">Workflow</a><a class="on" href="faq.html">FAQ</a></div></div></nav>
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">Frequently asked questions</div>
+  <h1>Questions from <span class="grad">the field.</span></h1>
+  <p>Short answers first, detail underneath, and a pointer to the research behind each one.</p>
+  <div class="search"><input id="q" type="search" placeholder="Search: SHAP, overlap, MMM, holdout..." aria-label="Search questions"></div>
+</div></header>
+<div class="cats"><div class="wrap" id="cats"></div></div>
+<main><div class="wrap"><div id="list"></div><div class="none" id="none">No questions match. Try a shorter search.</div></div></main>
+<footer><div class="wrap">Research drawn from the <a href="https://redam94.github.io/second-brain/">Second Brain</a> knowledge base. Each answer names the vault note and the original work behind it.</div></footer>
+
+<script>
+(()=>{"use strict";
+const V='https://redam94.github.io/second-brain/';
+const S={
+ dag:['Directed Acyclic Graphs','Research/Econometrics/Foundations/Directed-Acyclic-Graphs','Harrison (2023), Towards Data Science'],
+ dagci:['DAGs and Causal Identification','Research/Econometrics/Identification-Strategies/DAGs-and-Causal-Identification','Harrison (2023), Towards Data Science'],
+ dillon:['Dillon et al - SHAP and Causal Insights','Research/Model-Validation-and-Interpretability/Explanations,-Causality-and-Proxies/Dillon-et-al---SHAP-and-Causal-Insights/Dillon-et-al---SHAP-and-Causal-Insights---Overview','Dillon, LaRiviere, Lundberg, Roth & Syrgkanis, SHAP documentation'],
+ dillonu:['Dillon et al - Unobserved Confounding','Research/Model-Validation-and-Interpretability/Explanations,-Causality-and-Proxies/Dillon-et-al---SHAP-and-Causal-Insights/Dillon-et-al---Unobserved-Confounding-and-Quasi-Experimental-Remedies','Dillon et al., SHAP documentation'],
+ qa2:['Q: Covariate Adjustment for Precision vs Identification','Questions-and-Answers/Q---Covariate-Adjustment-for-Precision-vs-Identification','vault synthesis across its CUPED, regression adjustment, double ML and CausalImpact notes'],
+ qa1:['Q: Uncovering Causal Estimates from Non-Experimental Data','Questions-and-Answers/Q---Uncovering-Causal-Estimates-from-Non-Experimental-Data','vault synthesis, mainly Angrist & Pischke (2008), Mostly Harmless Econometrics'],
+ lra:['Logic of Regression Adjustment','Research/Research-Methodology/Logic-of-Regression-Adjustment','Nafa (2022), "These Are Not the Effects You Are Looking For"'],
+ t2:['Table 2 Fallacy','Research/Research-Methodology/Table-2-Fallacy','Nafa (2022); Westreich & Greenland (2013)'],
+ npb:['Nuisance Parameter Bias Simulation','Research/Research-Methodology/Nuisance-Parameter-Bias-Simulation','Nafa (2022)'],
+ elicit:['Knowledge Elicitation','Research/Bayesian-Statistics/Causal-Inference/Knowledge-Elicitation/_Index','Yamashita, Kanno & Furuta (2020); Shaposhnyk, Zahorska & Yanushkevich (2025); Liu et al. (2025)'],
+ sum:['Summary Causal DAGs','Research/Bayesian-Statistics/Causal-Inference/Foundations/Summary-Causal-DAGs','Zeng et al. (2025), "Causal DAG Summarization"'],
+ dosum:['Do-Calculus in Summary Causal DAGs','Research/Bayesian-Statistics/Causal-Inference/Foundations/Do-Calculus-in-Summary-Causal-DAGs','Zeng et al. (2025)'],
+ cdo:['Causal Discovery - Overview','Research/Causal-Discovery/Constraint-and-Score-Based-Discovery/Causal-Discovery---Overview','Glymour, Zhang & Spirtes (2019)'],
+ mf:['Markov and Faithfulness Assumptions','Research/Causal-Discovery/Constraint-and-Score-Based-Discovery/Markov-and-Faithfulness-Assumptions','Glymour, Zhang & Spirtes (2019)'],
+ gen:['General Structure of Bayesian Causal Inference','Research/Bayesian-Statistics/Causal-Inference/Bayesian-Inference/General-Structure-of-Bayesian-CI','Li, Ding & Mealli (2022); Gustafson (2015)'],
+ sens:['Sensitivity Analysis in Observational Studies','Research/Bayesian-Statistics/Causal-Inference/Sensitivity-and-Complex-Mechanisms/Sensitivity-Analysis-in-Observational-Studies','Li, Ding & Mealli (2022); VanderWeele & Ding (2017)'],
+ unified:['Q: A Unified View of Sensitivity to Assumption Violations','Questions-and-Answers/Q---A-Unified-View-of-Sensitivity-to-Assumption-Violations','vault synthesis across its sensitivity, Honest DiD, synthetic control and geo-test notes'],
+ overlap:['Common Support and Overlap','Research/Econometrics/Identification-Strategies/Propensity-Score-Matching/Common-Support-and-Overlap','Stuart (2010); King & Zeng (2006); Crump et al. (2009)'],
+ power:['Power Analysis and Sample Size','Research/Research-Methodology/Experimental-Design/Power-Analysis-and-Sample-Size','Lewis & Rao (2015) and a review article on sample size calculation'],
+ geo:['Geo-Experiment Methodology - Overview','Research/Market-Response-Models/Geo-Experiment-Methodology/Geo-Experiment-Methodology---Overview','Vaver & Koehler (2011); Kerman, Wang & Vaver (2017)'],
+ iv:['Instrumental Variables','Research/Econometrics/Identification-Strategies/Instrumental-Variables','Angrist & Pischke (2008), Ch. 4'],
+ bench:['Experimental Benchmarks for Observational Ad Measurement','Research/Market-Response-Models/User-Level-Ad-Experiments/Experimental-Benchmarks-for-Observational-Ad-Measurement','Gordon et al. (2019); Gordon, Moakler & Zettelmeyer (2023)'],
+ gordon:['Gordon et al 2019 - Exposure Endogeneity','Research/Market-Response-Models/User-Level-Ad-Experiments/Gordon-et-al-2019---Facebook-Experiment-Design-and-Exposure-Endogeneity','Gordon, Zettelmeyer, Bhargava & Chapsky (2019)'],
+ meta:['Metalearners for CATE','Research/Bayesian-Statistics/Causal-Inference/Treatment-Effect-Estimation/Metalearners-for-CATE','Künzel et al. (2019), PNAS'],
+ ab:['Activity Bias in Advertising','Research/Research-Methodology/Activity-Bias-in-Advertising','Lewis, Rao & Reiley (2011)'],
+ mmmprior:['Q: Using Experiment Results as Priors in a Bayesian MMM','Questions-and-Answers/Q---Using-Experiment-Results-as-Priors-in-a-Bayesian-MMM','vault synthesis; cites Jin et al., Gelman et al., Blake, Nosko & Tadelis (2015)'],
+ pitfalls:['Q: Common Pitfalls in Statistical Modeling','Questions-and-Answers/Q---Common-Pitfalls-in-Statistical-Modeling','vault synthesis; McElreath, Statistical Rethinking; Gelman & Loken (2013); Gelman et al., "Bayesian Workflow" (2020)']
+};
+const G=[
+{c:'Prediction and causation',q:[
+ {id:'predict-vs-cause',q:'What is the difference between a predictive model and a causal model?',s:'A predictive model tells you what to expect given what you see. A causal model tells you what changes if you step in.',
+  a:'<p>A predictive model learns the patterns in data generated by the world as it ran. It assumes people and processes keep behaving the same way, so those patterns hold. That is the right tool for forecasts, rankings and risk scores.</p><p>An intervention changes how the data are generated. Once you choose who gets a discount, the old link between discount and customer type is gone, and with it part of what the predictive model relied on. Answering "what if we change this?" needs assumptions about what causes what, usually written as a diagram.</p>',
+  m:'index.html#two',src:['dillon','dag']},
+ {id:'validation',q:'My model predicts well out of sample. Is that enough to trust it for decisions?',s:'It is enough to trust the forecast. It says nothing about what happens when you pull a lever.',
+  a:'<p>Holdout accuracy tests whether the model captured the associations in data like the data it was trained on. A confounded association predicts very well, since the confounder is still there in the test set.</p><p>In the retention simulation used throughout the guide, the model was accurate and its implied advice on discounts had the wrong sign. The only validation that speaks to a decision is one that compares the model’s claim against an intervention, such as a holdout experiment.</p>',
+  m:'index.html#trap',src:['dillon','dillonu']},
+ {id:'shap',q:'Can I read SHAP values or feature importance as business drivers?',s:'Only for a feature that is independent of the other features and of anything unmeasured that affects the outcome. That is rare for anything a person chose.',
+  a:'<p>These tools explain the fitted model. They show which inputs the model leans on, which is useful for debugging and for trust in a forecast.</p><p>They drift from the causal effect in three ways: a feature that moves with real drivers picks up their credit, a feature upstream of another one has its effect split, and a feature that shares a hidden cause with the outcome can show the wrong sign entirely. No diagnostic computed from the measured columns can flag the third case.</p><p>A ranked importance chart also reads every feature as an effect at once, which is the Table 2 fallacy in graphical form.</p>',
+  m:'index.html#two',src:['dillon','t2']},
+ {id:'dml',q:'I use double machine learning. Do I still need a diagram?',s:'Yes. Double ML handles the estimation carefully. It takes the list of controls as given, and the diagram is where that list comes from.',
+  a:'<p>Double ML removes the bias that flexible learners introduce when they shrink control effects, and it gives valid intervals. All of that sits downstream of the assumption that the controls you supplied block every backdoor path.</p><p>When a confounder is unmeasured, double ML fails in the same direction as a plain regression and reports a tighter interval. In the retention example it returned about −1.08 with a standard error of 0.05 against a true effect of +0.06. Across 663 real ad experiments, double ML with rich user data still gave a median lift several times the randomized answer.</p>',
+  m:'index.html#target',src:['dillonu','bench','qa2']}]},
+{c:'Building the diagram',q:[
+ {id:'build-dag',q:'How do I build a DAG when I am not sure what causes what?',s:'Start from the decision, list what influences both the lever and the outcome, and get the people who run the business to argue about it.',
+  a:'<ol><li>Put the treatment and the outcome on the page.</li><li>Ask what determines how the treatment gets set. In media that is usually plans, seasonality, budgets, expected demand and platform algorithms.</li><li>Ask what else moves the outcome.</li><li>Anything on both lists is a candidate confounder. Add it even if you cannot measure it.</li><li>For each pair of variables with no arrow, say out loud why there is no direct effect. Those absences are the claims.</li></ol><p>Structured workshops that record each link as cause, condition and effect help experts be specific. Language models can draft a first structure. In one study most model-proposed links were later confirmed, and some were not, so treat a draft as a list of questions for a human.</p>',
+  m:'index.html#workflow',src:['elicit','dagci']},
+ {id:'disagree',q:'Two experts draw different diagrams. Which one do I use?',s:'Both. Run the analysis under each and report where the answers differ.',
+  a:'<p>If both diagrams lead to the same adjustment set, the disagreement does not matter for this question. If they lead to different sets or different answers, you have found the assumption the conclusion hangs on.</p><p>Data may not be able to settle it. Diagrams in the same Markov equivalence class fit any dataset equally well. An experiment aimed at the disputed arrow usually can.</p>',
+  m:'index.html#mec',src:['mf','cdo']},
+ {id:'discovery',q:'Can software discover the diagram from my data?',s:'It can narrow the options. It usually returns a family of diagrams with some directions left open.',
+  a:'<p>Discovery algorithms read conditional independence patterns or optimize a fit score. Under their assumptions they recover the skeleton and the colliders. Other directions stay undetermined unless you add assumptions about the shape of the noise.</p><p>The standard methods assume no unmeasured common causes, which is seldom true in marketing data. Use discovery output as a draft to challenge with domain knowledge. Edges that are stable under resampling can still be wrong.</p>',
+  m:'index.html#disc',src:['cdo','mf']},
+ {id:'big-dag',q:'My diagram has forty nodes and nobody can follow it. What now?',s:'Cluster related variables into a summary diagram for discussion and for choosing adjustment sets.',
+  a:'<p>A summary DAG merges nodes into clusters. Merging adds connections, so the summary makes fewer independence claims than the original and never invents one. The do-calculus rules remain valid on it.</p><p>Keep clusters to variables at the same stage of the process so the result stays acyclic, and keep the detailed version for the analysts.</p>',
+  m:'index.html#summ',src:['sum','dosum']}]},
+{c:'Identification',q:[
+ {id:'not-identified',q:'What does "not identified" mean in practice?',s:'The data you have cannot answer the question, at any sample size and with any estimator.',
+  a:'<p>It means more than one answer is equally consistent with everything you observed. A model will still return a number. That number reflects the modeling choices, such as functional form or priors, and would change if those changed.</p><p>The useful response is to say what would identify it: a variable to measure, a test to run, or an assumption someone is willing to defend.</p>',
+  m:'index.html#limits',src:['gen','sens']},
+ {id:'two-kinds',q:'What is the difference between causal and statistical identification?',s:'Causal identification is about your assumptions. Statistical identification is about the variation in your data.',
+  a:'<p><b>Causal:</b> given the diagram, can the effect be written as a function of the distribution of measured variables? This fails when a backdoor path runs through something unmeasured.</p><p><b>Statistical:</b> do different values of the quantity produce different data? This fails when two channels always move together or when some group never received the treatment.</p><p>They fail independently. A confounded regression can be estimated to three decimal places. A perfectly randomized pair of channels that were always flighted together cannot be separated.</p>',
+  m:'index.html#ident',src:['gen','lra','qa2']},
+ {id:'bayes',q:'My Bayesian model gives a posterior for every parameter. Does that mean everything is identified?',s:'No. For a parameter the data cannot inform, the posterior is driven by the prior and stays that way as data grows.',
+  a:'<p>A practical test is to change the prior and refit. If the posterior follows the prior even with plenty of data, the parameter is weakly or partially identified.</p><p>Good reporting separates the two kinds of parameter and treats the unidentified ones as sensitivity dials with stated ranges.</p>',
+  m:'index.html#ident',src:['gen','sens']},
+ {id:'overlap',q:'How do I check overlap?',s:'Plot the treatment, or the propensity to be treated, within each group defined by your controls, and look for groups that are always or never treated.',
+  a:'<ul><li>Plot the distribution of estimated propensity scores for treated and untreated units on the same axes. Regions where only one group appears have no overlap.</li><li>Look at one or two important controls directly so you can describe who is missing.</li><li>If you trim to the overlapping region, state the population the estimate now describes. Dropping treated units changes the question.</li></ul><p>Precise targeting pushes propensities toward 0 and 1, so overlap tends to get worse as delivery systems get better.</p>',
+  m:'index.html#do',src:['overlap','bench']},
+ {id:'collinear',q:'Two channels are always bought together. What can I honestly report?',s:'Their combined effect. The split between them is not in the data.',
+  a:'<p>As the correlation between two spends approaches one, the data pin down the sum of their effects and lose the difference. Any split a model reports comes from priors or functional form.</p><p>To separate them, create independent variation: flight one without the other in some regions, or run tests at two spend levels for each.</p>',
+  m:'index.html#ident',src:['qa2','mmmprior']}]},
+{c:'Controls and regression',q:[
+ {id:'which-controls',q:'Which variables should I control for?',s:'Common causes of the treatment and the outcome, measured before the treatment was set. Nothing downstream of the treatment.',
+  a:'<p>Read them off the diagram: the smallest set that blocks every backdoor path. Leave out mediators, which carry the effect, and colliders, which create bias when conditioned on.</p><p>Choosing controls by how much they improve fit is safe only in a randomized experiment, where controls serve precision. In observational work a control that barely improves fit can still be the one that removes the bias.</p>',
+  m:'index.html#dsep',src:['dagci','qa2','lra']},
+ {id:'more-controls',q:'Is adding more controls always the safer choice?',s:'No. Some controls remove bias, some add it, and some erase the effect you are measuring.',
+  a:'<p>Adding a mediator such as site visits blocks part of the effect. Adding a common effect of treatment and outcome opens a path that was closed. Adding a variable that predicts treatment and has no bearing on the outcome only inflates the variance.</p><p>The playground in the guide has a "kitchen sink" button that shows each of these.</p>',
+  m:'index.html#dsep',src:['dag','lra']},
+ {id:'table2',q:'Can I interpret the coefficients on my control variables?',s:'Not as effects. The controls were chosen to identify the treatment, and that choice does nothing for their own coefficients.',
+  a:'<p>Each control has its own backdoor paths, which the model was never built to close. The treatment itself may sit on the path from a control to the outcome, so the control’s coefficient is at best a direct effect.</p><p>In a published simulation, 90% intervals for the treatment covered the truth about 90% of the time. Intervals for the controls covered it between 0% and 29% of the time, and coverage fell as the sample grew.</p>',
+  m:'index.html#table2',src:['t2','npb']},
+ {id:'experiment-controls',q:'I ran a randomized experiment. Should I still adjust for covariates?',s:'Yes, for precision. The estimate is unbiased either way, and good pre-period covariates make the interval much tighter.',
+  a:'<p>Use covariates fixed before assignment that predict the outcome, with the pre-period value of the outcome itself first. Variance falls by one minus the squared correlation.</p><p>Never adjust for anything measured after assignment. One documented case adjusted for an in-experiment metric and produced a tight interval around the wrong sign.</p>',
+  m:'index.html#ident',src:['qa2']},
+ {id:'regularize',q:'Can I put shrinkage or sparsity priors on my controls?',s:'Be careful. Shrinking a confounder leaks its effect into the treatment coefficient.',
+  a:'<p>A confounder nearly collinear with treatment adds little to fit, so regularization shrinks it, and the part that was shrunk away behaves like an omitted variable. The remedy is to residualize the treatment on the controls as well as the outcome, or to include an expected-treatment term.</p>',
+  m:'index.html#ident',src:['qa2']}]},
+{c:'Experiments',q:[
+ {id:'worth-it',q:'How do I know if an experiment is worth running?',s:'Compute the smallest effect the test can detect and compare it with the smallest effect that would change the decision.',
+  a:'<p>For a comparison of two means the sample per group is roughly 2(z<sub>α/2</sub> + z<sub>power</sub>)²σ² / d². With 5% significance and 80% power the multiplier is about 15.7. Halving the effect you want to detect quadruples the sample.</p><p>Ad effects are small next to the natural variation in sales, so required samples can be very large. Pre-period covariates cut the requirement by one minus the squared correlation with the outcome.</p>',
+  m:'index.html#workflow',src:['power']},
+ {id:'geo-vs-user',q:'User-level holdout or geo experiment?',s:'User-level when you can control delivery per person and the outcome is tracked per person. Geo when either fails.',
+  a:'<p>User-level tests have more units and more power. They struggle with shared devices, offline sales and channels with no person-level delivery.</p><p>Geo tests assign regions and read aggregate outcomes. With tens of regions, a regression on pretest and test totals works. With a handful, a time-based approach predicts the treated regions from the controls, which leans on that relationship staying stable. Include a cooldown period for lagged effects and stratify assignment by pretest volume.</p>',
+  m:'index.html#workflow',src:['geo','gordon']},
+ {id:'small-significant',q:'My test was small and came back significant with a big effect. Can I bank it?',s:'Treat the size with suspicion. Significant results from underpowered tests overstate magnitude and sometimes get the sign wrong.',
+  a:'<p>When power is low, the only estimates that clear the significance bar are the ones that happened to land far from zero. Before using the number elsewhere, widen its uncertainty and check it against prior knowledge of plausible effect sizes.</p>',
+  m:'index.html#workflow',src:['pitfalls','power','mmmprior']},
+ {id:'observational-ads',q:'Can observational methods replace holdouts for platform advertising?',s:'The evidence says not reliably.',
+  a:'<p>Large studies have re-analyzed randomized ad experiments with observational methods and rich user data. In one set of 15 experiments, half of the checkout estimates were off by more than a factor of three. In a later set of 663, the median lower-funnel lift was 5% by experiment, 24% by double ML and 64% by propensity score matching.</p><p>Exposure is driven by user activity, by the platform’s targeting and by auction competition. Much of that happens at the level of individual auctions and is invisible in user-level features.</p>',
+  m:'index.html#target',src:['bench','gordon','ab']}]},
+{c:'When you cannot randomize',q:[
+ {id:'no-experiment',q:'I cannot run an experiment. What are my options?',s:'Look for variation that was assigned by something unrelated to the outcome, then match it to a design.',
+  a:'<div class="scroll"><table><tr><th>Situation</th><th>Design</th><th>Key assumption</th><th>Estimates</th></tr><tr><td>A random nudge toward treatment</td><td>Instrumental variables</td><td>The nudge affects the outcome only through treatment</td><td>Effect for those the nudge moved</td></tr><tr><td>Staggered rollout</td><td>Difference-in-differences</td><td>Same trend without treatment</td><td>Effect on the treated groups</td></tr><tr><td>Sharp eligibility rule</td><td>Regression discontinuity</td><td>Units near the cutoff are alike</td><td>Effect at the cutoff</td></tr><tr><td>One treated market</td><td>Synthetic control</td><td>A blend of other markets tracks it</td><td>Effect on that market</td></tr><tr><td>None of the above</td><td>Adjustment</td><td>No unmeasured common causes</td><td>Effect where groups overlap</td></tr></table></div><p>The design router in the workflow walks through the same choice.</p>',
+  m:'index.html#workflow',src:['qa1','dillonu']},
+ {id:'iv-meaning',q:'What does an instrumental variables estimate actually tell me?',s:'The effect for the people whose treatment the instrument changed, which may be a narrow group.',
+  a:'<p>An instrument must shift the treatment and must reach the outcome through the treatment alone. The second condition cannot be tested and has to be argued.</p><p>When effects differ across people, the estimate applies to "compliers." If an email nudges mildly interested customers toward a feature, the result describes mildly interested customers. Ask whether they are the population your decision concerns.</p>',
+  m:'index.html#limits',src:['iv','qa1']}]},
+{c:'Sensitivity and robustness',q:[
+ {id:'sensitivity-how',q:'How do I run a sensitivity analysis?',s:'Name the assumption doing the most work, vary how badly it could fail, and report where the conclusion flips.',
+  a:'<div class="scroll"><table><tr><th>Design</th><th>Tool</th><th>What you report</th></tr><tr><td>Adjustment or regression</td><td>E-value, omitted-variable bounds</td><td>Strength a hidden factor would need</td></tr><tr><td>Matched comparison</td><td>Rosenbaum bounds</td><td>Hidden bias at which significance is lost</td></tr><tr><td>Difference-in-differences</td><td>Robust intervals for trend violations</td><td>Largest trend gap the result survives</td></tr><tr><td>Synthetic control</td><td>Placebo, backdating, leave-one-out</td><td>How unusual the treated unit is</td></tr><tr><td>Time-based geo test</td><td>Injected drift</td><td>Bias and coverage against drift rate</td></tr><tr><td>Bayesian model</td><td>Prior and likelihood power scaling</td><td>How far the posterior moves</td></tr></table></div><p>Express the breaking point in units a stakeholder can judge. If the sensitivity-aware interval is no wider than the original, the violations you allowed were probably too mild.</p>',
+  m:'index.html#limits',src:['unified','sens']},
+ {id:'placebo',q:'My placebo test passed. Am I safe?',s:'You have ruled out one specific problem. The untestable assumption is still untested.',
+  a:'<p>Placebo, backdating and pre-trend checks are falsification tests. Failing one is informative. Passing one tells you that particular failure did not show up in that particular window, often with little power to detect it.</p><p>Pair the check with a statement of how large a violation it could have caught, and with a sensitivity analysis for the assumption that data cannot inform.</p>',
+  m:'index.html#limits',src:['unified']},
+ {id:'forking',q:'We ran hundreds of model specifications and picked the best. Is that a problem?',s:'Yes. An analysis chosen by the data that then evaluate it reports overconfident results.',
+  a:'<p>The issue holds even when each choice seemed reasonable and nobody was fishing. Remedies include fixing the specification before seeing outcomes, holding out data for evaluation, modeling the alternatives together with partial pooling, and reporting the full range of estimates across reasonable specifications.</p>',
+  m:'index.html#workflow',src:['pitfalls']}]},
+{c:'Media mix models',q:[
+ {id:'mmm-causal',q:'Is a media mix model a causal model?',s:'It is used to make causal claims from observational data, so it inherits every identification requirement in this guide.',
+  a:'<p>An MMM is a regression of sales on spend and controls. Media was planned by people who anticipated demand, so every control in the model is an identification claim. Seasonality, price and promotions belong because they drive both spend and sales.</p><p>Its channel estimates can also be statistically unidentified when channels are flighted together. And its control coefficients are not effects.</p>',
+  m:'index.html#ident',src:['qa2','t2']},
+ {id:'mmm-experiments',q:'How should I use experiment results in an MMM?',s:'As evidence about what the model predicts for that exact experiment, with its uncertainty widened.',
+  a:'<ul><li>For each experiment, compute the model’s implied lift for the same regions, weeks, spend change and outcome, and tie that to the measured lift. A prior placed directly on a channel coefficient means different things as saturation and carryover settings change.</li><li>Match the quantity. A go-dark test measures an average return. A heavy-up test measures a marginal return, and curvature makes those differ.</li><li>Include carryover and cooldown weeks on both sides.</li><li>If the test regions and weeks are already in the model’s data, avoid counting them twice.</li><li>Widen the reported standard error to allow for differences in time and place.</li><li>When the model and the experiment conflict, look at them side by side. A routine update will average them into a number neither supports.</li></ul>',
+  m:'index.html#workflow',src:['mmmprior']},
+ {id:'branded-search',q:'Should branded search or site traffic be in my MMM as a control?',s:'Usually not, if you want the total effect of the channels that cause them.',
+  a:'<p>Branded search and site traffic sit downstream of upper-funnel media. Holding them fixed blocks the route by which TV or video does much of its work, so those channels shrink to direct effects and the mediator takes the credit.</p><p>If the mediator is also driven by unmeasured demand, conditioning on it opens a further biasing path.</p>',
+  m:'index.html#table2',src:['qa2','dag']}]},
+{c:'Audience targeting',q:[
+ {id:'propensity-uplift',q:'What is the difference between a propensity model and an uplift model?',s:'A propensity model predicts who will convert. An uplift model predicts whose behavior the ad will change.',
+  a:'<p>Uplift is the chance of converting if shown the ad minus the chance if not. A propensity score estimates one side of that subtraction. People with the highest propensity often convert without help, so targeting them buys conversions you already had.</p><p>The simplest uplift model fits one outcome model on exposed customers and one on held-out customers and subtracts. It must be trained on data where exposure was randomized.</p>',
+  m:'index.html#target',src:['meta','gordon']},
+ {id:'compare-targeting',q:'How do I compare a new targeting method with the current one?',s:'Randomize who is targeted by each method, keep a holdout inside each arm, and compare dollars per incremental conversion.',
+  a:'<p>Conversion rate of the selected audience rewards whichever method is better at finding people who were going to convert anyway. Cost per conversion has the same flaw.</p><p>The holdout inside each arm turns each audience’s conversions into incremental conversions. Dividing spend by that count gives a metric on which the two methods can be fairly ranked.</p>',
+  m:'index.html#target',src:['bench','meta']},
+ {id:'uplift-individual',q:'Can I identify which individual customers are persuadable?',s:'No. Uplift is identified for groups on average, never for a single person.',
+  a:'<p>Each person is observed either with the ad or without it. An uplift model ranks segments by their average response. Labels such as "persuadable" describe a region of that ranking and should not be attached to named individuals as facts.</p>',
+  m:'index.html#limits',src:['meta','lra']}]},
+{c:'Communicating results',q:[
+ {id:'tell-stakeholders',q:'How do I tell a stakeholder that their question cannot be answered from our data?',s:'Lead with what can be answered, state plainly what cannot, and price the test that would close the gap.',
+  a:'<p>A one-page readout with three headings works well: identified, identified under stated assumptions, and not identified. For the second group, give the breaking point in familiar units. For the third, name the data or experiment that would resolve it and what it would cost.</p><p>Framing the gap as a decision about whether to buy information lands better than framing it as a limitation of the analysis.</p>',
+  m:'index.html#check',src:['unified','sens']},
+ {id:'tight-interval',q:'The interval is very tight. Does that mean the estimate is reliable?',s:'It means the estimate is precise. Whether it is aimed at the right target is a separate question.',
+  a:'<p>Interval width reflects sample size and model structure. Confounding shifts the center and leaves the width alone, and adding data narrows the interval around the shifted value.</p><p>Before trusting a tight interval, ask what closed the backdoor paths.</p>',
+  m:'index.html#trap',src:['qa2','npb']}]}
+];
+const list=document.getElementById('list'),cats=document.getElementById('cats'),input=document.getElementById('q');
+function srcHTML(ks){return '<div class="src"><b>Second Brain notes:</b> '+ks.map(k=>`<a href="${V+S[k][1]}">${S[k][0]}</a>`).join(' · ')+'<br><b>Original sources:</b> '+[...new Set(ks.map(k=>S[k][2]))].join('; ')+'.</div>';}
+let n=0;
+G.forEach((g,gi)=>{const sec=document.createElement('section');sec.className='group';sec.dataset.g=gi;sec.innerHTML='<h2>'+g.c+'</h2>';
+  g.q.forEach(x=>{n++;const d=document.createElement('details');d.className='qa';d.id=x.id;d.dataset.t=(x.q+' '+x.s+' '+x.a.replace(/<[^>]+>/g,' ')).toLowerCase();
+    d.innerHTML=`<summary>${x.q}</summary><div class="a"><div class="short"><b>Short answer</b>${x.s}</div>${x.a}<div class="more"><a href="${x.m}">See this in the guide →</a></div>${srcHTML(x.src)}</div>`;sec.appendChild(d);});
+  list.appendChild(sec);});
+const mk=(t,gi)=>{const b=document.createElement('button');b.textContent=t;b.dataset.g=gi;cats.appendChild(b);return b;};
+const btns=[mk('All '+n,-1)].concat(G.map((g,i)=>mk(g.c,i)));let cur=-1;
+function apply(){const t=input.value.trim().toLowerCase();let shown=0;
+  document.querySelectorAll('.group').forEach(sec=>{let any=0;const gOK=cur<0||+sec.dataset.g===cur;
+    sec.querySelectorAll('.qa').forEach(d=>{const ok=gOK&&(!t||d.dataset.t.includes(t));d.style.display=ok?'':'none';if(ok){any++;shown++;}});sec.style.display=any?'':'none';});
+  document.getElementById('none').style.display=shown?'none':'block';btns.forEach(b=>b.classList.toggle('on',+b.dataset.g===cur));}
+btns.forEach(b=>b.onclick=()=>{cur=+b.dataset.g;apply();});input.oninput=apply;apply();
+function openHash(){const id=location.hash.slice(1);if(!id)return;const d=document.getElementById(id);if(d&&d.tagName==='DETAILS'){d.open=true;setTimeout(()=>d.scrollIntoView({block:'center'}),60);}}
+addEventListener('hashchange',openHash);openHash();
+document.querySelectorAll('.qa summary').forEach(s=>s.addEventListener('click',()=>{const d=s.parentElement;if(!d.open)history.replaceState(null,'','#'+d.id);}));
+})();
+</script>
+</body>
+</html>
