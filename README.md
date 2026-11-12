@@ -5,7 +5,7 @@ An interactive guide to causal identification and the trap of treating predictiv
 - `index.html`: the guide. It opens with a nine-stage practitioner workflow, a design router and a geo-test sizing calculator, then covers DAGs, d-separation, do-calculus, causal versus statistical identification, causal discovery, Markov equivalence, summary DAGs, a field guide to twelve graph types, the Table 2 fallacy, sensitivity analysis, when an observational estimate is good enough, an audience-targeting example, a weekly media mix model worked end to end with a filled-in readout, and transport and calibration of experimental results.
 - `faq.html`: 51 practitioner questions with short answers, detail, and sources.
 
-Both pages are self-contained static files with no build step and no external scripts.
+Both pages are static files with no build step and no external scripts. Images live in `assets/`: chapter icons (`assets/img/icons/`, neon line art on a transparent ground, inverted to dark ink on light sections), hero art and dark and light texture overlays (`assets/img/art/`) and the favicon. The art was generated with fal (Nano Banana 2.1); the icons were cut from a single 5x4 icon sheet so they share one style.
 
 Live site: https://redam94.github.io/causal-vs-predictive-modeling/
 
